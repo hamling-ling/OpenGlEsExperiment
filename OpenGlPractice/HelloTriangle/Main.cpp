@@ -6,6 +6,8 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "Slice.h"
+
 static HGLRC g_hGLRC;
 
 static TCHAR szClassName[] = TEXT("SimpleTrianle");
@@ -26,7 +28,26 @@ static void DisplayCompileError(GLuint shader, HWND hWnd);
 static void DisplayLinkError(GLuint program, HWND hWnd);
 
 static GLuint g_bufferObject;
+static GLuint g_bufferObject0;
+static GLuint g_bufferObject1;
+static GLuint g_bufferObject2;
 static GLuint g_vertexArrayObject;
+static GLuint g_vertexArrayObject0;
+static GLuint g_vertexArrayObject1;
+static GLuint g_vertexArrayObject2;
+
+const GLfloat colorsAndVertices[3][5] =
+{
+	{ 1.0f,  1.0f,  0.0f, -0.5f, -0.5f},
+	{ 1.0f,  1.0f,  0.0f,  0.5f, -0.5f},
+	{ 1.0f,  1.0f,  0.0f,  0.0f,  0.5f},
+};
+
+GLfloat colorsAndVerticesSliced0[3][5] = {0.0};
+
+
+GLfloat colorsAndVerticesSliced1[3][5] = {0.0};
+GLfloat colorsAndVerticesSliced2[3][5] = {0.0};
 
 int WINAPI WinMain(HINSTANCE hCurrInstance, HINSTANCE hPrevInstance, LPSTR szArgs, int nWinMode)
 {
@@ -106,6 +127,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lPar
 	return 0;
 }
 
+static void foo(int &i) { i = 3;};
 
 static void OnCreate(HWND hWnd)
 {
@@ -113,13 +135,6 @@ static void OnCreate(HWND hWnd)
 	int nPfdID;
 	BOOL bResult;
 	HGLRC hGLRC;
-
-	const GLfloat colorsAndVertices[3][5] =
-	{
-		{ 1.0f,  1.0f,  0.0f, -0.5f, -0.5f},
-		{ 1.0f,  1.0f,  0.0f,  0.5f, -0.5f},
-		{ 1.0f,  1.0f,  0.0f,  0.0f,  0.5f},
-	};
 
 	const PIXELFORMATDESCRIPTOR pfd = {
 		sizeof (PIXELFORMATDESCRIPTOR),
@@ -191,26 +206,22 @@ static void OnCreate(HWND hWnd)
 	glLinkProgram(g_shaderProgram);
 	DisplayLinkError(g_shaderProgram, hWnd);
 
-	glGenBuffers(1, &g_bufferObject);
+	GLint colorLocation = glGetAttribLocation(g_shaderProgram, "Color");
+	GLint vertexLocation = glGetAttribLocation(g_shaderProgram, "Vertex");
+
+	glGenBuffers(1, &g_bufferObject0);
 	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject);
 	glBufferData(GL_ARRAY_BUFFER, sizeof (colorsAndVertices), colorsAndVertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	GLint colorLocation = glGetAttribLocation(g_shaderProgram, "Color");
-	GLint vertexLocation = glGetAttribLocation(g_shaderProgram, "Vertex");
-
 	glGenVertexArrays(1, &g_vertexArrayObject);
 	glBindVertexArray(g_vertexArrayObject);
-
 	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject);
-
 	glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof (GLfloat), 0);
 	glVertexAttribPointer(vertexLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof (GLfloat), (GLvoid *)(3 * sizeof (GLfloat)));
 	glEnableVertexAttribArray(colorLocation);
 	glEnableVertexAttribArray(vertexLocation);
-
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 	glBindVertexArray(0);
 
 	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Color"));
@@ -223,7 +234,120 @@ static void OnCreate(HWND hWnd)
 	wglMakeCurrent(NULL, NULL);
 
 	ReleaseDC(hWnd, hDC);
+
+	//---------------
+	// slice
+	CVector3f a(colorsAndVertices[0][3],colorsAndVertices[0][4],0.0);
+	CVector3f b(colorsAndVertices[1][3],colorsAndVertices[1][4],0.0);
+	CVector3f c(colorsAndVertices[2][3],colorsAndVertices[2][4],0.0);
+	CTriangle3f tri0(a,b,c);
+
+	CVector3f s0(-0.1f, 1.0f, 0.0f);
+	CVector3f s1(0.1f, -1.0f, 0.0f);
+	CTriangle3f sliced[3];
+	if(SliceTriangle(tri0, s0, s1, sliced)) {
+		colorsAndVerticesSliced0[0][3] = sliced[0][CTriangle3f::A][CVector3f::X];
+		colorsAndVerticesSliced0[0][4] = sliced[0][CTriangle3f::A][CVector3f::Y];
+		colorsAndVerticesSliced0[1][3] = sliced[0][CTriangle3f::B][CVector3f::X];
+		colorsAndVerticesSliced0[1][4] = sliced[0][CTriangle3f::B][CVector3f::Y];
+		colorsAndVerticesSliced0[2][3] = sliced[0][CTriangle3f::C][CVector3f::X];
+		colorsAndVerticesSliced0[2][4] = sliced[0][CTriangle3f::C][CVector3f::Y];
+		for(int i = 0; i < 3; i++)
+		{
+			colorsAndVerticesSliced0[i][0] = 1.0;
+			colorsAndVerticesSliced0[i][1] = 1.0;
+			colorsAndVerticesSliced0[i][2] = 0.0;
+		}
+
+		colorsAndVerticesSliced1[0][3] = sliced[1][CTriangle3f::A][CVector3f::X];
+		colorsAndVerticesSliced1[0][4] = sliced[1][CTriangle3f::A][CVector3f::Y];
+		colorsAndVerticesSliced1[1][3] = sliced[1][CTriangle3f::B][CVector3f::X];
+		colorsAndVerticesSliced1[1][4] = sliced[1][CTriangle3f::B][CVector3f::Y];
+		colorsAndVerticesSliced1[2][3] = sliced[1][CTriangle3f::C][CVector3f::X];
+		colorsAndVerticesSliced1[2][4] = sliced[1][CTriangle3f::C][CVector3f::Y];
+		for(int i = 0; i < 3; i++)
+		{
+			colorsAndVerticesSliced1[i][0] = 0.0;
+			colorsAndVerticesSliced1[i][1] = 1.0;
+			colorsAndVerticesSliced1[i][2] = 1.0;
+		}
+
+		colorsAndVerticesSliced2[0][3] = sliced[2][CTriangle3f::A][CVector3f::X];
+		colorsAndVerticesSliced2[0][4] = sliced[2][CTriangle3f::A][CVector3f::Y];
+		colorsAndVerticesSliced2[1][3] = sliced[2][CTriangle3f::B][CVector3f::X];
+		colorsAndVerticesSliced2[1][4] = sliced[2][CTriangle3f::B][CVector3f::Y];
+		colorsAndVerticesSliced2[2][3] = sliced[2][CTriangle3f::C][CVector3f::X];
+		colorsAndVerticesSliced2[2][4] = sliced[2][CTriangle3f::C][CVector3f::Y];
+		for(int i = 0; i < 3; i++)
+		{
+			colorsAndVerticesSliced2[i][0] = 1.0;
+			colorsAndVerticesSliced2[i][1] = 0.0;
+			colorsAndVerticesSliced2[i][2] = 1.0;
+		}
+	}
+
+	//-- crate another object
+	hDC = GetDC(hWnd);
+	wglMakeCurrent(hDC, g_hGLRC);
+
+	colorLocation = glGetAttribLocation(g_shaderProgram, "Color");
+	vertexLocation = glGetAttribLocation(g_shaderProgram, "Vertex");
+
+	glGenBuffers(1, &g_bufferObject0);
+	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject0);
+	glBufferData(GL_ARRAY_BUFFER, sizeof (colorsAndVerticesSliced0), colorsAndVerticesSliced0, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenVertexArrays(1, &g_vertexArrayObject0);
+	glBindVertexArray(g_vertexArrayObject0);
+	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject0);
+	glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof (GLfloat), 0);
+	glVertexAttribPointer(vertexLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof (GLfloat), (GLvoid *)(3 * sizeof (GLfloat)));
+	glEnableVertexAttribArray(colorLocation);
+	glEnableVertexAttribArray(vertexLocation);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	glGenBuffers(1, &g_bufferObject1);
+	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject1);
+	glBufferData(GL_ARRAY_BUFFER, sizeof (colorsAndVerticesSliced1), colorsAndVerticesSliced1, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenVertexArrays(1, &g_vertexArrayObject1);
+	glBindVertexArray(g_vertexArrayObject1);
+	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject1);
+	glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof (GLfloat), 0);
+	glVertexAttribPointer(vertexLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof (GLfloat), (GLvoid *)(3 * sizeof (GLfloat)));
+	glEnableVertexAttribArray(colorLocation);
+	glEnableVertexAttribArray(vertexLocation);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	glGenBuffers(1, &g_bufferObject2);
+	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject2);
+	glBufferData(GL_ARRAY_BUFFER, sizeof (colorsAndVerticesSliced2), colorsAndVerticesSliced2, GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenVertexArrays(1, &g_vertexArrayObject2);
+	glBindVertexArray(g_vertexArrayObject2);
+	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject2);
+	glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 5 * sizeof (GLfloat), 0);
+	glVertexAttribPointer(vertexLocation, 2, GL_FLOAT, GL_FALSE, 5 * sizeof (GLfloat), (GLvoid *)(3 * sizeof (GLfloat)));
+	glEnableVertexAttribArray(colorLocation);
+	glEnableVertexAttribArray(vertexLocation);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Color"));
+	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Vertex"));
+
+	wglMakeCurrent(NULL, NULL);
+
+	ReleaseDC(hWnd, hDC);
+
+
 }
+
 
 static void OnSize(HWND hWnd, int nWidth, int nHeight)
 {
@@ -255,10 +379,20 @@ static void OnPaint(HWND hWnd)
 
 	glUseProgram(g_shaderProgram);
 
-	glBindVertexArray(g_vertexArrayObject);
+	//glBindVertexArray(g_vertexArrayObject);
+	//glDrawArrays(GL_TRIANGLES, 0, 3);
+	//glBindVertexArray(0);
 
+	glBindVertexArray(g_vertexArrayObject0);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
 
+	glBindVertexArray(g_vertexArrayObject1);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+
+	glBindVertexArray(g_vertexArrayObject2);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glBindVertexArray(0);
 
 	glFlush();
@@ -278,7 +412,13 @@ static void OnDestroy(HWND hWnd)
 
 	wglMakeCurrent(hDC, g_hGLRC);
 	glDeleteVertexArrays(1, &g_vertexArrayObject);
+	glDeleteVertexArrays(1, &g_vertexArrayObject0);
+	glDeleteVertexArrays(1, &g_vertexArrayObject1);
+	glDeleteVertexArrays(1, &g_vertexArrayObject2);
 	glDeleteBuffers(1, &g_bufferObject);
+	glDeleteBuffers(1, &g_bufferObject0);
+	glDeleteBuffers(1, &g_bufferObject1);
+	glDeleteBuffers(1, &g_bufferObject2);
 	glDeleteProgram(g_shaderProgram);
 	wglMakeCurrent(NULL, NULL);
 

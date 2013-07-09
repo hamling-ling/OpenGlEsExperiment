@@ -245,7 +245,7 @@ static void OnCreate(HWND hWnd)
 
 	glDeleteShader(g_vertexShader);
 	glLinkProgram(g_shaderProgram);
-   	DisplayLinkError(g_shaderProgram, hWnd);
+	DisplayLinkError(g_shaderProgram, hWnd);
 
 	glGenBuffers(1, &g_bufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject);
