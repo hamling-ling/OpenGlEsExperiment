@@ -238,7 +238,7 @@ static void OnCreate(HWND hWnd)
 	g_vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	LoadShaderSource(g_vertexShader, "Lighting.vert");
 	glCompileShader(g_vertexShader);
-   	DisplayCompileError(g_vertexShader, hWnd);
+	DisplayCompileError(g_vertexShader, hWnd);
 
 	g_shaderProgram = glCreateProgram();
 	glAttachShader(g_shaderProgram, g_vertexShader);
@@ -428,7 +428,7 @@ static void DisplayCompileError(GLuint shader, HWND hWnd)
 	int len;
 	char* buf;
 
-   	glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
 	if (compiled == GL_FALSE) {
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &size);
 		if (size > 0) {

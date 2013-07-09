@@ -142,8 +142,8 @@ static void OnCreate(HWND hWnd)
 	};
 
 	const int attributes[] = {
-		WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-		WGL_CONTEXT_MINOR_VERSION_ARB, 0, 
+		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+		WGL_CONTEXT_MINOR_VERSION_ARB, 3, 
 		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 		0
 	};
@@ -182,14 +182,14 @@ static void OnCreate(HWND hWnd)
 	g_vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	LoadShaderSource(g_vertexShader, "Simple.vert");
 	glCompileShader(g_vertexShader);
-   	DisplayCompileError(g_vertexShader, hWnd);
+	DisplayCompileError(g_vertexShader, hWnd);
 
 	g_shaderProgram = glCreateProgram();
 	glAttachShader(g_shaderProgram, g_vertexShader);
 
 	glDeleteShader(g_vertexShader);
 	glLinkProgram(g_shaderProgram);
-   	DisplayLinkError(g_shaderProgram, hWnd);
+	DisplayLinkError(g_shaderProgram, hWnd);
 
 	glGenBuffers(1, &g_bufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject);
@@ -321,7 +321,7 @@ static void DisplayCompileError(GLuint shader, HWND hWnd)
 	int len;
 	char* buf;
 
-   	glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
 	if (compiled == GL_FALSE) {
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &size);
 		if (size > 0) {
