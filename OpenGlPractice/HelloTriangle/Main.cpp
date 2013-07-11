@@ -31,25 +31,12 @@ static void LoadShaderSource(GLuint shader, const char* fileName);
 static void DisplayCompileError(GLuint shader, HWND hWnd);
 static void DisplayLinkError(GLuint program, HWND hWnd);
 
-//static GLuint g_bufferObject;
-static GLuint g_bufferObject0;
-static GLuint g_bufferObject1;
-static GLuint g_bufferObject2;
-//static GLuint g_vertexArrayObject;
-static GLuint g_vertexArrayObject0;
-static GLuint g_vertexArrayObject1;
-static GLuint g_vertexArrayObject2;
-
 const GLfloat colorsAndVertices[3][6] =
 {
 	{ 1.0f,  1.0f,  0.0f, -0.5f, -0.5f, 0.0f},
 	{ 1.0f,  1.0f,  0.0f,  0.5f, -0.5f, 0.0f},
 	{ 1.0f,  1.0f,  0.0f,  0.0f,  0.5f, 0.0f},
 };
-
-GLfloat colorsAndVerticesSliced0[3][6] = {0.0};
-GLfloat colorsAndVerticesSliced1[3][6] = {0.0};
-GLfloat colorsAndVerticesSliced2[3][6] = {0.0};
 
 SimpleObject* pOrigObj;
 vector<SimpleObject*> m_objects;

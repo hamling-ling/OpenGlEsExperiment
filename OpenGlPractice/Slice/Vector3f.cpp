@@ -192,8 +192,7 @@ void CVector3f::Negate()
 }
 
 
-float
-CVector3f::Normalize()
+float CVector3f::Normalize()
 {
 	float length = Length();
 
@@ -207,8 +206,7 @@ CVector3f::Normalize()
 }
 
 
-float
-CVector3f::Angle(const CVector3f& vec) const
+float CVector3f::Angle(const CVector3f& vec) const
 {
 	CVector3f normal1(m_vec);
 	normal1.Normalize();
@@ -222,8 +220,7 @@ CVector3f::Angle(const CVector3f& vec) const
 }
 
 
-CVector3f
-operator+(const CVector3f& vec1, const CVector3f& vec2)
+CVector3f operator+(const CVector3f& vec1, const CVector3f& vec2)
 {
 	CVector3f vec;
 	for (int i = 0; i < CVector3f::DIMENSION; i++) {
@@ -234,8 +231,7 @@ operator+(const CVector3f& vec1, const CVector3f& vec2)
 }
 
 
-CVector3f
-operator-(const CVector3f& vec1, const CVector3f& vec2)
+CVector3f operator-(const CVector3f& vec1, const CVector3f& vec2)
 {
 	CVector3f vec;
 	for (int i = 0; i < CVector3f::DIMENSION; i++) {
@@ -246,8 +242,7 @@ operator-(const CVector3f& vec1, const CVector3f& vec2)
 }
 
 
-CVector3f
-operator*(float scalar, const CVector3f& vec2)
+CVector3f operator*(float scalar, const CVector3f& vec2)
 {
 	CVector3f vec;
 	for (int i = 0; i < CVector3f::DIMENSION; i++) {
@@ -258,8 +253,7 @@ operator*(float scalar, const CVector3f& vec2)
 }
 
 
-CVector3f
-operator*(const CVector3f& vec1, float scalar)
+CVector3f operator*(const CVector3f& vec1, float scalar)
 {
 	CVector3f vec;
 	for (int i = 0; i < CVector3f::DIMENSION; i++) {
@@ -270,8 +264,7 @@ operator*(const CVector3f& vec1, float scalar)
 }
 
 
-CVector3f
-operator/(const CVector3f& vec1, float scalar)
+CVector3f operator/(const CVector3f& vec1, float scalar)
 {
 	CVector3f vec;
 	if (scalar == 0.0f) {
@@ -285,8 +278,7 @@ operator/(const CVector3f& vec1, float scalar)
 }
 
 
-bool
-operator==(const CVector3f& vec1, const CVector3f& vec2)
+bool operator==(const CVector3f& vec1, const CVector3f& vec2)
 {
 	bool equal;
 	equal = (vec1.m_vec[CVector3f::X] == vec2.m_vec[CVector3f::X]) &&
@@ -297,8 +289,7 @@ operator==(const CVector3f& vec1, const CVector3f& vec2)
 }
 
 
-bool
-operator!=(const CVector3f& vec1, const CVector3f& vec2)
+bool operator!=(const CVector3f& vec1, const CVector3f& vec2)
 {
 	bool notEqual;
 	notEqual = (vec1.m_vec[CVector3f::X] != vec2.m_vec[CVector3f::X]) ||
