@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "stdafx.h"
 #include <cmath>
 #include "Vector3f.h"
 
@@ -32,15 +32,13 @@ CVector3f::~CVector3f()
 }
 
 
-void
-CVector3f::SetValue(const float vec[DIMENSION])
+void CVector3f::SetValue(const float vec[DIMENSION])
 {
 	SetValue(vec[X], vec[Y], vec[Z]);
 }
 
 
-void
-CVector3f::SetValue(float x, float y, float z)
+void CVector3f::SetValue(float x, float y, float z)
 {
 	m_vec[X] = x;
 	m_vec[Y] = y;
@@ -48,15 +46,13 @@ CVector3f::SetValue(float x, float y, float z)
 }
 
 
-void
-CVector3f::GetValue(float vec[DIMENSION]) const
+void CVector3f::GetValue(float vec[DIMENSION]) const
 {
 	GetValue(vec[X], vec[Y], vec[Z]);
 }
 
 
-void
-CVector3f::GetValue(float&x, float& y, float& z) const
+void CVector3f::GetValue(float&x, float& y, float& z) const
 {
 	x = m_vec[X];
 	y = m_vec[Y];
@@ -64,30 +60,26 @@ CVector3f::GetValue(float&x, float& y, float& z) const
 }
 
 
-CVector3f&
-CVector3f::operator=(const CVector3f& vec)
+CVector3f& CVector3f::operator=(const CVector3f& vec)
 {
 	SetValue(vec.m_vec);
 	return *this;
 }
 
 
-float&
-CVector3f::operator[](int i)
+float& CVector3f::operator[](int i)
 {
 	return m_vec[i];
 }
 
 
-float
-CVector3f::operator[](int i) const
+float CVector3f::operator[](int i) const
 {
 	return m_vec[i];
 }
 
 
-CVector3f&
-CVector3f::operator*=(float scalar)
+CVector3f& CVector3f::operator*=(float scalar)
 {
 	for (int i = 0; i < DIMENSION; i++) {
 		m_vec[i] *= scalar;
@@ -97,8 +89,7 @@ CVector3f::operator*=(float scalar)
 }
 
 
-CVector3f&
-CVector3f::operator/=(float scalar)
+CVector3f& CVector3f::operator/=(float scalar)
 {
 	if (scalar == 0.0f) {
 		scalar = 1.0f;
@@ -111,8 +102,7 @@ CVector3f::operator/=(float scalar)
 }
 
 
-CVector3f&
-CVector3f::operator+=(const CVector3f& vec)
+CVector3f& CVector3f::operator+=(const CVector3f& vec)
 {
 	for (int i = 0; i < DIMENSION; i++) {
 		m_vec[i] += vec[i];
@@ -122,8 +112,7 @@ CVector3f::operator+=(const CVector3f& vec)
 }
 
 
-CVector3f&
-CVector3f::operator-=(const CVector3f& vec)
+CVector3f& CVector3f::operator-=(const CVector3f& vec)
 {
 	for (int i = 0; i < DIMENSION; i++) {
 		m_vec[i] -= vec[i];
@@ -133,8 +122,7 @@ CVector3f::operator-=(const CVector3f& vec)
 }
 
 
-CVector3f
-CVector3f::operator-() const
+CVector3f CVector3f::operator-() const
 {
 	CVector3f vec;
 	for (int i = 0; i < DIMENSION; i++) {
@@ -145,8 +133,7 @@ CVector3f::operator-() const
 }
 
 
-CVector3f
-CVector3f::operator+() const
+CVector3f CVector3f::operator+() const
 {
 	CVector3f vec;
 	for (int i = 0; i < DIMENSION; i++) {
@@ -157,8 +144,7 @@ CVector3f::operator+() const
 }
 
 
-float
-CVector3f::Dot(const CVector3f& vec) const
+float CVector3f::Dot(const CVector3f& vec) const
 {
 	float dot = 0.0f;
 	for (int i = 0; i < DIMENSION; i++) {
@@ -169,8 +155,7 @@ CVector3f::Dot(const CVector3f& vec) const
 }
 
 
-CVector3f
-CVector3f::Cross(const CVector3f& vec) const
+CVector3f CVector3f::Cross(const CVector3f& vec) const
 {
 	CVector3f cross;
 	for (int i = 0; i < DIMENSION; i++) {
@@ -182,8 +167,7 @@ CVector3f::Cross(const CVector3f& vec) const
 }
 
 
-float
-CVector3f::Length() const
+float CVector3f::Length() const
 {
 	float dot = 0.0f;
 	for (int i = 0; i < DIMENSION; i++) {
@@ -194,15 +178,13 @@ CVector3f::Length() const
 }
 
 
-void
-CVector3f::MakeZero()
+void CVector3f::MakeZero()
 {
 	SetValue(0.0f, 0.0f, 0.0f);
 }
 
 
-void
-CVector3f::Negate()
+void CVector3f::Negate()
 {
 	for (int i = 0; i < DIMENSION; i++) {
 		m_vec[i] = - m_vec[i];

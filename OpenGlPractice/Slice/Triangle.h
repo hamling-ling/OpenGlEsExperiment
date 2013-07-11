@@ -4,7 +4,7 @@
 #include "Vector3f.h"
 
 
-class CTriangle3f
+class CTriangle
 {
 public:
 	enum {
@@ -18,11 +18,11 @@ private:
 	CVector3f m_vecs[VERTICES];
 
 public:
-	CTriangle3f();
-	CTriangle3f(const CTriangle3f& vec);
-	CTriangle3f(const CVector3f vecs[VERTICES]);
-	CTriangle3f(CVector3f x, CVector3f y, CVector3f z);
-	virtual ~CTriangle3f();
+	CTriangle();
+	CTriangle(const CTriangle& vec);
+	CTriangle(const CVector3f vecs[VERTICES]);
+	CTriangle(CVector3f x, CVector3f y, CVector3f z);
+	virtual ~CTriangle();
 
 	void SetValue(const CVector3f vecs[VERTICES]);
 	void SetValue(CVector3f a, CVector3f b, CVector3f c);
@@ -30,15 +30,17 @@ public:
 	void GetValue(CVector3f vecs[VERTICES]) const;
 	void GetValue(CVector3f& a, CVector3f& b, CVector3f& c) const;
 
+	CVector3f GetCenter();
+
 	CVector3f& operator[](int i);
 	CVector3f operator[](int i) const;
 
-	CTriangle3f& operator=(const CTriangle3f& tri);
+	CTriangle& operator=(const CTriangle& tri);
 
 	void MakeZero();
 
-	friend bool operator==(const CTriangle3f& vec1, const CTriangle3f& vec2);
-	friend bool operator!=(const CTriangle3f& vec1, const CTriangle3f& vec2);
+	friend bool operator==(const CTriangle& vec1, const CTriangle& vec2);
+	friend bool operator!=(const CTriangle& vec1, const CTriangle& vec2);
 };
 
 

@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+﻿#include "stdafx.h"
 #include "Slice.h"
 #include "Vector3f.h"
 #include "float.h"
@@ -39,17 +39,17 @@ bool TryGetIntersection(CVector3f p0, CVector3f p2, CVector3f p1, CVector3f p3,C
 
 void Decompose(CVector3f &a, CVector3f &b, CVector3f &c,
 			   CVector3f &i0, CVector3f &i1,
-			   CTriangle3f* tris)
+			   CTriangle* tris)
 {
 	tris[0].SetValue(a, i0, i1);
 	tris[1].SetValue(b, c, i0);
 	tris[2].SetValue(c, i1, i0);
 }
 
-// test a point p1 is left/right side of line e(between p2 and p3)
-//  1: p1 is left side of e
-//  0: p1 is on e
-// -1: p1 is right side of e
+// test a point p1 is left/right side of line l(between p2 and p3)
+//  1: p1 is left side of l
+//  0: p1 is on l
+// -1: p1 is right side of l
 int side( const CVector3f &p1, const CVector3f &p2, const CVector3f &p3 )
 {
 	const float n  = p1[CVector3f::X] * (p2[CVector3f::Y] - p3[CVector3f::Y])
@@ -61,14 +61,14 @@ int side( const CVector3f &p1, const CVector3f &p2, const CVector3f &p3 )
 	else				return  0;
 }
 
-bool SliceTriangle(const CTriangle3f &tri, const CVector3f &s0, const CVector3f &s1, CTriangle3f sliced[3])
+bool SliceTriangle(const CTriangle &tri, const CVector3f &s0, const CVector3f &s1, CTriangle sliced[3])
 {
 	CVector3f i0(0.0f,0.0f,0.0f);
 	CVector3f i1(0.0f,0.0f,0.0f);
 
-	CVector3f* pA = &(tri[CTriangle3f::A]);
-	CVector3f* pB = &(tri[CTriangle3f::B]);
-	CVector3f* pC = &(tri[CTriangle3f::C]);
+	CVector3f* pA = &(tri[CTriangle::A]);
+	CVector3f* pB = &(tri[CTriangle::B]);
+	CVector3f* pC = &(tri[CTriangle::C]);
 
 	bool result = true;
 	if(TryGetIntersection(*pA,*pB,s0,s1,i0))
@@ -100,6 +100,78 @@ bool SliceTriangle(const CTriangle3f &tri, const CVector3f &s0, const CVector3f 
 	else
 	{
 		result = false;
+	}
+
+	return result;
+}
+
+bool SliceTriangle(const CTriangle &tri, const CLine &line, SliceResult& sliceResult)
+{
+	CVector3f i0(0.0f,0.0f,0.0f);
+	CVector3f i1(0.0f,0.0f,0.0f);
+
+	CVector3f* pA = &(tri[CTriangle::A]);
+	CVector3f* pB = &(tri[CTriangle::B]);
+	CVector3f* pC = &(tri[CTriangle::C]);
+
+	CVector3f* pS0 = &(line[CTriangle::A]);
+	CVector3f* pS1 = &(line[CTriangle::B]);
+
+	CTriangle decomped[3];
+	int decompedLen = 3;
+
+	bool result = true;
+	if(TryGetIntersection(*pA,*pB,*pS0,*pS1,i0))
+	{
+		if(TryGetIntersection(*pB,*pC,*pS0,*pS1,i1))
+		{
+			Decompose(*pB,*pC,*pA,i1,i0,decomped);
+		}
+		else if(TryGetIntersection(*pC,*pA,*pS0,*pS1,i1))
+		{
+			Decompose(*pA,*pB,*pC,i0,i1,decomped);
+		}
+		else
+		{
+			decomped[0] = tri;
+			decompedLen = 1;
+			result = false;
+		}
+	}
+	else if(TryGetIntersection(*pB,*pC,*pS0,*pS1,i0))
+	{
+		if(TryGetIntersection(*pC,*pA,*pS0,*pS1,i1))
+		{
+			Decompose(*pC,*pA,*pB,i1,i0,decomped);
+		}
+		else
+		{
+			decomped[0] = tri;
+			decompedLen = 1;
+			result = false;
+		}
+	}
+	else
+	{
+		decomped[0] = tri;
+		decompedLen = 1;
+		result = false;
+	}
+
+	memset(&sliceResult, 0, sizeof(sliceResult));
+
+	for(int i = 0; i < decompedLen; i++) {
+		CVector3f center = decomped[i].GetCenter();
+		if(side(center, line[CLine::A], line[CLine::B]) >= 0) {
+			// left
+			sliceResult.LeftTriangles[sliceResult.LeftTriangleCount] = decomped[i];
+			sliceResult.LeftTriangleCount++;
+		}
+		else {
+			// right
+			sliceResult.RightTriangles[sliceResult.RightTriangleCount] = decomped[i];
+			sliceResult.RightTriangleCount++;
+		}
 	}
 
 	return result;
