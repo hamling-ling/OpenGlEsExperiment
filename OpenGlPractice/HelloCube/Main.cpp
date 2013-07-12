@@ -1,15 +1,20 @@
 #include <windows.h>
-#include <stdio.h>
-#include <math.h>
+#include <cstdio>
+#include <cmath>
+#include <vector>
 
 #include <GL/glew.h>
 #include <GL/wglew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "Line.h"
 #include "Vector3f.h"
 #include "Matrix4x4f.h"
+#include "SimpleObject.h"
+#include "Slice.h"
 
+using namespace std;
 
 static HGLRC g_hGLRC;
 
@@ -30,9 +35,7 @@ static void LoadShaderSource(GLuint shader, const char* fileName);
 static void DisplayCompileError(GLuint shader, HWND hWnd);
 static void DisplayLinkError(GLuint program, HWND hWnd);
 
-static GLuint g_bufferObject;
-static GLuint g_vertexArrayObject;
-
+SimpleObject* pOrigObj;
 
 int WINAPI WinMain(HINSTANCE hCurrInstance, HINSTANCE hPrevInstance, LPSTR szArgs, int nWinMode)
 {
@@ -247,26 +250,11 @@ static void OnCreate(HWND hWnd)
 	glLinkProgram(g_shaderProgram);
 	DisplayLinkError(g_shaderProgram, hWnd);
 
-	glGenBuffers(1, &g_bufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof (normalsAndVertices), normalsAndVertices, GL_STATIC_DRAW);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glGenVertexArrays(1, &g_vertexArrayObject);
-	glBindVertexArray(g_vertexArrayObject);
-
-	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject);
-
 	GLint normalLocation = glGetAttribLocation(g_shaderProgram, "Normal");
 	GLint vertexLocation = glGetAttribLocation(g_shaderProgram, "Vertex");
-	glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof (GLfloat), 0);
-	glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof (GLfloat), (GLvoid *)(3 * sizeof (GLfloat)));
-	glEnableVertexAttribArray(normalLocation);
-	glEnableVertexAttribArray(vertexLocation);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(0);
+	pOrigObj = new SimpleObject();
+	pOrigObj->BindBuffer(normalLocation, vertexLocation, &(normalsAndVertices[0][0]), 64);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -276,6 +264,19 @@ static void OnCreate(HWND hWnd)
 	wglMakeCurrent(NULL, NULL);
 
 	ReleaseDC(hWnd, hDC);
+
+	//--------------------
+	// slice
+	CVector3f s0(-0.1f, 1.0f, 0.0f);
+	CVector3f s1(0.1f, -1.0f, 0.0f);
+	CLine line(s0,s1);
+	SliceResult sliceResult;
+	const vector<CTriangle3v>& triangles = pOrigObj->GetVertexArray();
+	vector<CTriangle3v>::const_iterator cit = triangles.begin();
+	while(cit != triangles.end()) {
+		
+	}
+
 }
 
 static void OnSize(HWND hWnd, int nWidth, int nHeight)
@@ -363,10 +364,8 @@ static void OnPaint(HWND hWnd)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glBindVertexArray(g_vertexArrayObject);
-
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-
+	glBindVertexArray(pOrigObj->GetVertexArrayObject());
+	glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
 	glBindVertexArray(0);
 
 	glFlush();
@@ -385,8 +384,8 @@ static void OnDestroy(HWND hWnd)
 	hDC = GetDC(hWnd);
 
 	wglMakeCurrent(hDC, g_hGLRC);
-	glDeleteVertexArrays(1, &g_vertexArrayObject);
-	glDeleteBuffers(1, &g_bufferObject);
+	delete pOrigObj;
+
 	glDeleteProgram(g_shaderProgram);
 	wglMakeCurrent(NULL, NULL);
 

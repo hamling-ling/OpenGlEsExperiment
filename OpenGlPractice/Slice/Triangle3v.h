@@ -19,11 +19,11 @@ public:
 	CTriangle3v();
 	CTriangle3v(const CTriangle3v& vec);
 	CTriangle3v(const CVertex vecs[VERTICES]);
-	CTriangle3v(CVertex x, CVertex y, CVertex z);
+	CTriangle3v(const CVertex& a, const CVertex& b, const CVertex& c);
 	virtual ~CTriangle3v();
 
 	void SetValue(const CVertex vecs[VERTICES]);
-	void SetValue(CVertex a, CVertex b, CVertex c);
+	void SetValue(const CVertex& a, const CVertex& b, const CVertex& c);
 
 	void GetValue(CVertex vecs[VERTICES]) const;
 	void GetValue(CVertex& a, CVertex& b, CVertex& c) const;
@@ -37,7 +37,7 @@ public:
 
 	void MakeZero();
 
-	friend bool operator==(const CTriangle3v& vec1, const CTriangle3v& vec2);
-	friend bool operator!=(const CTriangle3v& vec1, const CTriangle3v& vec2);
+	friend bool operator==(const CTriangle3v& tri1, const CTriangle3v& tri2);
+	friend bool operator!=(const CTriangle3v& tri1, const CTriangle3v& tri2);
 };
 

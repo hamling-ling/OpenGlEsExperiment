@@ -33,8 +33,8 @@ public:
 	void GetValue(float vec[DIMENSION]) const;
 	void GetValue(CVector3f& normal, CVector3f &point) const;
 	void GetValue(float &nx, float &ny, float &nz, float &vx, float &vy, float &vz) const;
-	CVector3f GetNormal();
-	CVector3f GetPoint();
+	CVector3f GetNormal() const;
+	CVector3f GetPoint() const;
 
 	float& operator[](int i);
 	float operator[](int i) const;

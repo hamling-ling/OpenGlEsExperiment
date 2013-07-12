@@ -91,13 +91,13 @@ void CVertex::GetValue(float &nx, float &ny, float &nz, float &vx, float &vy, fl
 }
 
 
-CVector3f CVertex::GetNormal()
+CVector3f CVertex::GetNormal() const 
 {
 	return CVector3f(m_vec);
 }
 
 
-CVector3f CVertex::GetPoint()
+CVector3f CVertex::GetPoint() const
 {
 	return CVector3f(&(m_vec[3]));
 }
@@ -116,7 +116,7 @@ float& CVertex::operator[](int i)
 }
 
 
-float CVector3f::operator[](int i) const
+float CVertex::operator[](int i) const
 {
 	return m_vec[i];
 }

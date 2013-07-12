@@ -22,22 +22,38 @@ GLuint SimpleObject::GetVertexArrayLen()
 	return m_verticesLen;
 }
 
-void SimpleObject::BindBuffer(GLint colorLocation, GLint vertexLocation, const GLfloat *colorsAndVertices, GLuint verticesLen)
+vector<CTriangle3v>& SimpleObject::GetVertexArray()
+{
+	return m_vertices;
+}
+
+void SimpleObject::BindBuffer(GLint normalLocation, GLint vertexLocation, const GLfloat *normalsAndVertices, GLuint verticesLen)
 {
 	glGenBuffers(1, &g_bufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof (GLfloat) * 6 * verticesLen, colorsAndVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof (GLfloat) * 6 * verticesLen, normalsAndVertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glGenVertexArrays(1, &g_vertexArrayObject);
 	glBindVertexArray(g_vertexArrayObject);
 	glBindBuffer(GL_ARRAY_BUFFER, g_bufferObject);
-	glVertexAttribPointer(colorLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof (GLfloat), 0);
+	glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof (GLfloat), 0);
 	glVertexAttribPointer(vertexLocation, 3, GL_FLOAT, GL_FALSE, 6 * sizeof (GLfloat), (GLvoid *)(3 * sizeof (GLfloat)));
-	glEnableVertexAttribArray(colorLocation);
+	glEnableVertexAttribArray(normalLocation);
 	glEnableVertexAttribArray(vertexLocation);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
 	m_verticesLen = verticesLen;
+
+	for(GLuint i = 0; i < verticesLen; i=i+3) {
+		CVertex a(normalsAndVertices);
+		normalsAndVertices += 6;
+		CVertex b(normalsAndVertices);
+		normalsAndVertices += 6;
+		CVertex c(normalsAndVertices);
+		CTriangle3v tri(a,b,c);
+
+		m_vertices.push_back(tri);
+	}
 }

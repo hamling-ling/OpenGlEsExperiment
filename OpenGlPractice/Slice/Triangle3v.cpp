@@ -20,7 +20,7 @@ CTriangle3v::CTriangle3v(const CVertex vecs[VERTICES])
 }
 
 
-CTriangle3v::CTriangle3v(CVertex a, CVertex b, CVertex c)
+CTriangle3v::CTriangle3v(const CVertex& a, const CVertex& b, const CVertex& c)
 {
 	SetValue(a, b, c);
 }
@@ -33,11 +33,11 @@ CTriangle3v::~CTriangle3v()
 
 void CTriangle3v::SetValue(const CVertex vecs[VERTICES])
 {
-	SetValue(vecs[0], vecs[1], vecs[2]);
+	SetValue(vecs[A], vecs[B], vecs[C]);
 }
 
 
-void CTriangle3v::SetValue(CVertex a, CVertex b, CVertex c)
+void CTriangle3v::SetValue(const CVertex& a, const CVertex& b, const CVertex& c)
 {
 	m_vecs[A] = a;
 	m_vecs[B] = b;
