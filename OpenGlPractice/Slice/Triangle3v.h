@@ -28,7 +28,7 @@ public:
 	void GetValue(CVertex vecs[VERTICES]) const;
 	void GetValue(CVertex& a, CVertex& b, CVertex& c) const;
 
-	CVector3f GetCenter();
+	CVector3f GetCenter() const;
 
 	CVertex& operator[](int i);
 	CVertex operator[](int i) const;

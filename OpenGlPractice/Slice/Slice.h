@@ -17,10 +17,10 @@ typedef struct SLICERESULT {
 } SliceResult;
 
 typedef struct SLICERESULT3v {
-	int RightTriangleCount;
-	int LeftTriangleCount;
-	CTriangle3v RightTriangles[2];
-	CTriangle3v LeftTriangles[2];
+	int NormalSideCount;
+	int AntinormalSideCount;
+	CTriangle3v NormalSides[2];
+	CTriangle3v AntinormalSides[2];
 } SliceResult3v;
 
 bool TryGetIntersection(CVector3f p0, CVector3f p2, CVector3f p1, CVector3f p3,CVector3f &i);

@@ -58,7 +58,7 @@ void CTriangle3v::GetValue(CVertex& a, CVertex& b, CVertex& c) const
 	c = m_vecs[C];
 }
 
-CVector3f CTriangle3v::GetCenter()
+CVector3f CTriangle3v::GetCenter() const
 {
 	float x = 0.0f;
 	float y = 0.0f;

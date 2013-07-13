@@ -64,6 +64,8 @@ bool TryGetIntersection3v(const CVertex& r0, const CVertex& r1, const CVector3f&
 		i0v = r1v;
 
 	i0.SetValue(r0.GetNormal(), p);
+
+	return true;
 }
 
 void Decompose(CVector3f &a, CVector3f &b, CVector3f &c,
@@ -215,6 +217,41 @@ bool SliceTriangle(const CTriangle &tri, const CLine &line, SliceResult& sliceRe
 	return result;
 }
 
+/**
+	test which side of a plane a given triangle is belonged to.
+	@param tri triangle
+	@param n normal vector of a plane
+	@param p any point on a plane
+	@param sliceResult result
+ */
+void SortSides(const CTriangle3v &tri, const CVector3f& n, const CVector3f& p, SliceResult3v& sliceResult)
+{
+	CVector3f a = tri.GetCenter();
+	CVector3f p_a = a - p;
+	CVector3f p_n = n - p;
+	float denominator = p_a.Length() * p_n.Length();
+	if(denominator != 0.0) {
+		float numerator = p_a.Dot(p_n);
+		float cosT = numerator / denominator;
+		if(cosT >= 0.0) {
+			// normal vector side
+			sliceResult.NormalSides[sliceResult.NormalSideCount] = tri;
+			sliceResult.NormalSideCount++;
+		}
+		else {
+			// anti-normal vector side
+			sliceResult.AntinormalSides[sliceResult.AntinormalSideCount] = tri;
+			sliceResult.AntinormalSideCount++;
+		}
+	}
+	else {
+		// a is on the plane
+		// treate as normal side
+		sliceResult.NormalSides[sliceResult.NormalSideCount] = tri;
+		sliceResult.NormalSideCount++;
+	}
+}
+
 bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v& sliceResult)
 {
 	CVertex i0,i1;
@@ -267,22 +304,11 @@ bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v&
 		result = false;
 	}
 
+	// determine a side and set result
 	memset(&sliceResult, 0, sizeof(sliceResult));
-
-	// t.b.d
-	//for(int i = 0; i < decompedLen; i++) {
-	//	CVector3f center = decomped[i].GetCenter();
-	//	if(side(center, line[CLine::A], line[CLine::B]) >= 0) {
-	//		// left
-	//		sliceResult.LeftTriangles[sliceResult.LeftTriangleCount] = decomped[i];
-	//		sliceResult.LeftTriangleCount++;
-	//	}
-	//	else {
-	//		// right
-	//		sliceResult.RightTriangles[sliceResult.RightTriangleCount] = decomped[i];
-	//		sliceResult.RightTriangleCount++;
-	//	}
-	//}
+	for(int i = 0; i < decompedLen; i++) {
+		SortSides(decomped[i], *pn, *pp, sliceResult);
+	}
 
 	return result;
 }
