@@ -41,11 +41,11 @@ namespace SliceTest
 
 			//Assert::IsTrue(FEQ(sliced[0][CTriangle::B][CVector3f::X],0.05));
 			//Assert::IsTrue(FEQ(sliced[0][CTriangle::B][CVector3f::Y],-0.5));
-			//Assert::IsTrue(FEQ(sliced[0][CTriangle::B][CVector3f::Z], 0.0));
+			//Assert::IsTrue(FEQ(sliced[0][CTriangle::B][CVector3f::Z], 0.5));
 
 			//Assert::IsTrue(FEQ(sliced[0][CTriangle::C][CVector3f::X], 0.0));
 			//Assert::IsTrue(FEQ(sliced[0][CTriangle::C][CVector3f::Y], 0.0));
-			//Assert::IsTrue(FEQ(sliced[0][CTriangle::C][CVector3f::Z], 0.0));
+			//Assert::IsTrue(FEQ(sliced[0][CTriangle::C][CVector3f::Z], 0.5));
 
 			//// 2nd triangle
 			//Assert::IsTrue(FEQ(sliced[1][CTriangle::A][CVector3f::X], 0.5));
@@ -58,7 +58,7 @@ namespace SliceTest
 
 			//Assert::IsTrue(FEQ(sliced[1][CTriangle::C][CVector3f::X], 0.05));
 			//Assert::IsTrue(FEQ(sliced[1][CTriangle::C][CVector3f::Y], -0.5));
-			//Assert::IsTrue(FEQ(sliced[1][CTriangle::C][CVector3f::Z], 0.0));
+			//Assert::IsTrue(FEQ(sliced[1][CTriangle::C][CVector3f::Z], 0.5));
 
 			//// 3rd triangle
 			//Assert::IsTrue(FEQ(sliced[2][CTriangle::A][CVector3f::X], 0.5));
@@ -67,11 +67,11 @@ namespace SliceTest
 
 			//Assert::IsTrue(FEQ(sliced[2][CTriangle::B][CVector3f::X], 0.0));
 			//Assert::IsTrue(FEQ(sliced[2][CTriangle::B][CVector3f::Y], 0.0));
-			//Assert::IsTrue(FEQ(sliced[2][CTriangle::B][CVector3f::Z], 0.0));
+			//Assert::IsTrue(FEQ(sliced[2][CTriangle::B][CVector3f::Z], 0.5));
 
 			//Assert::IsTrue(FEQ(sliced[2][CTriangle::C][CVector3f::X], 0.05));
 			//Assert::IsTrue(FEQ(sliced[2][CTriangle::C][CVector3f::Y], -0.5));
-			//Assert::IsTrue(FEQ(sliced[2][CTriangle::C][CVector3f::Z], 0.0));
+			//Assert::IsTrue(FEQ(sliced[2][CTriangle::C][CVector3f::Z], 0.5));
 
 		}
 
