@@ -43,11 +43,10 @@ bool TryGetIntersection(CVector3f p0, CVector3f p2, CVector3f p1, CVector3f p3,C
 // see http://www.thepolygoners.com/tutorials/lineplane/lineplane.html
 bool TryGetIntersection3v(const CVertex& r0, const CVertex& r1, const CVector3f& n, const CVector3f& p, CVertex& i0)
 {
-	const CVector3f& a = r0.GetNormal();
 	const CVector3f r0v(r0.GetPoint());
 	CVector3f r1v = r1.GetPoint();
 	float NdotP2P0 = n.Dot(p - r0.GetPoint());
-	float NdotV = n.Dot(p - r0.GetPoint());
+	float NdotV = n.Dot(r1.GetPoint() - r0.GetPoint());
 	if(NdotV == 0.0)
 		return false;
 
@@ -63,7 +62,7 @@ bool TryGetIntersection3v(const CVertex& r0, const CVertex& r1, const CVector3f&
 	else // t==1.0
 		i0v = r1v;
 
-	i0.SetValue(r0.GetNormal(), p);
+	i0.SetValue(r0.GetNormal(), i0v);
 
 	return true;
 }
@@ -228,10 +227,10 @@ void SortSides(const CTriangle3v &tri, const CVector3f& n, const CVector3f& p, S
 {
 	CVector3f a = tri.GetCenter();
 	CVector3f p_a = a - p;
-	CVector3f p_n = n - p;
-	float denominator = p_a.Length() * p_n.Length();
+
+	float denominator = p_a.Length() * n.Length();
 	if(denominator != 0.0) {
-		float numerator = p_a.Dot(p_n);
+		float numerator = p_a.Dot(n);
 		float cosT = numerator / denominator;
 		if(cosT >= 0.0) {
 			// normal vector side

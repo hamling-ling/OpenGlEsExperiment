@@ -18,7 +18,7 @@ public:
 	CPlane();
 	CPlane(const CPlane& p);
 	CPlane(const CVector3f vecs[VERTICES]);
-	CPlane(const CVector3f& x, const CVector3f& y);
+	CPlane(const CVector3f& n, const CVector3f& p);
 	virtual ~CPlane();
 
 	void SetValue(const CVector3f vecs[VERTICES]);

@@ -48,11 +48,11 @@ void CVertex::SetValue(const CVector3f& normal, const CVector3f &point)
 {
 	SetValue(
 		normal[CVector3f::X],
-		normal[CVector3f::X],
-		normal[CVector3f::X],
+		normal[CVector3f::Y],
+		normal[CVector3f::Z],
 		point[CVector3f::X],
-		point[CVector3f::X],
-		point[CVector3f::X]);
+		point[CVector3f::Y],
+		point[CVector3f::Z]);
 }
 
 
