@@ -32,17 +32,18 @@ namespace SliceTest
 
 			SliceResult3v sliced;
 			bool isSliced = SliceTriangle3v(tri, plane, sliced);
+
 			Assert::IsTrue(isSliced);
 			Assert::IsTrue(sliced.NormalSideCount == 2);
 			Assert::IsTrue(sliced.AntinormalSideCount == 1);
 
 			// 1st triangle
 			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::A][CVertex::VX], 0.5));
-			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::A][CVertex::VY], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::A][CVertex::VY],-0.5));
 			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::A][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::B][CVertex::VX], 0.0));
-			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::B][CVertex::VY], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::B][CVertex::VX], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::B][CVertex::VY], 0.5));
 			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::B][CVertex::VZ], 0.5));
 
 			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::C][CVertex::VX], 0.05));
@@ -51,11 +52,11 @@ namespace SliceTest
 
 			// 2nd triangle
 			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::A][CVertex::VX], 0.5));
-			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::A][CVertex::VY],-0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::A][CVertex::VY], 0.5));
 			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::A][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::B][CVertex::VX], 0.5));
-			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::B][CVertex::VY], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::B][CVertex::VX], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::B][CVertex::VY], 0.0));
 			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::B][CVertex::VZ], 0.5));
 
 			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::C][CVertex::VX], 0.05));
@@ -78,124 +79,132 @@ namespace SliceTest
 
 		TEST_METHOD(TestMethod2)
 		{
-			const float Vertices[3][3] =
+			const float normalsAndVertices[3][6] =
 			{
-				{ -0.5f, -0.5f,  0.5f},
-				{ 0.5f, -0.5f,  0.5f},
-				{ 0.5f,  0.5f,  0.5f},
+				{0.0, 0.0, 1.0, -0.5f, -0.5f,  0.5f},
+				{0.0, 0.0, 1.0,  0.5f, -0.5f,  0.5f},
+				{0.0, 0.0, 1.0,  0.5f,  0.5f,  0.5f},
 			};
 
-			CVector3f a(Vertices[0]);
-			CVector3f b(Vertices[1]);
-			CVector3f c(Vertices[2]);
-			CTriangle tri0(a,b,c);
+			CVertex a(normalsAndVertices[0]);
+			CVertex b(normalsAndVertices[1]);
+			CVertex c(normalsAndVertices[2]);
+			CTriangle3v tri(a,b,c);
 
-			CVector3f s0(-1.0f, 0.0f, 0.0f);
-			CVector3f s1(1.0f, 0.0f, 0.0f);
-			CTriangle sliced[3];
+			CVector3f p(-1.0f, 0.0f, 0.0f);
+			CVector3f n(0.0f, 1.0f, 0.0f);
+			CPlane plane(n, p);
 
-			bool isSliced = SliceTriangle(tri0, s0, s1, sliced);
+			SliceResult3v sliced;
+			bool isSliced = SliceTriangle3v(tri, plane, sliced);
+
 			Assert::IsTrue(isSliced);
-
+			Assert::IsTrue(sliced.NormalSideCount == 1);
+			Assert::IsTrue(sliced.AntinormalSideCount == 2);
+			
 			// 1st triangle
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::A][CVector3f::X], 0.5));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::A][CVector3f::Y], 0.5));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::A][CVector3f::Z], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::A][CVertex::VX], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::A][CVertex::VY], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::A][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::B][CVector3f::X], 0.0));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::B][CVector3f::Y], 0.0));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::B][CVector3f::Z], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::B][CVertex::VX], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::B][CVertex::VY], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::B][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::C][CVector3f::X], 0.5));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::C][CVector3f::Y], 0.0));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::C][CVector3f::Z], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::C][CVertex::VX], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::C][CVertex::VY], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::C][CVertex::VZ], 0.5));
 
-			// 2nd triangle
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::A][CVector3f::X], -0.5));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::A][CVector3f::Y],-0.5));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::A][CVector3f::Z], 0.5));
+			//// 2nd triangle
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::A][CVertex::VX], -0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::A][CVertex::VY],-0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::A][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::B][CVector3f::X], 0.5));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::B][CVector3f::Y], -0.5));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::B][CVector3f::Z], 0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::B][CVertex::VX], 0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::B][CVertex::VY], -0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::B][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::C][CVector3f::X], 0.0));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::C][CVector3f::Y], 0.0));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::C][CVector3f::Z], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::C][CVertex::VX], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::C][CVertex::VY], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::C][CVertex::VZ], 0.5));
 
-			// 3rd triangle
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::A][CVector3f::X], 0.5));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::A][CVector3f::Y], -0.5));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::A][CVector3f::Z], 0.5));
+			//// 3rd triangle
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[1][CTriangle3v::A][CVertex::VX], 0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[1][CTriangle3v::A][CVertex::VY], -0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[1][CTriangle3v::A][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::B][CVector3f::X], 0.5));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::B][CVector3f::Y], 0.0));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::B][CVector3f::Z], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[1][CTriangle3v::B][CVertex::VX], 0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[1][CTriangle3v::B][CVertex::VY], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[1][CTriangle3v::B][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::C][CVector3f::X], 0.0));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::C][CVector3f::Y], 0.0));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::C][CVector3f::Z], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[1][CTriangle3v::C][CVertex::VX], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[1][CTriangle3v::C][CVertex::VY], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[1][CTriangle3v::C][CVertex::VZ], 0.5));
 		}
 
 		TEST_METHOD(TestMethod3)
 		{
-			const float Vertices[3][3] =
+			const float normalsAndVertices[3][6] =
 			{
-				{ -0.5f, -0.5f,  0.5f},
-				{ 0.5f, -0.5f,  0.5f},
-				{ 0.5f,  0.5f,  0.5f},
+				{0.0, 0.0, 1.0, -0.5f, -0.5f,  0.5f},
+				{0.0, 0.0, 1.0,  0.5f, -0.5f,  0.5f},
+				{0.0, 0.0, 1.0,  0.5f,  0.5f,  0.5f},
 			};
 
-			CVector3f a(Vertices[0]);
-			CVector3f b(Vertices[1]);
-			CVector3f c(Vertices[2]);
-			CTriangle tri0(a,b,c);
+			CVertex a(normalsAndVertices[0]);
+			CVertex b(normalsAndVertices[1]);
+			CVertex c(normalsAndVertices[2]);
+			CTriangle3v tri(a,b,c);
 
-			CVector3f s0(0.0f, -0.5f, 0.0f);
-			CVector3f s1(0.5f, 0.0f, 0.0f);
-			CTriangle sliced[3];
+			CVector3f p(0.0f, -0.5f, 0.0f);
+			CVector3f n(-1.0f/sqrt(2.0), 1.0f/sqrt(2.0), 0.0f);
+			CPlane plane(n, p);
 
-			bool isSliced = SliceTriangle(tri0, s0, s1, sliced);
+			SliceResult3v sliced;
+			bool isSliced = SliceTriangle3v(tri, plane, sliced);
+
 			Assert::IsTrue(isSliced);
+			Assert::IsTrue(sliced.NormalSideCount == 2);
+			Assert::IsTrue(sliced.AntinormalSideCount == 1);
 
 			// 1st triangle
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::A][CVector3f::X], 0.5));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::A][CVector3f::Y], -0.5));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::A][CVector3f::Z], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::A][CVertex::VX], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::A][CVertex::VY], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::A][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::B][CVector3f::X], 0.5));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::B][CVector3f::Y], 0.0));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::B][CVector3f::Z], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::B][CVertex::VX], -0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::B][CVertex::VY], -0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::B][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::C][CVector3f::X], 0.0));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::C][CVector3f::Y], -0.5));
-			Assert::IsTrue(FEQ(sliced[0][CTriangle::C][CVector3f::Z], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::C][CVertex::VX], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::C][CVertex::VY], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[0][CTriangle3v::C][CVertex::VZ], 0.5));
 
 			// 2nd triangle
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::A][CVector3f::X], 0.5));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::A][CVector3f::Y], 0.5));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::A][CVector3f::Z], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::A][CVertex::VX], -0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::A][CVertex::VY], -0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::A][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::B][CVector3f::X], -0.5));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::B][CVector3f::Y], -0.5));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::B][CVector3f::Z], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::B][CVertex::VX], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::B][CVertex::VY], -0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::B][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::C][CVector3f::X], 0.5));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::C][CVector3f::Y], 0.0));
-			Assert::IsTrue(FEQ(sliced[1][CTriangle::C][CVector3f::Z], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::C][CVertex::VX], 0.5));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::C][CVertex::VY], 0.0));
+			Assert::IsTrue(FEQ(sliced.NormalSides[1][CTriangle3v::C][CVertex::VZ], 0.5));
 
 			// 3rd triangle
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::A][CVector3f::X], -0.5));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::A][CVector3f::Y], -0.5));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::A][CVector3f::Z], 0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::A][CVertex::VX], 0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::A][CVertex::VY], -0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::A][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::B][CVector3f::X], 0.0));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::B][CVector3f::Y], -0.5));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::B][CVector3f::Z], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::B][CVertex::VX], 0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::B][CVertex::VY], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::B][CVertex::VZ], 0.5));
 
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::C][CVector3f::X], 0.5));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::C][CVector3f::Y], 0.0));
-			Assert::IsTrue(FEQ(sliced[2][CTriangle::C][CVector3f::Z], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::C][CVertex::VX], 0.0));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::C][CVertex::VY], -0.5));
+			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::C][CVertex::VZ], 0.5));
 		}
 	};
 }
