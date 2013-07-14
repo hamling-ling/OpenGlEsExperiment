@@ -23,14 +23,10 @@ typedef struct SLICERESULT3v {
 	CTriangle3v AntinormalSides[2];
 } SliceResult3v;
 
-bool TryGetIntersection(CVector3f p0, CVector3f p2, CVector3f p1, CVector3f p3,CVector3f &i);
+bool TryGetIntersection3v(const CVertex& r0, const CVertex& r1, const CVector3f& n, const CVector3f& p, CVertex& i0);
 
 void Decompose(CVector3f &a, CVector3f &b, CVector3f &c,
 			   CVector3f &i0, CVector3f &i1,
 			   CTriangle* tris);
 
-int side( const CVector3f &p1, const CVector3f &p2, const CVector3f &p3 );
-
-bool SliceTriangle(const CTriangle &tri, const CVector3f &s0, const CVector3f &s1, CTriangle sliced[3]);
-bool SliceTriangle(const CTriangle &tri, const CLine &line, SliceResult& sliceResult);
 bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v& sliceResult);

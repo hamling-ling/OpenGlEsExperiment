@@ -86,8 +86,8 @@ void CVertex::GetValue(float &nx, float &ny, float &nz, float &vx, float &vy, fl
 	ny = m_vec[NY];
 	nz = m_vec[NZ];
 	vx = m_vec[VX];
-	ny = m_vec[VY];
-	nz = m_vec[VZ];
+	vy = m_vec[VY];
+	vz = m_vec[VZ];
 }
 
 

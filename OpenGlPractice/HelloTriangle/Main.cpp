@@ -31,11 +31,11 @@ static void LoadShaderSource(GLuint shader, const char* fileName);
 static void DisplayCompileError(GLuint shader, HWND hWnd);
 static void DisplayLinkError(GLuint program, HWND hWnd);
 
-const GLfloat colorsAndVertices[3][6] =
+const GLfloat normalsAndVertices[3][6] =
 {
-	{ 1.0f,  1.0f,  0.0f, -0.5f, -0.5f, 0.0f},
-	{ 1.0f,  1.0f,  0.0f,  0.5f, -0.5f, 0.0f},
-	{ 1.0f,  1.0f,  0.0f,  0.0f,  0.5f, 0.0f},
+	{ 0.0f,  0.0f,  1.0f, -0.5f, -0.5f, 0.0f},
+	{ 0.0f,  0.0f,  1.0f,  0.5f, -0.5f, 0.0f},
+	{ 0.0f,  0.0f,  1.0f,  0.0f,  0.5f, 0.0f},
 };
 
 SimpleObject* pOrigObj;
@@ -198,13 +198,13 @@ static void OnCreate(HWND hWnd)
 	glLinkProgram(g_shaderProgram);
 	DisplayLinkError(g_shaderProgram, hWnd);
 
-	GLint colorLocation = glGetAttribLocation(g_shaderProgram, "Color");
+	GLint normalLocation = glGetAttribLocation(g_shaderProgram, "Normal");
 	GLint vertexLocation = glGetAttribLocation(g_shaderProgram, "Vertex");
 
 	pOrigObj = new SimpleObject();
-	pOrigObj->BindBuffer(colorLocation, vertexLocation, &(colorsAndVertices[0][0]), 3);
+	pOrigObj->BindBuffer(normalLocation, vertexLocation, &(normalsAndVertices[0][0]), 3);
 
-	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Color"));
+	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Normal"));
 	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Vertex"));
 
 	glEnable(GL_CULL_FACE);
@@ -217,72 +217,55 @@ static void OnCreate(HWND hWnd)
 
 	//---------------
 	// slice
-	CVector3f a(colorsAndVertices[0][3],colorsAndVertices[0][4],0.0);
-	CVector3f b(colorsAndVertices[1][3],colorsAndVertices[1][4],0.0);
-	CVector3f c(colorsAndVertices[2][3],colorsAndVertices[2][4],0.0);
-	CTriangle tri0(a,b,c);
+	CVertex a(normalsAndVertices[0]);
+	CVertex b(normalsAndVertices[1]);
+	CVertex c(normalsAndVertices[2]);
+	CTriangle3v tri(a,b,c);
 
-	CVector3f s0(-0.1f, 1.0f, 0.0f);
-	CVector3f s1(0.1f, -1.0f, 0.0f);
-	CTriangle sliced[3];
-	CLine line(s0,s1);
-	SliceResult sliceResult;
+	CVector3f p(-0.1f, 1.0f, 0.0f);
+	CVector3f n(1.0f, 0.1f, 0.0f);
+	CPlane plane(n, p);
 
-	GLfloat bufL[64][6] = {0.0f};
-	GLfloat bufR[64][6] = {0.0f};
-	if(SliceTriangle(tri0, line, sliceResult)) {
+	SliceResult3v sliceResult;
 
-		for(int i = 0; i < sliceResult.LeftTriangleCount; i++) {
-			bufL[i+0][0] = 1.0f; bufL[i+0][1] = 1.0f; bufL[i+0][2] = 0.0f;
-			bufL[i+0][3] = sliceResult.LeftTriangles[i][CTriangle::A][CVector3f::X];
-			bufL[i+0][4] = sliceResult.LeftTriangles[i][CTriangle::A][CVector3f::Y];
+	GLfloat bufN[64][6] = {0.0f};
+	GLfloat bufA[64][6] = {0.0f};
 
-			bufL[i+1][0] = 1.0f; bufL[i+1][1] = 1.0f; bufL[i+1][2] = 0.0f;
-			bufL[i+1][3] = sliceResult.LeftTriangles[i][CTriangle::B][CVector3f::X];
-			bufL[i+1][4] = sliceResult.LeftTriangles[i][CTriangle::B][CVector3f::Y];
+	if(SliceTriangle3v(tri, plane, sliceResult)) {
 
-			bufL[i+2][0] = 1.0f; bufL[i+2][1] = 1.0f; bufL[i+2][2] = 0.0f;
-			bufL[i+2][3] = sliceResult.LeftTriangles[i][CTriangle::C][CVector3f::X];
-			bufL[i+2][4] = sliceResult.LeftTriangles[i][CTriangle::C][CVector3f::Y];
-
+		for(int i = 0; i < sliceResult.NormalSideCount; i++) {
+			sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[3*i+0][0]));
+			sliceResult.NormalSides[i][CTriangle3v::B].GetValue(&(bufN[3*i+1][0]));
+			sliceResult.NormalSides[i][CTriangle3v::C].GetValue(&(bufN[3*i+2][0]));
 		}
 
-		for(int i = 0; i < sliceResult.RightTriangleCount; i++) {
-			bufR[i+0][0] = 1.0f; bufR[i+0][1] = 0.0f; bufR[i+0][2] = 0.0f;
-			bufR[i+0][3] = sliceResult.RightTriangles[i][CTriangle::A][CVector3f::X];
-			bufR[i+0][4] = sliceResult.RightTriangles[i][CTriangle::A][CVector3f::Y];
-
-			bufR[i+1][0] = 1.0f; bufR[i+1][1] = 0.0f; bufR[i+1][2] = 0.0f;
-			bufR[i+1][3] = sliceResult.RightTriangles[i][CTriangle::B][CVector3f::X];
-			bufR[i+1][4] = sliceResult.RightTriangles[i][CTriangle::B][CVector3f::Y];
-
-			bufR[i+2][0] = 1.0f; bufR[i+2][1] = 0.0f; bufR[i+2][2] = 0.0f;
-			bufR[i+2][3] = sliceResult.RightTriangles[i][CTriangle::C][CVector3f::X];
-			bufR[i+2][4] = sliceResult.RightTriangles[i][CTriangle::C][CVector3f::Y];
+		for(int i = 0; i < sliceResult.AntinormalSideCount; i++) {
+			sliceResult.AntinormalSides[i][CTriangle3v::A].GetValue(&(bufA[3*i+0][0]));
+			sliceResult.AntinormalSides[i][CTriangle3v::B].GetValue(&(bufA[3*i+1][0]));
+			sliceResult.AntinormalSides[i][CTriangle3v::C].GetValue(&(bufA[3*i+2][0]));
 		}
-
 	}
 
 	//-- crate another object
 	hDC = GetDC(hWnd);
 	wglMakeCurrent(hDC, g_hGLRC);
 
-	colorLocation = glGetAttribLocation(g_shaderProgram, "Color");
+	normalLocation = glGetAttribLocation(g_shaderProgram, "Normal");
 	vertexLocation = glGetAttribLocation(g_shaderProgram, "Vertex");
 
-	if(sliceResult.LeftTriangleCount > 0) {
+	if(sliceResult.NormalSideCount > 0) {
 		SimpleObject *pObj = new SimpleObject();
-		pObj->BindBuffer(colorLocation, vertexLocation, &(bufL[0][0]), sliceResult.LeftTriangleCount * 3);
+		pObj->BindBuffer(normalLocation, vertexLocation, &(bufN[0][0]), sliceResult.NormalSideCount * 3);
 		m_objects.push_back(pObj);
 	}
 
-	if(sliceResult.RightTriangleCount > 0) {
+	if(sliceResult.AntinormalSideCount > 0) {
 		SimpleObject *pObj = new SimpleObject();
-		pObj->BindBuffer(colorLocation, vertexLocation, &(bufR[0][0]), sliceResult.RightTriangleCount * 3);
+		pObj->BindBuffer(normalLocation, vertexLocation, &(bufA[0][0]), sliceResult.AntinormalSideCount * 3);
 		m_objects.push_back(pObj);
 	}
 
-	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Color"));
+	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Normal"));
 	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Vertex"));
 
 	wglMakeCurrent(NULL, NULL);
@@ -321,12 +304,21 @@ static void OnPaint(HWND hWnd)
 
 	glUseProgram(g_shaderProgram);
 
-	glBindVertexArray(pOrigObj->GetVertexArrayObject());
-	glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
-	glBindVertexArray(0);
+	//glBindVertexArray(pOrigObj->GetVertexArrayObject());
+	//glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
+	//glBindVertexArray(0);
 
+	GLfloat color[3] = {1.0f, 0.0f, 0.0f};
 	vector<SimpleObject*>::iterator it = m_objects.begin();
 	while(it != m_objects.end()) {
+
+		int index = it - m_objects.begin();
+		color[0] = (float)((index) % 2);
+		color[1] = (float)((index+1)%2);
+		color[2] = (float)((index+2)%2);
+
+		glUniform3fv(glGetUniformLocation(g_shaderProgram, "Color"), 1, color);
+
 		glBindVertexArray((*it)->GetVertexArrayObject());
 		glDrawArrays(GL_TRIANGLES, 0, (*it)->GetVertexArrayLen());
 		glBindVertexArray(0);

@@ -23,6 +23,7 @@ public:
 	GLuint GetVertexArrayLen();
 	vector<CTriangle3v> &GetVertexArray();
 
-	void BindBuffer(GLint colorLocation, GLint vertexLocation, const GLfloat *normalsAndVertices, GLuint verticesLen);
+	//void BindBuffer(GLint colorLocation, GLint vertexLocation, const GLfloat *normalsAndVertices, GLuint verticesLen);
+	void BindBuffer(GLint normalLocation, GLint vertexLocation, const GLfloat *normalsAndVertices, GLuint verticesLen);
 };
 

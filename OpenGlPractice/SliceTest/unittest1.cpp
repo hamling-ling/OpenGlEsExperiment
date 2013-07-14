@@ -157,7 +157,7 @@ namespace SliceTest
 			CTriangle3v tri(a,b,c);
 
 			CVector3f p(0.0f, -0.5f, 0.0f);
-			CVector3f n(-1.0f/sqrt(2.0), 1.0f/sqrt(2.0), 0.0f);
+			CVector3f n((float)(-1.0/sqrt(2.0)), (float)(1.0/sqrt(2.0)), 0.0f);
 			CPlane plane(n, p);
 
 			SliceResult3v sliced;

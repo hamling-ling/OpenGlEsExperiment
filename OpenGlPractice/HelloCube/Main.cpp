@@ -273,9 +273,9 @@ static void OnCreate(HWND hWnd)
 	SliceResult sliceResult;
 	const vector<CTriangle3v>& triangles = pOrigObj->GetVertexArray();
 	vector<CTriangle3v>::const_iterator cit = triangles.begin();
-	while(cit != triangles.end()) {
-		
-	}
+	//while(cit != triangles.end()) {
+	//	
+	//}
 
 }
 
