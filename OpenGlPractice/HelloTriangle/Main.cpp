@@ -39,7 +39,7 @@ const GLfloat normalsAndVertices[3][6] =
 };
 
 SimpleObject* pOrigObj;
-vector<SimpleObject*> m_objects;
+vector<SimpleObject*> objects;
 
 int WINAPI WinMain(HINSTANCE hCurrInstance, HINSTANCE hPrevInstance, LPSTR szArgs, int nWinMode)
 {
@@ -256,13 +256,13 @@ static void OnCreate(HWND hWnd)
 	if(sliceResult.NormalSideCount > 0) {
 		SimpleObject *pObj = new SimpleObject();
 		pObj->BindBuffer(normalLocation, vertexLocation, &(bufN[0][0]), sliceResult.NormalSideCount * 3);
-		m_objects.push_back(pObj);
+		objects.push_back(pObj);
 	}
 
 	if(sliceResult.AntinormalSideCount > 0) {
 		SimpleObject *pObj = new SimpleObject();
 		pObj->BindBuffer(normalLocation, vertexLocation, &(bufA[0][0]), sliceResult.AntinormalSideCount * 3);
-		m_objects.push_back(pObj);
+		objects.push_back(pObj);
 	}
 
 	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Normal"));
@@ -309,10 +309,10 @@ static void OnPaint(HWND hWnd)
 	//glBindVertexArray(0);
 
 	GLfloat color[3] = {1.0f, 0.0f, 0.0f};
-	vector<SimpleObject*>::iterator it = m_objects.begin();
-	while(it != m_objects.end()) {
+	vector<SimpleObject*>::iterator it = objects.begin();
+	while(it != objects.end()) {
 
-		int index = it - m_objects.begin();
+		int index = it - objects.begin();
 		color[0] = (float)((index) % 2);
 		color[1] = (float)((index+1)%2);
 		color[2] = (float)((index+2)%2);
@@ -343,12 +343,12 @@ static void OnDestroy(HWND hWnd)
 	wglMakeCurrent(hDC, g_hGLRC);
 	delete pOrigObj;;
 
-	vector<SimpleObject*>::iterator it = m_objects.begin();
-	while(it != m_objects.end()) {
+	vector<SimpleObject*>::iterator it = objects.begin();
+	while(it != objects.end()) {
 		SimpleObject *p = (*it);
-		m_objects.erase(it);
+		objects.erase(it);
 		delete p;
-		it = m_objects.begin();
+		it = objects.begin();
 	}
 
 	glDeleteProgram(g_shaderProgram);

@@ -27,6 +27,8 @@ static void OnCreate(HWND hWnd);
 static void OnSize(HWND hWnd, int nWidth, int nHeight);
 static void OnPaint(HWND hWnd);
 static void OnDestroy(HWND hWnd);
+static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6], GLfloat bufA[64][6],
+				  int& bufNCount, int& bufACount);
 
 static GLuint g_vertexShader;
 static GLuint g_shaderProgram;
@@ -36,6 +38,7 @@ static void DisplayCompileError(GLuint shader, HWND hWnd);
 static void DisplayLinkError(GLuint program, HWND hWnd);
 
 SimpleObject* pOrigObj;
+vector<SimpleObject*> objects;
 
 int WINAPI WinMain(HINSTANCE hCurrInstance, HINSTANCE hPrevInstance, LPSTR szArgs, int nWinMode)
 {
@@ -267,16 +270,72 @@ static void OnCreate(HWND hWnd)
 
 	//--------------------
 	// slice
-	CVector3f s0(-0.1f, 1.0f, 0.0f);
-	CVector3f s1(0.1f, -1.0f, 0.0f);
-	CLine line(s0,s1);
-	SliceResult sliceResult;
-	const vector<CTriangle3v>& triangles = pOrigObj->GetVertexArray();
-	vector<CTriangle3v>::const_iterator cit = triangles.begin();
-	//while(cit != triangles.end()) {
-	//	
-	//}
+	GLfloat bufN[64][6] = {0.0f};
+	GLfloat bufA[64][6] = {0.0f};
+	int bufNCount = 0;
+	int bufACount = 0;
+	Slice(&(normalsAndVertices[0][0]), 36, bufN, bufA, bufNCount, bufACount);
 
+	hDC = GetDC(hWnd);
+	wglMakeCurrent(hDC, g_hGLRC);
+
+	normalLocation = glGetAttribLocation(g_shaderProgram, "Normal");
+	vertexLocation = glGetAttribLocation(g_shaderProgram, "Vertex");
+
+	if(bufNCount > 0) {
+		SimpleObject *pObj = new SimpleObject();
+		pObj->BindBuffer(normalLocation, vertexLocation, &(bufN[0][0]), bufNCount);
+		//pObj->BindBuffer(normalLocation, vertexLocation, &(normalsAndVertices[0][0]), 36);
+		objects.push_back(pObj);
+	}
+
+	if(bufACount > 0) {
+		SimpleObject *pObj = new SimpleObject();
+		pObj->BindBuffer(normalLocation, vertexLocation, &(bufA[0][0]), bufACount);
+		objects.push_back(pObj);
+	}
+
+	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Normal"));
+	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Vertex"));
+
+	wglMakeCurrent(NULL, NULL);
+
+	ReleaseDC(hWnd, hDC);
+}
+
+static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6], GLfloat bufA[64][6],
+				  int& bufNCount, int& bufACount)
+{
+	bufNCount = 0;
+	bufACount = 0;
+	CVector3f p(-0.1f, 1.0f, 0.0f);
+	CVector3f n(1.0f, 0.1f, 0.0f);
+	CPlane plane(n, p);
+
+	SliceResult3v sliceResult;
+
+	for(int vertCount = 0; vertCount < len; vertCount+=3)
+	{
+		CVertex a(normalsAndVertices + (vertCount+0) * 6);
+		CVertex b(normalsAndVertices + (vertCount+1) * 6);
+		CVertex c(normalsAndVertices + (vertCount+2) * 6);
+		CTriangle3v tri(a,b,c);
+
+		if(SliceTriangle3v(tri, plane, sliceResult)) {
+
+			for(int i = 0; i < sliceResult.NormalSideCount; i++) {
+				sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
+				sliceResult.NormalSides[i][CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
+				sliceResult.NormalSides[i][CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
+			}
+
+			for(int i = 0; i < sliceResult.AntinormalSideCount; i++) {
+				sliceResult.AntinormalSides[i][CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
+				sliceResult.AntinormalSides[i][CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
+				sliceResult.AntinormalSides[i][CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
+			}
+		}
+	}
 }
 
 static void OnSize(HWND hWnd, int nWidth, int nHeight)
@@ -364,9 +423,31 @@ static void OnPaint(HWND hWnd)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glBindVertexArray(pOrigObj->GetVertexArrayObject());
-	glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
-	glBindVertexArray(0);
+
+
+
+
+	GLfloat color[3] = {1.0f, 0.0f, 0.0f};
+	glUniform3fv(glGetUniformLocation(g_shaderProgram, "Color"), 1, color);
+	//glBindVertexArray(pOrigObj->GetVertexArrayObject());
+	//glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
+	//glBindVertexArray(0);
+
+	vector<SimpleObject*>::iterator it = objects.begin();
+	while(it != objects.end()) {
+
+		int index = it - objects.begin();
+		color[0] = (float)((index) % 2);
+		color[1] = (float)((index+1)%2);
+		color[2] = (float)((index+2)%2);
+
+		glUniform3fv(glGetUniformLocation(g_shaderProgram, "Color"), 1, color);
+
+		glBindVertexArray((*it)->GetVertexArrayObject());
+		glDrawArrays(GL_TRIANGLES, 0, (*it)->GetVertexArrayLen());
+		glBindVertexArray(0);
+		it++;
+	}
 
 	glFlush();
 
@@ -385,6 +466,14 @@ static void OnDestroy(HWND hWnd)
 
 	wglMakeCurrent(hDC, g_hGLRC);
 	delete pOrigObj;
+
+		vector<SimpleObject*>::iterator it = objects.begin();
+	while(it != objects.end()) {
+		SimpleObject *p = (*it);
+		objects.erase(it);
+		delete p;
+		it = objects.begin();
+	}
 
 	glDeleteProgram(g_shaderProgram);
 	wglMakeCurrent(NULL, NULL);
