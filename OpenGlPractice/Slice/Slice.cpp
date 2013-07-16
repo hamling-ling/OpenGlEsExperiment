@@ -8,6 +8,23 @@
 using namespace std;
 
 
+bool OnThePlane(const CVector3f& r0, const CVector3f& r1, const CVector3f& n, const CVector3f& p)
+{
+	CVector3f r0_p = p - r0;
+	CVector3f r1_p = p - r1;
+	CVector3f r0_p_cross_r1_p = r0_p.Cross(r1_p);
+
+	float n_cross_len = n.Length() * r0_p_cross_r1_p.Length();
+	if(n_cross_len == 0.0)
+		return false; // bug
+
+	float cosT = n.Dot(r0_p_cross_r1_p) / n_cross_len;
+	if(fabs(cosT) == 1.0)
+		return false;
+	else
+		return true;
+}
+
 // ray(point r0 to point r1)
 // plane(specified by normal and any point on the plane p)
 // see http://www.thepolygoners.com/tutorials/lineplane/lineplane.html
@@ -23,18 +40,9 @@ IntersectionType TryGetIntersection3v(const CVertex& r0, const CVertex& r1, cons
 
 	if(NdotV == 0.0) {
 		// N perp V
-		CVector3f r0_p = p - r0v;
-		CVector3f r1_p = p - r1v;
-		CVector3f cross = r0_p.Cross(r1_p);
-		float n_cross = n.Length() * cross.Length();
-		if(n_cross == 0.0)
-			return OffParallel; // bug
-
-		float cosT = n.Dot(cross) / n_cross;
-		if(fabs(cosT) == 1.0)
+		if(OnThePlane(r0v, r1v, n, p))
 			return OnParallel;
-		else
-			return OffParallel;
+		return OffParallel;
 	}
 
 	float t = NdotP2P0/NdotV;
