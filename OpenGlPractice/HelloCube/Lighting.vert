@@ -14,10 +14,12 @@ uniform float shininess;
 
 in vec3 Normal;
 in vec3 Vertex;
+uniform vec3 Color;
 
 void main(void)
 {
-	vec4 ambient = Ka * La;
+	//vec4 ambient = Ka * La;
+	vec4 ambient = vec4(Color,1.0);
 
 	vec3 N = normalize(mat3(modelViewMatrix) * Normal);
 	vec3 L = normalize(mat3(viewMatrix) * lightPosition.xyz);

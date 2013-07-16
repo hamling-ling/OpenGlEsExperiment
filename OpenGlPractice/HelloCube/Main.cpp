@@ -126,7 +126,7 @@ static void OnCreate(HWND hWnd)
 	BOOL bResult;
 	HGLRC hGLRC;
 
-	const GLfloat normalsAndVertices[36][6] =
+	const GLfloat normalsAndVertices[][6] =
 	{
 		/* ‘O */
 		{ 0.0f,  0.0f,  1.0f, -0.5f, -0.5f,  0.5f},
@@ -257,7 +257,8 @@ static void OnCreate(HWND hWnd)
 	GLint vertexLocation = glGetAttribLocation(g_shaderProgram, "Vertex");
 
 	pOrigObj = new SimpleObject();
-	pOrigObj->BindBuffer(normalLocation, vertexLocation, &(normalsAndVertices[0][0]), 64);
+	pOrigObj->BindBuffer(normalLocation, vertexLocation, &(normalsAndVertices[0][0]),
+		sizeof(normalsAndVertices)/6/sizeof(GLfloat));
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -274,7 +275,8 @@ static void OnCreate(HWND hWnd)
 	GLfloat bufA[64][6] = {0.0f};
 	int bufNCount = 0;
 	int bufACount = 0;
-	Slice(&(normalsAndVertices[0][0]), 36, bufN, bufA, bufNCount, bufACount);
+	Slice(&(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/6/sizeof(GLfloat)
+		, bufN, bufA, bufNCount, bufACount);
 
 	hDC = GetDC(hWnd);
 	wglMakeCurrent(hDC, g_hGLRC);
@@ -321,19 +323,18 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 		CVertex c(normalsAndVertices + (vertCount+2) * 6);
 		CTriangle3v tri(a,b,c);
 
-		if(SliceTriangle3v(tri, plane, sliceResult)) {
+		SliceTriangle3v(tri, plane, sliceResult);
 
-			for(int i = 0; i < sliceResult.NormalSideCount; i++) {
-				sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
-				sliceResult.NormalSides[i][CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
-				sliceResult.NormalSides[i][CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
-			}
+		for(int i = 0; i < sliceResult.NormalSideCount; i++) {
+			sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
+			sliceResult.NormalSides[i][CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
+			sliceResult.NormalSides[i][CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
+		}
 
-			for(int i = 0; i < sliceResult.AntinormalSideCount; i++) {
-				sliceResult.AntinormalSides[i][CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
-				sliceResult.AntinormalSides[i][CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
-				sliceResult.AntinormalSides[i][CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
-			}
+		for(int i = 0; i < sliceResult.AntinormalSideCount; i++) {
+			sliceResult.AntinormalSides[i][CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
+			sliceResult.AntinormalSides[i][CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
+			sliceResult.AntinormalSides[i][CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
 		}
 	}
 }
@@ -422,10 +423,6 @@ static void OnPaint(HWND hWnd)
 	glUniform1fv(glGetUniformLocation(g_shaderProgram, "shininess"), 1, cubeShininess);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-
-
 
 	GLfloat color[3] = {1.0f, 0.0f, 0.0f};
 	glUniform3fv(glGetUniformLocation(g_shaderProgram, "Color"), 1, color);
