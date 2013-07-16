@@ -11,41 +11,60 @@ using namespace std;
 // ray(point r0 to point r1)
 // plane(specified by normal and any point on the plane p)
 // see http://www.thepolygoners.com/tutorials/lineplane/lineplane.html
-bool TryGetIntersection3v(const CVertex& r0, const CVertex& r1, const CVector3f& n, const CVector3f& p, CVertex& i0, bool &isEndPoint)
+IntersectionType TryGetIntersection3v(const CVertex& r0, const CVertex& r1, const CVector3f& n, const CVector3f& p, CVertex& i0)
 {
-	isEndPoint = false;
+	IntersectionType result = NoIntersection;
 
 	const CVector3f r0v(r0.GetPoint());
 	CVector3f r1v = r1.GetPoint();
 	float NdotP2P0 = n.Dot(p - r0.GetPoint());
-	float NdotV = n.Dot(r1.GetPoint() - r0.GetPoint());
-	if(NdotV == 0.0)
-		return false;
+	CVector3f r0_r1 = r1.GetPoint() - r0.GetPoint();
+	float NdotV = n.Dot(r0_r1);
+
+	if(NdotV == 0.0) {
+		// N perp V
+		CVector3f r0_p = p - r0v;
+		CVector3f r1_p = p - r1v;
+		CVector3f cross = r0_p.Cross(r1_p);
+		float n_cross = n.Length() * cross.Length();
+		if(n_cross == 0.0)
+			return OffParallel; // bug
+
+		float cosT = n.Dot(cross) / n_cross;
+		if(fabs(cosT) == 1.0)
+			return OnParallel;
+		else
+			return OffParallel;
+	}
 
 	float t = NdotP2P0/NdotV;
-	if(t < 0.0 || 1.0 < t)
-		return false;
+	if(t < 0.0)
+		return BeforeFirstEnd;
+	if( 1.0 < t)
+		return BeyondSecondEnd;
 
 	CVector3f i0v; // intersection
-	isEndPoint = !(0 < t && t < 1.0);
-	if(isEndPoint) {
-		if(t == 0.0)
-			i0v = r0v;
-		else // t==1.0
-			i0v = r1v;
-	}
-	else {
+	if(0 < t && t < 1.0) {
 		i0v = r0v + t*(r1v - r0v);
+		result = BetweenEnds;
+	}
+	else if(t == 0.0) {
+		i0v = r0v;
+		result = OnFirstEnd;
+	}
+	else {// t==1.0
+		i0v = r1v;
+		result = OnSecondEnd;
 	}
 
 	i0.SetValue(r0.GetNormal(), i0v);
 
-	return true;
+	return result;
 }
 
 
-void Decompose3v(CVertex &a, CVertex &b, CVertex &c,
-				 CVertex &i0, CVertex &i1,
+void Decompose3v(const CVertex &a, const CVertex &b, const CVertex &c,
+				 const CVertex &i0, const CVertex &i1,
 				 CTriangle3v* tris)
 {
 	tris[0].SetValue(a, i0, i1);
@@ -94,9 +113,7 @@ bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v&
 {
 	CVertex i0,i1;
 
-	CVertex* pA = &(tri[CTriangle3v::A]);
-	CVertex* pB = &(tri[CTriangle3v::B]);
-	CVertex* pC = &(tri[CTriangle3v::C]);
+
 
 	CVector3f* pn = &(plane[CPlane::N]);
 	CVector3f* pp = &(plane[CPlane::P]);
@@ -106,31 +123,29 @@ bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v&
 	decomped[0] = tri;
 
 	bool result = false;
-	bool isEndPoint0 = false;
-	bool isEndPoint1 = false;;
-	if(TryGetIntersection3v(*pA,*pB,*pn,*pp,i0, isEndPoint0)) {
-		if(TryGetIntersection3v(*pB,*pC,*pn,*pp,i1, isEndPoint1)) {
-			if(!isEndPoint0 && !isEndPoint1) {
+	for(int i = 0; i < 3; i++) {
+		CVertex* pA = &(tri[(i+0)%3]);
+		CVertex* pB = &(tri[(i+1)%3]);
+		CVertex* pC = &(tri[(i+2)%3]);
+
+		IntersectionType firstResult = TryGetIntersection3v(*pA,*pB,*pn,*pp,i0);
+		if(firstResult == BetweenEnds) {
+			IntersectionType secondResult = TryGetIntersection3v(*pB,*pC,*pn,*pp,i1);
+			if(secondResult == BetweenEnds) {
 				Decompose3v(*pB,*pC,*pA,i1,i0,decomped);
 				decompedLen = 3;
 				result = true;
+				break;
 			}
-		}
-		else if(TryGetIntersection3v(*pC,*pA,*pn,*pp,i1, isEndPoint0)) {
-			if(!isEndPoint0 && !isEndPoint1) {
+			else if(TryGetIntersection3v(*pC,*pA,*pn,*pp,i1)) {
 				Decompose3v(*pA,*pB,*pC,i0,i1,decomped);
 				decompedLen = 3;
 				result = true;
+				break;
 			}
 		}
-	}
-	else if(TryGetIntersection3v(*pB,*pC,*pn,*pp,i0, isEndPoint0)) {
-		if(TryGetIntersection3v(*pC,*pA,*pn,*pp,i1, isEndPoint1)) {
-			if(!isEndPoint0 && !isEndPoint1) {
-				Decompose3v(*pC,*pA,*pB,i1,i0,decomped);
-				decompedLen = 3;
-				result = true;
-			}
+		else if(firstResult == OnParallel) {
+			break;
 		}
 	}
 

@@ -21,12 +21,24 @@ typedef struct SLICERESULT3v {
 	int AntinormalSideCount;
 	CTriangle3v NormalSides[2];
 	CTriangle3v AntinormalSides[2];
+	CTriangle3v* Intersections[2];
 } SliceResult3v;
 
-bool TryGetIntersection3v(const CVertex& r0, const CVertex& r1, const CVector3f& n, const CVector3f& p, CVertex& i0, bool &isEndPoint);
+typedef enum INTERSECTIONTYPE {
+	NoIntersection,
+	BetweenEnds,
+	OnFirstEnd,
+	OnSecondEnd,
+	BeforeFirstEnd,
+	BeyondSecondEnd,
+	OnParallel,
+	OffParallel,
+} IntersectionType;
 
-void Decompose(CVector3f &a, CVector3f &b, CVector3f &c,
-			   CVector3f &i0, CVector3f &i1,
-			   CTriangle* tris);
+IntersectionType TryGetIntersection3v(const CVertex& r0, const CVertex& r1, const CVector3f& n, const CVector3f& p, CVertex& i0);
+
+void Decompose3v(const CVertex &a, const CVertex &b, const CVertex &c,
+				 const CVertex &i0, const CVertex &i1,
+				 CTriangle3v* tris);
 
 bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v& sliceResult);
