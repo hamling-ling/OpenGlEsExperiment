@@ -141,12 +141,18 @@ bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v&
 				Decompose3v(*pB,*pC,*pA,i1,i0,decomped);
 				decompedLen = 3;
 				result = true;
+				// save intersection
+				sliceResult.Intersections[0] = i0;
+				sliceResult.Intersections[1] = i1;
 				break;
 			}
 			else if(TryGetIntersection3v(*pC,*pA,*pn,*pp,i1)) {
 				Decompose3v(*pA,*pB,*pC,i0,i1,decomped);
 				decompedLen = 3;
 				result = true;
+				// save intersection
+				sliceResult.Intersections[0] = i0;
+				sliceResult.Intersections[1] = i1;
 				break;
 			}
 		}
