@@ -287,7 +287,6 @@ static void OnCreate(HWND hWnd)
 	if(bufNCount > 0) {
 		SimpleObject *pObj = new SimpleObject();
 		pObj->BindBuffer(normalLocation, vertexLocation, &(bufN[0][0]), bufNCount);
-		//pObj->BindBuffer(normalLocation, vertexLocation, &(normalsAndVertices[0][0]), 36);
 		objects.push_back(pObj);
 	}
 

@@ -121,8 +121,6 @@ bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v&
 {
 	CVertex i0,i1;
 
-
-
 	CVector3f* pn = &(plane[CPlane::N]);
 	CVector3f* pp = &(plane[CPlane::P]);
 
