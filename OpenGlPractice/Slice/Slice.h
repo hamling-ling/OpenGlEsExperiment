@@ -22,6 +22,7 @@ typedef struct SLICERESULT3v {
 	CTriangle3v NormalSides[2];
 	CTriangle3v AntinormalSides[2];
 	CVertex Intersections[2];
+	int InterSectionCount;
 } SliceResult3v;
 
 typedef enum INTERSECTIONTYPE {

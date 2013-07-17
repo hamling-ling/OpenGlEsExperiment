@@ -20,9 +20,9 @@ bool OnThePlane(const CVector3f& r0, const CVector3f& r1, const CVector3f& n, co
 
 	float cosT = n.Dot(r0_p_cross_r1_p) / n_cross_len;
 	if(fabs(cosT) == 1.0)
-		return false;
-	else
 		return true;
+	else
+		return false;
 }
 
 // ray(point r0 to point r1)
@@ -71,15 +71,22 @@ IntersectionType TryGetIntersection3v(const CVertex& r0, const CVertex& r1, cons
 }
 
 
-void Decompose3v(const CVertex &a, const CVertex &b, const CVertex &c,
-				 const CVertex &i0, const CVertex &i1,
-				 CTriangle3v* tris)
+void Decompose3(const CVertex &a, const CVertex &b, const CVertex &c,
+				const CVertex &i0, const CVertex &i1,
+				CTriangle3v* tris)
 {
 	tris[0].SetValue(a, i0, i1);
 	tris[1].SetValue(b, c, i0);
 	tris[2].SetValue(c, i1, i0);
 }
 
+
+void Decompose2(const CVertex &a, const CVertex &b, const CVertex &c,
+				const CVertex &i1, CTriangle3v* tris)
+{
+	tris[0].SetValue(a, b, i1);
+	tris[1].SetValue(a, i1, b);
+}
 
 /**
 	test which side of a plane a given triangle is belonged to.
@@ -135,28 +142,32 @@ bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v&
 		CVertex* pC = &(tri[(i+2)%3]);
 
 		IntersectionType firstResult = TryGetIntersection3v(*pA,*pB,*pn,*pp,i0);
-		if(firstResult == BetweenEnds) {
+		if(BetweenEnds == firstResult) {
 			IntersectionType secondResult = TryGetIntersection3v(*pB,*pC,*pn,*pp,i1);
-			if(secondResult == BetweenEnds) {
-				Decompose3v(*pB,*pC,*pA,i1,i0,decomped);
+			if(BetweenEnds == secondResult) {
+				Decompose3( *pB, *pC, *pA, i1, i0, decomped);
 				decompedLen = 3;
 				result = true;
 				// save intersection
 				sliceResult.Intersections[0] = i0;
 				sliceResult.Intersections[1] = i1;
-				break;
-			}
-			else if(TryGetIntersection3v(*pC,*pA,*pn,*pp,i1)) {
-				Decompose3v(*pA,*pB,*pC,i0,i1,decomped);
-				decompedLen = 3;
-				result = true;
-				// save intersection
-				sliceResult.Intersections[0] = i0;
-				sliceResult.Intersections[1] = i1;
+				sliceResult.InterSectionCount = 2;
 				break;
 			}
 		}
-		else if(firstResult == OnParallel) {
+		else if(OnFirstEnd == firstResult) {
+			IntersectionType secondResult = TryGetIntersection3v(*pB,*pC,*pn,*pp,i1);
+			if(BetweenEnds == secondResult) {
+				Decompose2( *pA, *pB, *pC, i1, decomped);
+				decompedLen = 2;
+				break;
+			}
+		}
+		else if(OnParallel == firstResult) {
+			// save intersection
+			sliceResult.Intersections[0] = *pA;
+			sliceResult.Intersections[1] = *pB;
+			sliceResult.InterSectionCount = 2;
 			break;
 		}
 	}
