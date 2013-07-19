@@ -1,7 +1,8 @@
 #include <windows.h>
 #include <cstdio>
 #include <cmath>
-#include <vector>
+#include <list>
+#include <algorithm>
 
 #include <GL/glew.h>
 #include <GL/wglew.h>
@@ -304,6 +305,20 @@ static void OnCreate(HWND hWnd)
 	ReleaseDC(hWnd, hDC);
 }
 
+
+static bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& connection)
+{
+	if(line[CLine::A] == p) {
+		connection = line[CLine::B];
+		return true;
+	}
+	else if(line[CLine::B] == p) {
+		connection = line[CLine::A];
+		return true;
+	}
+	return false;
+}
+
 static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6], GLfloat bufA[64][6],
 				  int& bufNCount, int& bufACount)
 {
@@ -314,7 +329,7 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 	CPlane plane(n, p);
 
 	SliceResult3v sliceResult;
-
+	list<CLine> intersections;
 	for(int vertCount = 0; vertCount < len; vertCount+=3)
 	{
 		CVertex a(normalsAndVertices + (vertCount+0) * 6);
@@ -335,6 +350,44 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 			sliceResult.AntinormalSides[i][CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
 			sliceResult.AntinormalSides[i][CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
 		}
+
+		if( 2 == sliceResult.InterSectionCount) {
+			CLine line(sliceResult.Intersections[0].GetPoint(), sliceResult.Intersections[1].GetPoint());
+			intersections.push_back(line);
+		}
+	}
+
+	if(intersections.size() < 3) {
+		return;
+	}
+
+	list<CVector3f> closedIntersections;
+	list<CLine>::iterator it = intersections.begin();
+	closedIntersections.push_back((*it)[CLine::A]);
+	closedIntersections.push_back((*it)[CLine::B]);
+	intersections.pop_front();
+
+	it = intersections.begin();
+
+	while(intersections.size() > 0) {
+		
+		list<CLine>::iterator inner_it = it;
+		while(inner_it != intersections.end()) {
+			CVector3f connection;
+			if(IsConnecting(*(closedIntersections.rbegin()), *inner_it, connection)) {
+				closedIntersections.push_back(connection);
+				intersections.erase(inner_it);
+				break;
+			}
+			inner_it++;
+		}
+		if(inner_it == intersections.end())
+			break;
+	}
+
+	// if it is closed
+	if(*(closedIntersections.begin()) == *closedIntersections.end()) {
+
 	}
 }
 

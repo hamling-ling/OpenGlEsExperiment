@@ -127,13 +127,13 @@ void SortSides(const CTriangle3v &tri, const CVector3f& n, const CVector3f& p, S
 bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v& sliceResult)
 {
 	CVertex i0,i1;
-
 	CVector3f* pn = &(plane[CPlane::N]);
 	CVector3f* pp = &(plane[CPlane::P]);
-
 	CTriangle3v decomped[3];
+
 	int decompedLen = 1;
 	decomped[0] = tri;
+	memset(&sliceResult, 0, sizeof(sliceResult));
 
 	bool result = false;
 	for(int i = 0; i < 3; i++) {
@@ -160,6 +160,11 @@ bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v&
 			if(BetweenEnds == secondResult) {
 				Decompose2( *pA, *pB, *pC, i1, decomped);
 				decompedLen = 2;
+				result = true;
+				// save intersection
+				sliceResult.Intersections[0] = *pA;
+				sliceResult.Intersections[1] = i1;
+				sliceResult.InterSectionCount = 2;
 				break;
 			}
 		}
@@ -173,7 +178,6 @@ bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v&
 	}
 
 	// determine a side and set result
-	memset(&sliceResult, 0, sizeof(sliceResult));
 	for(int i = 0; i < decompedLen; i++) {
 		SortSides(decomped[i], *pn, *pp, sliceResult);
 	}
