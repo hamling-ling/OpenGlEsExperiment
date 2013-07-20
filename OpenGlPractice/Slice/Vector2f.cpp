@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include <cmath>
 #include "Vector2f.h"
+#include "CommonTool.h"
 
-#ifndef PI
-#define PI  3.14159265358979323846f
-#endif
 
 CVector2f::CVector2f()
 {

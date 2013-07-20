@@ -220,6 +220,17 @@ float CVector3f::Angle(const CVector3f& vec) const
 }
 
 
+bool CVector3f::NearlyEquals(const CVector3f& vec) const
+{
+	bool isNearlyEquals = true;
+	for (int i = 0; i < CVector3f::DIMENSION; i++) {
+		isNearlyEquals &= FEQ(m_vec[i],vec[i]);
+	}
+
+	return isNearlyEquals;
+}
+
+
 CVector3f operator+(const CVector3f& vec1, const CVector3f& vec2)
 {
 	CVector3f vec;

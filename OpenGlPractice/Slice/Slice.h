@@ -6,9 +6,6 @@
 #include "Line.h"
 #include "Matrix4x4f.h"
 
-#define EPSILON		(1e-5)
-#define FEQ(x,y)	(abs((x)-(y))<EPSILON)
-
 typedef struct SLICERESULT {
 	int RightTriangleCount;
 	int LeftTriangleCount;

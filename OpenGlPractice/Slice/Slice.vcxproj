@@ -89,6 +89,7 @@ copy /Y "$(ProjectDir)*.cpp" "$(OutDir)"
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CommonTool.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Matrix4x4f.h" />
     <ClInclude Include="Plane.h" />
@@ -102,6 +103,7 @@ copy /Y "$(ProjectDir)*.cpp" "$(OutDir)"
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CommonTool.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Matrix4x4f.cpp" />
     <ClCompile Include="Plane.cpp" />
