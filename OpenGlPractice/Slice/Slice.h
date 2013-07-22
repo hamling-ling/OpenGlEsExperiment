@@ -1,10 +1,14 @@
 ﻿#pragma once
 
+#include <list>
+#include <vector>
 #include "Triangle.h"
 #include "Triangle3v.h"
 #include "Plane.h"
 #include "Line.h"
 #include "Matrix4x4f.h"
+
+using namespace std;
 
 typedef struct SLICERESULT {
 	int RightTriangleCount;
@@ -40,3 +44,16 @@ void Decompose3v(const CVertex &a, const CVertex &b, const CVertex &c,
 				 CTriangle3v* tris);
 
 bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v& sliceResult);
+
+bool GetClosedIntersections(const list<CLine>& intersections, vector<CVector3f>& closedIntersections);
+
+bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& connection, CVector3f nonconnection);
+
+bool CanSnip(const int idxa, const int idxb, const int idxc, const vector<CVector3f>& closedIntersections);
+
+bool IsInside(const int idxp, const int idxa, const int idxb, const int idxc,
+		  const vector<CVector3f>& closedIntersections);
+
+void Snip(const int idxa, const int idxb, const int idxc,
+		  vector<CVector3f>& closedIntersections,
+		  list<CTriangle3v>& triangles);

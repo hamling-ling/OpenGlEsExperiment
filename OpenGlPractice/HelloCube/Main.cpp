@@ -30,7 +30,6 @@ static void OnPaint(HWND hWnd);
 static void OnDestroy(HWND hWnd);
 static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6], GLfloat bufA[64][6],
 				  int& bufNCount, int& bufACount);
-static bool GetClosedIntersections(const list<CLine>& intersections, list<CVector3f>& closedIntersections);
 
 static GLuint g_vertexShader;
 static GLuint g_shaderProgram;
@@ -307,70 +306,10 @@ static void OnCreate(HWND hWnd)
 }
 
 
-static bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& connection, CVector3f nonconnection)
-{
-	if(line[CLine::A].NearlyEquals(p)) {
-		connection = line[CLine::B];
-		nonconnection = line[CLine::A];
-		return true;
-	}
-	else if(line[CLine::B].NearlyEquals(p)) {
-		connection = line[CLine::A];
-		nonconnection = line[CLine::B];
-		return true;
-	}
-	return false;
-}
 
 
-static bool GetClosedIntersections(const list<CLine>& lines, list<CVector3f>& closedIntersections)
-{
-	closedIntersections.clear();
 
-	if(lines.size() < 3) {
-		return false;
-	}
 
-	list<CLine> intersections(lines.begin(), lines.end());
-	list<CLine>::iterator it = intersections.begin();
-	closedIntersections.push_back((*it)[CLine::A]);
-	closedIntersections.push_back((*it)[CLine::B]);
-	intersections.pop_front();
-
-	it = intersections.begin();
-	CVector3f connection, nonconnection;
-
-	while(intersections.size() > 0) {
-		
-		list<CLine>::iterator inner_it = it;
-		bool found = false;
-		while(inner_it != intersections.end()) {
-			CVector3f connection, nonconnection;
-			if(IsConnecting(*(closedIntersections.rbegin()), *inner_it, connection, nonconnection)) {
-				closedIntersections.push_back(connection);
-				intersections.erase(inner_it);
-				found = true;
-				break;
-			}
-			inner_it++;
-		}
-		if(!found)
-			break;
-	}
-
-	// if it is closed
-	list<CVector3f>::const_reverse_iterator last = closedIntersections.rbegin();
-	if( closedIntersections.size() > 2 &&
-		closedIntersections.begin()->NearlyEquals(*last)) {
-			// yes, it's closed
-			closedIntersections.pop_back();
-	}
-	else {
-		closedIntersections.clear();
-	}
-
-	return !closedIntersections.empty();
-}
 
 
 static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6], GLfloat bufA[64][6],
@@ -411,8 +350,22 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 		}
 	}
 
-	list<CVector3f> closedIntersections;
+	list<CTriangle3v> triangles;
+	vector<CVector3f> closedIntersections;
 	if(GetClosedIntersections(intersections, closedIntersections)) {
+		while(closedIntersections.size() > 2) {
+			for(int i = 0; i < closedIntersections.size()-1; i++) {
+				int size = closedIntersections.size();
+				int preIdx = (i+0)%size;
+				int curIdx = (i+1)%size;
+				int nxtIdx = (i+2)%size;
+				if(CanSnip(preIdx, curIdx, nxtIdx, closedIntersections)) {
+					Snip(preIdx, curIdx, nxtIdx, closedIntersections, triangles);
+					i = closedIntersections.size(); // break inner loop
+				}
+			}
+		}
+		vector<CTriangle3v> triangles;
 	}
 }
 

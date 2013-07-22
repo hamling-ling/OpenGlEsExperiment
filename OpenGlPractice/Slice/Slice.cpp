@@ -184,3 +184,134 @@ bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v&
 
 	return result;
 }
+bool GetClosedIntersections(const list<CLine>& lines, vector<CVector3f>& closedIntersections)
+{
+	closedIntersections.clear();
+
+	if(lines.size() < 3) {
+		return false;
+	}
+
+	list<CLine> intersections(lines.begin(), lines.end());
+	list<CLine>::iterator it = intersections.begin();
+	closedIntersections.push_back((*it)[CLine::A]);
+	closedIntersections.push_back((*it)[CLine::B]);
+	intersections.pop_front();
+
+	it = intersections.begin();
+	CVector3f connection, nonconnection;
+
+	while(intersections.size() > 0) {
+		
+		list<CLine>::iterator inner_it = it;
+		bool found = false;
+		while(inner_it != intersections.end()) {
+			CVector3f connection, nonconnection;
+			if(IsConnecting(*(closedIntersections.rbegin()), *inner_it, connection, nonconnection)) {
+				closedIntersections.push_back(connection);
+				intersections.erase(inner_it);
+				found = true;
+				break;
+			}
+			inner_it++;
+		}
+		if(!found)
+			break;
+	}
+
+	// if it is closed
+	vector<CVector3f>::const_reverse_iterator last = closedIntersections.rbegin();
+	if( closedIntersections.size() > 2 &&
+		closedIntersections.begin()->NearlyEquals(*last)) {
+			// yes, it's closed
+			closedIntersections.pop_back();
+	}
+	else {
+		closedIntersections.clear();
+	}
+
+	return !closedIntersections.empty();
+}
+
+bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& connection, CVector3f nonconnection)
+{
+	if(line[CLine::A].NearlyEquals(p)) {
+		connection = line[CLine::B];
+		nonconnection = line[CLine::A];
+		return true;
+	}
+	else if(line[CLine::B].NearlyEquals(p)) {
+		connection = line[CLine::A];
+		nonconnection = line[CLine::B];
+		return true;
+	}
+	return false;
+}
+
+bool CanSnip(const int idxa, const int idxb, const int idxc, const vector<CVector3f>& closedIntersections)
+{
+	CVector3f bc = closedIntersections[idxc] - closedIntersections[idxb];
+	CVector3f ba = closedIntersections[idxa] - closedIntersections[idxb];
+
+	float denom = bc.Length() * ba.Length();
+	if(FEQ(denom, 0.0))
+		return false;
+
+	float cosT = bc.Dot(ba)/denom;
+	if(cosT <= 0.0f || 1.0 <= cosT)
+		return false;
+
+	int size = closedIntersections.size();
+	for(int idx = idxc; idx != idxc; idx=(idx+1)%size) {
+		if(IsInside(idx, idxa, idxb, idxc, closedIntersections)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool IsInside(const int idxp, const int idxa, const int idxb, const int idxc, const vector<CVector3f>& closedIntersections)
+{
+	CVector3f ab = closedIntersections[idxb] - closedIntersections[idxa];
+	CVector3f bc = closedIntersections[idxc] - closedIntersections[idxb];
+	CVector3f ca = closedIntersections[idxa] - closedIntersections[idxc];
+	CVector3f ap = closedIntersections[idxp] - closedIntersections[idxa];
+	CVector3f bp = closedIntersections[idxp] - closedIntersections[idxb];
+	CVector3f cp = closedIntersections[idxp] - closedIntersections[idxc];
+
+	CVector3f e1 = ab.Cross(ap);
+	CVector3f e2 = bc.Cross(bp);
+	CVector3f e3 = ca.Cross(cp);
+
+	float cosT1 = e1.Dot(e2);
+	float cosT2 = e2.Dot(e3);
+	float cosT3 = e3.Dot(e1);
+
+	if(ISPOSITIVE(cosT1) && ISPOSITIVE(cosT2) && ISPOSITIVE(cosT3)) {
+		return true;
+	}
+
+	return false;
+}
+
+
+void Snip(const int idxa, const int idxb, const int idxc,
+		  vector<CVector3f>& closedIntersections,
+		  list<CTriangle3v>& triangles)
+{
+	CVector3f normal;
+	CVertex va(normal, closedIntersections[idxa]);
+	CVertex vb(normal, closedIntersections[idxb]);
+	CVertex vc(normal, closedIntersections[idxc]);
+
+	CTriangle3v tri(va, vb, vc);
+	triangles.push_back(tri);
+
+	float sortedIndexes[3] = {idxa, idxb, idxc};
+	sort(sortedIndexes, sortedIndexes+3);
+	for(int i = 2; 0 < i; i--) {
+		closedIntersections.erase(closedIntersections.begin() + sortedIndexes[2]);
+	}
+}
+
