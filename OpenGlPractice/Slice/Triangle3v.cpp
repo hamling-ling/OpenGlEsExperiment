@@ -45,6 +45,14 @@ void CTriangle3v::SetValue(const CVertex& a, const CVertex& b, const CVertex& c)
 }
 
 
+void CTriangle3v::SetNormal(const CVector3f& n)
+{
+	m_vecs[A].SetNormal(n);
+	m_vecs[B].SetNormal(n);
+	m_vecs[C].SetNormal(n);
+}
+
+
 void CTriangle3v::GetValue(CVertex vecs[VERTICES]) const
 {
 	GetValue(vecs[A], vecs[B], vecs[C]);

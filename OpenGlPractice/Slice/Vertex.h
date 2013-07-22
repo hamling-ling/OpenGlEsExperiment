@@ -29,6 +29,7 @@ public:
 	void SetValue(const float vec[DIMENSION]);
 	void SetValue(const CVector3f& normal, const CVector3f &point);
 	void SetValue(float nx, float ny, float nz, float vx, float vy, float vz);
+	void SetNormal(const CVector3f& n);
 
 	void GetValue(float vec[DIMENSION]) const;
 	void GetValue(CVector3f& normal, CVector3f &point) const;

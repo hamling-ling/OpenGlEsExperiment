@@ -24,6 +24,7 @@ public:
 
 	void SetValue(const CVertex vecs[VERTICES]);
 	void SetValue(const CVertex& a, const CVertex& b, const CVertex& c);
+	void CTriangle3v::SetNormal(const CVector3f& n);
 
 	void GetValue(CVertex vecs[VERTICES]) const;
 	void GetValue(CVertex& a, CVertex& b, CVertex& c) const;

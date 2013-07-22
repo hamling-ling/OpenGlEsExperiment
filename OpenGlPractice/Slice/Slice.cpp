@@ -308,7 +308,7 @@ void Snip(const int idxa, const int idxb, const int idxc,
 	CTriangle3v tri(va, vb, vc);
 	triangles.push_back(tri);
 
-	float sortedIndexes[3] = {idxa, idxb, idxc};
+	int sortedIndexes[3] = {idxa, idxb, idxc};
 	sort(sortedIndexes, sortedIndexes+3);
 	for(int i = 2; 0 < i; i--) {
 		closedIntersections.erase(closedIntersections.begin() + sortedIndexes[2]);

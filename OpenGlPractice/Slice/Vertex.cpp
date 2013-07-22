@@ -67,6 +67,14 @@ void CVertex::SetValue(float nx, float ny, float nz, float vx, float vy, float v
 }
 
 
+void CVertex::SetNormal(const CVector3f& n)
+{
+	m_vec[NX] = n[CVector3f::X];
+	m_vec[NY] = n[CVector3f::Y];
+	m_vec[NZ] = n[CVector3f::Z];
+}
+
+
 void CVertex::GetValue(float vec[DIMENSION]) const
 {
 	GetValue(vec[NX], vec[NY], vec[NZ], vec[VX], vec[VY], vec[VZ]);
