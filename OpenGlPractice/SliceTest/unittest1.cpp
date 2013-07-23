@@ -1,9 +1,12 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 
+#include <list>
+#include <vector>
 #include "Slice.h"
 #include "Plane.h"
 
+using namespace std;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace SliceTest
@@ -244,6 +247,144 @@ namespace SliceTest
 			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::C][CVertex::VX], 0.5));
 			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::C][CVertex::VY], 0.5));
 			Assert::IsTrue(FEQ(sliced.AntinormalSides[0][CTriangle3v::C][CVertex::VZ], 0.5));
+		}
+
+		TEST_METHOD(TestTriangulation)
+		{
+			const float normalsAndVertices[][6] =
+			{
+				/* ëO */
+				{ 0.0f,  0.0f,  1.0f, -0.5f, -0.5f,  0.5f},
+				{ 0.0f,  0.0f,  1.0f,  0.5f, -0.5f,  0.5f},
+				{ 0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f},
+
+				{ 0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f},
+				{ 0.0f,  0.0f,  1.0f, -0.5f,  0.5f,  0.5f},
+				{ 0.0f,  0.0f,  1.0f, -0.5f, -0.5f,  0.5f},
+
+				/* å„ */
+				{ 0.0f,  0.0f, -1.0f,  0.5f, -0.5f, -0.5f},
+				{ 0.0f,  0.0f, -1.0f, -0.5f, -0.5f, -0.5f},
+				{ 0.0f,  0.0f, -1.0f, -0.5f,  0.5f, -0.5f},
+
+				{ 0.0f,  0.0f, -1.0f, -0.5f,  0.5f, -0.5f},
+				{ 0.0f,  0.0f, -1.0f,  0.5f,  0.5f, -0.5f},
+				{ 0.0f,  0.0f, -1.0f,  0.5f, -0.5f, -0.5f},
+
+				/* âE */
+				{ 1.0f,  0.0f,  0.0f,  0.5f, -0.5f,  0.5f},
+				{ 1.0f,  0.0f,  0.0f,  0.5f, -0.5f, -0.5f},
+				{ 1.0f,  0.0f,  0.0f,  0.5f,  0.5f, -0.5f},
+
+				{ 1.0f,  0.0f,  0.0f,  0.5f,  0.5f, -0.5f},
+				{ 1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.5f},
+				{ 1.0f,  0.0f,  0.0f,  0.5f, -0.5f,  0.5f},
+
+				/* ç∂ */
+				{-1.0f,  0.0f,  0.0f, -0.5f, -0.5f, -0.5f},
+				{-1.0f,  0.0f,  0.0f, -0.5f, -0.5f,  0.5f},
+				{-1.0f,  0.0f,  0.0f, -0.5f,  0.5f,  0.5f},
+
+				{-1.0f,  0.0f,  0.0f, -0.5f,  0.5f,  0.5f},
+				{-1.0f,  0.0f,  0.0f, -0.5f,  0.5f, -0.5f},
+				{-1.0f,  0.0f,  0.0f, -0.5f, -0.5f, -0.5f},
+
+				/* è„ */
+				{ 0.0f,  1.0f,  0.0f, -0.5f,  0.5f,  0.5f},
+				{ 0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f},
+				{ 0.0f,  1.0f,  0.0f,  0.5f,  0.5f, -0.5f},
+
+				{ 0.0f,  1.0f,  0.0f,  0.5f,  0.5f, -0.5f},
+				{ 0.0f,  1.0f,  0.0f, -0.5f,  0.5f, -0.5f},
+				{ 0.0f,  1.0f,  0.0f, -0.5f,  0.5f,  0.5f},
+
+				/* â∫ */
+				{ 0.0f, -1.0f,  0.0f,  0.5f, -0.5f,  0.5f},
+				{ 0.0f, -1.0f,  0.0f, -0.5f, -0.5f,  0.5f},
+				{ 0.0f, -1.0f,  0.0f, -0.5f, -0.5f, -0.5f},
+
+				{ 0.0f, -1.0f,  0.0f, -0.5f, -0.5f, -0.5f},
+				{ 0.0f, -1.0f,  0.0f,  0.5f, -0.5f, -0.5f},
+				{ 0.0f, -1.0f,  0.0f,  0.5f, -0.5f,  0.5f}
+			};
+
+			int len = sizeof(normalsAndVertices)/6/sizeof(float);
+			float bufN[64][6] = {0.0f};
+			float bufA[64][6] = {0.0f};
+			int bufNCount = 0;
+			int bufACount = 0;
+
+			CVector3f p(-0.1f, 1.0f, 0.0f);
+			CVector3f n(1.0f, 0.1f, 0.0f);
+			CPlane plane(n, p);
+
+			SliceResult3v sliceResult;
+			list<CLine> intersections;
+			for(int vertCount = 0; vertCount < len; vertCount+=3)
+			{
+				CVertex a(normalsAndVertices[vertCount+0]);
+				CVertex b(normalsAndVertices[vertCount+1]);
+				CVertex c(normalsAndVertices[vertCount+2]);
+				CTriangle3v tri(a,b,c);
+
+				SliceTriangle3v(tri, plane, sliceResult);
+
+				for(int i = 0; i < sliceResult.NormalSideCount; i++) {
+					sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
+					sliceResult.NormalSides[i][CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
+					sliceResult.NormalSides[i][CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
+				}
+
+				for(int i = 0; i < sliceResult.AntinormalSideCount; i++) {
+					sliceResult.AntinormalSides[i][CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
+					sliceResult.AntinormalSides[i][CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
+					sliceResult.AntinormalSides[i][CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
+				}
+
+				if( 2 == sliceResult.InterSectionCount) {
+					CLine line(sliceResult.Intersections[0].GetPoint(), sliceResult.Intersections[1].GetPoint());
+					intersections.push_back(line);
+				}
+			}
+
+			list<CTriangle3v> triangles;
+			vector<CVector3f> closedIntersections;
+			if(!GetClosedIntersections(intersections, closedIntersections)) {
+				return;
+			}
+
+			CVector3f refNormal = GetNormal(closedIntersections);
+
+			while(closedIntersections.size() > 2) {
+				for(int i = 0; i < closedIntersections.size()-1; i++) {
+					int size = closedIntersections.size();
+					int preIdx = (i+0)%size;
+					int curIdx = (i+1)%size;
+					int nxtIdx = (i+2)%size;
+					if(CanSnip(preIdx, curIdx, nxtIdx, closedIntersections, refNormal)) {
+						Snip(preIdx, curIdx, nxtIdx, closedIntersections, triangles);
+						i = size; // break inner loop
+					}
+				}
+			}
+
+			list<CTriangle3v>::iterator it = triangles.begin();
+			CVector3f normal = n;
+			CVector3f antnormal = n * 1.0f;
+
+			while(it != triangles.end()) {
+				CTriangle3v tri = *it;
+				tri.SetNormal(antnormal);
+				tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
+				tri[CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
+				tri[CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
+
+				tri.SetNormal(n);
+				tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
+				tri[CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
+				tri[CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
+				it++;
+			}
 		}
 	};
 }

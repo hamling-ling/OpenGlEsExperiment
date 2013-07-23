@@ -25,6 +25,7 @@ bool OnThePlane(const CVector3f& r0, const CVector3f& r1, const CVector3f& n, co
 		return false;
 }
 
+
 // ray(point r0 to point r1)
 // plane(specified by normal and any point on the plane p)
 // see http://www.thepolygoners.com/tutorials/lineplane/lineplane.html
@@ -87,6 +88,7 @@ void Decompose2(const CVertex &a, const CVertex &b, const CVertex &c,
 	tris[0].SetValue(a, b, i1);
 	tris[1].SetValue(a, i1, b);
 }
+
 
 /**
 	test which side of a plane a given triangle is belonged to.
@@ -184,6 +186,8 @@ bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v&
 
 	return result;
 }
+
+
 bool GetClosedIntersections(const list<CLine>& lines, vector<CVector3f>& closedIntersections)
 {
 	closedIntersections.clear();
@@ -233,6 +237,7 @@ bool GetClosedIntersections(const list<CLine>& lines, vector<CVector3f>& closedI
 	return !closedIntersections.empty();
 }
 
+
 bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& connection, CVector3f nonconnection)
 {
 	if(line[CLine::A].NearlyEquals(p)) {
@@ -248,21 +253,46 @@ bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& connection, 
 	return false;
 }
 
-bool CanSnip(const int idxa, const int idxb, const int idxc, const vector<CVector3f>& closedIntersections)
-{
-	CVector3f bc = closedIntersections[idxc] - closedIntersections[idxb];
-	CVector3f ba = closedIntersections[idxa] - closedIntersections[idxb];
 
-	float denom = bc.Length() * ba.Length();
-	if(FEQ(denom, 0.0))
+CVector3f GetNormal(vector<CVector3f>& closedIntersections)
+{
+	CVector3f normal;
+	for(int i = 0; i < closedIntersections.size()-1; i++) {
+		int size = closedIntersections.size();
+		int idxa = (i+0)%size; // a
+		int idxb = (i+1)%size; // b
+		int idxc = (i+2)%size; // c
+		CVector3f ba = closedIntersections[idxa] - closedIntersections[idxb];
+		CVector3f bc = closedIntersections[idxc] - closedIntersections[idxb];
+		normal += ba.Cross(bc);
+	}
+
+	normal /= closedIntersections.size();
+
+	return normal;
+}
+
+
+bool CanSnip(const int idxa, const int idxb, const int idxc,
+			 const vector<CVector3f>& closedIntersections,
+			 const CVector3f& normal)
+{
+	CVector3f ba = closedIntersections[idxa] - closedIntersections[idxb];
+	CVector3f bc = closedIntersections[idxc] - closedIntersections[idxb];
+	CVector3f baxbc=ba.Cross(bc);
+	float denom = normal.Length() * baxbc.Length();
+	if(FEQ(denom, 0.0f))
 		return false;
 
-	float cosT = bc.Dot(ba)/denom;
-	if(cosT <= 0.0f || 1.0 <= cosT)
+	float cosT = baxbc.Dot(normal)/denom;
+	if(!FEQ(cosT, 1.0f))
 		return false;
 
 	int size = closedIntersections.size();
-	for(int idx = idxc; idx != idxc; idx=(idx+1)%size) {
+	for(int idx = 0; idx < size; idx++) {
+		if(idx == idxa || idx == idxb || idx == idxc) {
+			continue;
+		}
 		if(IsInside(idx, idxa, idxb, idxc, closedIntersections)) {
 			return false;
 		}
@@ -270,6 +300,7 @@ bool CanSnip(const int idxa, const int idxb, const int idxc, const vector<CVecto
 
 	return true;
 }
+
 
 bool IsInside(const int idxp, const int idxa, const int idxb, const int idxc, const vector<CVector3f>& closedIntersections)
 {
@@ -308,10 +339,6 @@ void Snip(const int idxa, const int idxb, const int idxc,
 	CTriangle3v tri(va, vb, vc);
 	triangles.push_back(tri);
 
-	int sortedIndexes[3] = {idxa, idxb, idxc};
-	sort(sortedIndexes, sortedIndexes+3);
-	for(int i = 2; 0 < i; i--) {
-		closedIntersections.erase(closedIntersections.begin() + sortedIndexes[2]);
-	}
+	closedIntersections.erase(closedIntersections.begin() + idxb);
 }
 

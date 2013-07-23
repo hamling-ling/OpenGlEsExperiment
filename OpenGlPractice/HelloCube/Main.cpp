@@ -306,12 +306,6 @@ static void OnCreate(HWND hWnd)
 }
 
 
-
-
-
-
-
-
 static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6], GLfloat bufA[64][6],
 				  int& bufNCount, int& bufACount)
 {
@@ -349,7 +343,7 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 			intersections.push_back(line);
 		}
 	}
-
+	/*
 	list<CTriangle3v> triangles;
 	vector<CVector3f> closedIntersections;
 	if(GetClosedIntersections(intersections, closedIntersections)) {
@@ -384,7 +378,7 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 		tri[CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
 		tri[CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
 		it++;
-	}
+	}*/
 }
 
 static void OnSize(HWND hWnd, int nWidth, int nHeight)

@@ -49,7 +49,11 @@ bool GetClosedIntersections(const list<CLine>& intersections, vector<CVector3f>&
 
 bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& connection, CVector3f nonconnection);
 
-bool CanSnip(const int idxa, const int idxb, const int idxc, const vector<CVector3f>& closedIntersections);
+CVector3f GetNormal(vector<CVector3f>& closedIntersections);
+
+bool CanSnip(const int idxa, const int idxb, const int idxc,
+			 const vector<CVector3f>& closedIntersections,
+			 const CVector3f& normal);
 
 bool IsInside(const int idxp, const int idxa, const int idxb, const int idxc,
 		  const vector<CVector3f>& closedIntersections);
