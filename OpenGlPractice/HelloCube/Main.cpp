@@ -367,24 +367,27 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 
 	list<CTriangle3v>::iterator it = triangles.begin();
 	CVector3f normal = n;
-	CVector3f antnormal = n * 1.0f;
+	CVector3f antnormal = n * -1.0f;
 
 	while(it != triangles.end()) {
 		CTriangle3v tri = *it;
 		if(bufNCount + 2 < 64) {
 			tri.SetNormal(antnormal);
-			tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
-			tri[CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
 			tri[CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
+			tri[CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
+			tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
 		}
 		if(bufACount + 2 < 64) {
-			tri.SetNormal(n);
+			tri.SetNormal(normal);
 			tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
 			tri[CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
 			tri[CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
 		}
 		it++;
 	}
+
+	for(int i = 0; i < bufNCount; i++)
+		bufN[i][5] -= 0.25;
 }
 
 static void OnSize(HWND hWnd, int nWidth, int nHeight)

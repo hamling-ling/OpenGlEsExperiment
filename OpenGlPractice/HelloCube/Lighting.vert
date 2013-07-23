@@ -35,6 +35,6 @@ void main(void)
 	}
 	vec4 specular = Ks * specularLighting * Ls;
 
-	gl_FrontColor = ambient + diffuse + specular;
+	gl_FrontColor = (ambient + diffuse + specular);
 	gl_Position = modelViewProjectionMatrix * vec4(Vertex, 1.0);
 }
