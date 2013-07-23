@@ -343,23 +343,26 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 			intersections.push_back(line);
 		}
 	}
-	/*
+
 	list<CTriangle3v> triangles;
 	vector<CVector3f> closedIntersections;
-	if(GetClosedIntersections(intersections, closedIntersections)) {
-		while(closedIntersections.size() > 2) {
-			for(int i = 0; i < closedIntersections.size()-1; i++) {
-				int size = closedIntersections.size();
-				int preIdx = (i+0)%size;
-				int curIdx = (i+1)%size;
-				int nxtIdx = (i+2)%size;
-				if(CanSnip(preIdx, curIdx, nxtIdx, closedIntersections)) {
-					Snip(preIdx, curIdx, nxtIdx, closedIntersections, triangles);
-					i = closedIntersections.size(); // break inner loop
-				}
+	if(!GetClosedIntersections(intersections, closedIntersections)) {
+		return;
+	}
+
+	CVector3f refNormal = GetNormal(closedIntersections);
+
+	while(closedIntersections.size() > 2) {
+		for(int i = 0; i < closedIntersections.size()-1; i++) {
+			int size = closedIntersections.size();
+			int preIdx = (i+0)%size;
+			int curIdx = (i+1)%size;
+			int nxtIdx = (i+2)%size;
+			if(CanSnip(preIdx, curIdx, nxtIdx, closedIntersections, refNormal)) {
+				Snip(preIdx, curIdx, nxtIdx, closedIntersections, triangles);
+				i = size; // break inner loop
 			}
 		}
-		vector<CTriangle3v> triangles;
 	}
 
 	list<CTriangle3v>::iterator it = triangles.begin();
@@ -368,17 +371,20 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 
 	while(it != triangles.end()) {
 		CTriangle3v tri = *it;
-		tri.SetNormal(antnormal);
-		tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
-		tri[CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
-		tri[CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
-
-		tri.SetNormal(n);
-		tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
-		tri[CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
-		tri[CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
+		if(bufNCount + 2 < 64) {
+			tri.SetNormal(antnormal);
+			tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
+			tri[CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
+			tri[CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
+		}
+		if(bufACount + 2 < 64) {
+			tri.SetNormal(n);
+			tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
+			tri[CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
+			tri[CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
+		}
 		it++;
-	}*/
+	}
 }
 
 static void OnSize(HWND hWnd, int nWidth, int nHeight)
@@ -473,8 +479,8 @@ static void OnPaint(HWND hWnd)
 	//glBindVertexArray(0);
 
 	vector<SimpleObject*>::iterator it = objects.begin();
-	while(it != objects.end()) {
 
+	while(it != objects.end()) {
 		int index = it - objects.begin();
 		color[0] = (float)((index) % 2);
 		color[1] = (float)((index+1)%2);

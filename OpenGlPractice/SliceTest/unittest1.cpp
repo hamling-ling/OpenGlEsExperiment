@@ -372,13 +372,17 @@ namespace SliceTest
 			CVector3f normal = n;
 			CVector3f antnormal = n * 1.0f;
 
+			Assert::IsTrue(triangles.size() == 6);
 			while(it != triangles.end()) {
+				Assert::IsTrue(bufNCount + 2 < 64);
+
 				CTriangle3v tri = *it;
 				tri.SetNormal(antnormal);
 				tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
 				tri[CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
 				tri[CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
 
+				Assert::IsTrue(bufACount + 2 < 64);
 				tri.SetNormal(n);
 				tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
 				tri[CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
