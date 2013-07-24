@@ -69,8 +69,8 @@ int WINAPI WinMain(HINSTANCE hCurrInstance, HINSTANCE hPrevInstance, LPSTR szArg
 			WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 			CW_USEDEFAULT,
 			CW_USEDEFAULT,
-			CW_USEDEFAULT,
-			CW_USEDEFAULT,
+			300,
+			300,
 			NULL,
 			NULL,
 			hCurrInstance,
@@ -312,7 +312,8 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 	bufNCount = 0;
 	bufACount = 0;
 	CVector3f p(-0.1f, 1.0f, 0.0f);
-	CVector3f n(1.0f, 0.1f, 0.0f);
+	CVector3f n(-1.0f, -0.1f, 0.0f);
+	//CVector3f n(1.0f, 0.1f, 0.0f);
 	CPlane plane(n, p);
 
 	SliceResult3v sliceResult;
@@ -366,22 +367,38 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 	}
 
 	list<CTriangle3v>::iterator it = triangles.begin();
-	CVector3f normal = n;
-	CVector3f antnormal = n * -1.0f;
+	CVector3f normalN = n * -1.0f;	// normal side face expected to face this direction
+	CVector3f normalA = n;			// anti-normal side expected face direction
 
+	bool samedirN = normalN.IsSameDirection(refNormal);
+	bool samedirA = !samedirN;
 	while(it != triangles.end()) {
 		CTriangle3v tri = *it;
 		if(bufNCount + 2 < 64) {
-			tri.SetNormal(antnormal);
-			tri[CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
-			tri[CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
-			tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
+			tri.SetNormal(normalN);
+			if(samedirN) {
+				tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
+				tri[CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
+				tri[CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
+			}
+			else {
+				tri[CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
+				tri[CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
+				tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
+			}
 		}
 		if(bufACount + 2 < 64) {
-			tri.SetNormal(normal);
-			tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
-			tri[CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
-			tri[CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
+			tri.SetNormal(normalA);
+			if(samedirA) {
+				tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
+				tri[CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
+				tri[CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
+			}
+			else {
+				tri[CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
+				tri[CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
+				tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
+			}
 		}
 		it++;
 	}

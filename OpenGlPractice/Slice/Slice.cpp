@@ -262,9 +262,9 @@ CVector3f GetNormal(vector<CVector3f>& closedIntersections)
 		int idxa = (i+0)%size; // a
 		int idxb = (i+1)%size; // b
 		int idxc = (i+2)%size; // c
-		CVector3f ba = closedIntersections[idxa] - closedIntersections[idxb];
-		CVector3f bc = closedIntersections[idxc] - closedIntersections[idxb];
-		normal += ba.Cross(bc);
+		CVector3f B = closedIntersections[idxa] - closedIntersections[idxb];
+		CVector3f A = closedIntersections[idxc] - closedIntersections[idxb];
+		normal += A.Cross(B);
 	}
 
 	normal /= closedIntersections.size();
@@ -277,14 +277,14 @@ bool CanSnip(const int idxa, const int idxb, const int idxc,
 			 const vector<CVector3f>& closedIntersections,
 			 const CVector3f& normal)
 {
-	CVector3f ba = closedIntersections[idxa] - closedIntersections[idxb];
-	CVector3f bc = closedIntersections[idxc] - closedIntersections[idxb];
-	CVector3f baxbc=ba.Cross(bc);
-	float denom = normal.Length() * baxbc.Length();
+	CVector3f B = closedIntersections[idxa] - closedIntersections[idxb];
+	CVector3f A = closedIntersections[idxc] - closedIntersections[idxb];
+	CVector3f AxB=A.Cross(B);
+	float denom = normal.Length() * AxB.Length();
 	if(FEQ(denom, 0.0f))
 		return false;
 
-	float cosT = baxbc.Dot(normal)/denom;
+	float cosT = AxB.Dot(normal)/denom;
 	if(!FEQ(cosT, 1.0f))
 		return false;
 
