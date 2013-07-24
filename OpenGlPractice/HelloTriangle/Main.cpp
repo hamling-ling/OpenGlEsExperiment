@@ -231,7 +231,7 @@ static void OnCreate(HWND hWnd)
 	GLfloat bufN[64][6] = {0.0f};
 	GLfloat bufA[64][6] = {0.0f};
 
-	if(SliceTriangle3v(tri, plane, sliceResult)) {
+	if(ChopTriangle3v(tri, plane, sliceResult)) {
 
 		for(int i = 0; i < sliceResult.NormalSideCount; i++) {
 			sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[3*i+0][0]));

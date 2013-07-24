@@ -280,6 +280,9 @@ static void OnCreate(HWND hWnd)
 	Chop(plane, &(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/6/sizeof(GLfloat)
 		, bufN, bufA, bufNCount, bufACount);
 
+	for(int i = 0; i < bufNCount; i++)
+		bufN[i][5] += 0.25;
+
 	hDC = GetDC(hWnd);
 	wglMakeCurrent(hDC, g_hGLRC);
 

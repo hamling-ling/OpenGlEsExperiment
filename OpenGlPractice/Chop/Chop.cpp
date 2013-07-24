@@ -126,7 +126,7 @@ void SortSides(const CTriangle3v &tri, const CVector3f& n, const CVector3f& p, S
 }
 
 
-bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v& sliceResult)
+bool ChopTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v& sliceResult)
 {
 	CVertex i0,i1;
 	CVector3f* pn = &(plane[CPlane::N]);
@@ -188,9 +188,9 @@ bool SliceTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v&
 }
 
 
-bool GetClosedIntersections(const list<CLine>& lines, vector<CVector3f>& closedIntersections)
+bool GetContour(const list<CLine>& lines, vector<CVector3f>& contour)
 {
-	closedIntersections.clear();
+	contour.clear();
 
 	if(lines.size() < 3) {
 		return false;
@@ -198,8 +198,8 @@ bool GetClosedIntersections(const list<CLine>& lines, vector<CVector3f>& closedI
 
 	list<CLine> intersections(lines.begin(), lines.end());
 	list<CLine>::iterator it = intersections.begin();
-	closedIntersections.push_back((*it)[CLine::A]);
-	closedIntersections.push_back((*it)[CLine::B]);
+	contour.push_back((*it)[CLine::A]);
+	contour.push_back((*it)[CLine::B]);
 	intersections.pop_front();
 
 	it = intersections.begin();
@@ -211,8 +211,8 @@ bool GetClosedIntersections(const list<CLine>& lines, vector<CVector3f>& closedI
 		bool found = false;
 		while(inner_it != intersections.end()) {
 			CVector3f connection, nonconnection;
-			if(IsConnecting(*(closedIntersections.rbegin()), *inner_it, connection, nonconnection)) {
-				closedIntersections.push_back(connection);
+			if(IsConnecting(*(contour.rbegin()), *inner_it, connection, nonconnection)) {
+				contour.push_back(connection);
 				intersections.erase(inner_it);
 				found = true;
 				break;
@@ -224,17 +224,17 @@ bool GetClosedIntersections(const list<CLine>& lines, vector<CVector3f>& closedI
 	}
 
 	// if it is closed
-	vector<CVector3f>::const_reverse_iterator last = closedIntersections.rbegin();
-	if( closedIntersections.size() > 2 &&
-		closedIntersections.begin()->NearlyEquals(*last)) {
+	vector<CVector3f>::const_reverse_iterator last = contour.rbegin();
+	if( contour.size() > 2 &&
+		contour.begin()->NearlyEquals(*last)) {
 			// yes, it's closed
-			closedIntersections.pop_back();
+			contour.pop_back();
 	}
 	else {
-		closedIntersections.clear();
+		contour.clear();
 	}
 
-	return !closedIntersections.empty();
+	return !contour.empty();
 }
 
 
@@ -297,14 +297,14 @@ bool CanSnip(const int idxa, const int idxb, const int idxc,
 }
 
 
-bool IsInside(const int idxp, const int idxa, const int idxb, const int idxc, const vector<CVector3f>& closedIntersections)
+bool IsInside(const int idxp, const int idxa, const int idxb, const int idxc, const vector<CVector3f>& contour)
 {
-	CVector3f ab = closedIntersections[idxb] - closedIntersections[idxa];
-	CVector3f bc = closedIntersections[idxc] - closedIntersections[idxb];
-	CVector3f ca = closedIntersections[idxa] - closedIntersections[idxc];
-	CVector3f ap = closedIntersections[idxp] - closedIntersections[idxa];
-	CVector3f bp = closedIntersections[idxp] - closedIntersections[idxb];
-	CVector3f cp = closedIntersections[idxp] - closedIntersections[idxc];
+	CVector3f ab = contour[idxb] - contour[idxa];
+	CVector3f bc = contour[idxc] - contour[idxb];
+	CVector3f ca = contour[idxa] - contour[idxc];
+	CVector3f ap = contour[idxp] - contour[idxa];
+	CVector3f bp = contour[idxp] - contour[idxb];
+	CVector3f cp = contour[idxp] - contour[idxc];
 
 	CVector3f e1 = ab.Cross(ap);
 	CVector3f e2 = bc.Cross(bp);
@@ -323,18 +323,18 @@ bool IsInside(const int idxp, const int idxa, const int idxb, const int idxc, co
 
 
 void Snip(const int idxa, const int idxb, const int idxc,
-		  vector<CVector3f>& closedIntersections,
+		  vector<CVector3f>& contour,
 		  list<CTriangle3v>& triangles)
 {
 	CVector3f normal;
-	CVertex va(normal, closedIntersections[idxa]);
-	CVertex vb(normal, closedIntersections[idxb]);
-	CVertex vc(normal, closedIntersections[idxc]);
+	CVertex va(normal, contour[idxa]);
+	CVertex vb(normal, contour[idxb]);
+	CVertex vc(normal, contour[idxc]);
 
 	CTriangle3v tri(va, vb, vc);
 	triangles.push_back(tri);
 
-	closedIntersections.erase(closedIntersections.begin() + idxb);
+	contour.erase(contour.begin() + idxb);
 }
 
 
@@ -354,7 +354,7 @@ void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
 		CVertex c(normalsAndVertices + (vertCount+2) * 6);
 		CTriangle3v tri(a,b,c);
 
-		SliceTriangle3v(tri, plane, sliceResult);
+		ChopTriangle3v(tri, plane, sliceResult);
 
 		for(int i = 0; i < sliceResult.NormalSideCount; i++) {
 			sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
@@ -375,21 +375,21 @@ void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
 	}
 
 	list<CTriangle3v> triangles;
-	vector<CVector3f> closedIntersections;
-	if(!GetClosedIntersections(intersections, closedIntersections)) {
+	vector<CVector3f> contour;
+	if(!GetContour(intersections, contour)) {
 		return;
 	}
 
-	CVector3f refNormal = GetNormal(closedIntersections);
+	CVector3f refNormal = GetNormal(contour);
 
-	while(closedIntersections.size() > 2) {
-		for(int i = 0; i < closedIntersections.size()-1; i++) {
-			int size = closedIntersections.size();
+	while(contour.size() > 2) {
+		for(int i = 0; i < contour.size()-1; i++) {
+			int size = contour.size();
 			int preIdx = (i+0)%size;
 			int curIdx = (i+1)%size;
 			int nxtIdx = (i+2)%size;
-			if(CanSnip(preIdx, curIdx, nxtIdx, closedIntersections, refNormal)) {
-				Snip(preIdx, curIdx, nxtIdx, closedIntersections, triangles);
+			if(CanSnip(preIdx, curIdx, nxtIdx, contour, refNormal)) {
+				Snip(preIdx, curIdx, nxtIdx, contour, triangles);
 				i = size; // break inner loop
 			}
 		}

@@ -34,7 +34,7 @@ namespace SliceTest
 			CPlane plane(n, p);
 
 			SliceResult3v sliced;
-			bool isSliced = SliceTriangle3v(tri, plane, sliced);
+			bool isSliced = ChopTriangle3v(tri, plane, sliced);
 
 			Assert::IsTrue(isSliced);
 			Assert::IsTrue(sliced.NormalSideCount == 2);
@@ -99,7 +99,7 @@ namespace SliceTest
 			CPlane plane(n, p);
 
 			SliceResult3v sliced;
-			bool isSliced = SliceTriangle3v(tri, plane, sliced);
+			bool isSliced = ChopTriangle3v(tri, plane, sliced);
 
 			Assert::IsTrue(isSliced);
 			Assert::IsTrue(sliced.NormalSideCount == 1);
@@ -164,7 +164,7 @@ namespace SliceTest
 			CPlane plane(n, p);
 
 			SliceResult3v sliced;
-			bool isSliced = SliceTriangle3v(tri, plane, sliced);
+			bool isSliced = ChopTriangle3v(tri, plane, sliced);
 
 			Assert::IsTrue(isSliced);
 			Assert::IsTrue(sliced.NormalSideCount == 2);
@@ -229,7 +229,7 @@ namespace SliceTest
 			CPlane plane(n, p);
 
 			SliceResult3v sliced;
-			bool isSliced = SliceTriangle3v(tri, plane, sliced);
+			bool isSliced = ChopTriangle3v(tri, plane, sliced);
 
 			Assert::IsFalse(isSliced);
 			Assert::IsTrue(sliced.NormalSideCount == 0);
@@ -327,7 +327,7 @@ namespace SliceTest
 				CVertex c(normalsAndVertices[vertCount+2]);
 				CTriangle3v tri(a,b,c);
 
-				SliceTriangle3v(tri, plane, sliceResult);
+				ChopTriangle3v(tri, plane, sliceResult);
 
 				for(int i = 0; i < sliceResult.NormalSideCount; i++) {
 					sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
@@ -349,7 +349,7 @@ namespace SliceTest
 
 			list<CTriangle3v> triangles;
 			vector<CVector3f> closedIntersections;
-			if(!GetClosedIntersections(intersections, closedIntersections)) {
+			if(!GetContour(intersections, closedIntersections)) {
 				return;
 			}
 
