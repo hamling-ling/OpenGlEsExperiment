@@ -1,9 +1,11 @@
 ﻿#include "stdafx.h"
+
+#include <algorithm>
+#include "float.h"
+
 #include "Chop.h"
 #include "Vector3f.h"
 #include "Vertex.h"
-#include "float.h"
-#include <algorithm>
 
 using namespace std;
 
