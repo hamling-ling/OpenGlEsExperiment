@@ -13,7 +13,7 @@
 #include "Vector3f.h"
 #include "Matrix4x4f.h"
 #include "SimpleObject.h"
-#include "Slice.h"
+#include "Chop.h"
 
 using namespace std;
 

@@ -3,7 +3,7 @@
 
 #include <list>
 #include <vector>
-#include "Slice.h"
+#include "Chop.h"
 #include "Plane.h"
 
 using namespace std;

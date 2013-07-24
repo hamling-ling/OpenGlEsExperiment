@@ -1,5 +1,5 @@
 ﻿#include "stdafx.h"
-#include "Slice.h"
+#include "Chop.h"
 #include "Vector3f.h"
 #include "Vertex.h"
 #include "float.h"

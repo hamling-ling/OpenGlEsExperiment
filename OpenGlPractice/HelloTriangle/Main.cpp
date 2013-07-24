@@ -7,7 +7,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "Slice.h"
+#include "Chop.h"
 #include "SimpleObject.h"
 
 using namespace std;
