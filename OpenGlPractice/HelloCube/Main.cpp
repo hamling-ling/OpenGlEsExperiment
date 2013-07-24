@@ -276,7 +276,8 @@ static void OnCreate(HWND hWnd)
 	GLfloat bufA[64][6] = {0.0f};
 	int bufNCount = 0;
 	int bufACount = 0;
-	Slice(&(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/6/sizeof(GLfloat)
+	CPlane plane(CVector3f(-1.0f, -0.1f, 0.0f), CVector3f(-0.1f, 1.0f, 0.0f));
+	Chop(plane, &(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/6/sizeof(GLfloat)
 		, bufN, bufA, bufNCount, bufACount);
 
 	hDC = GetDC(hWnd);
@@ -305,107 +306,6 @@ static void OnCreate(HWND hWnd)
 	ReleaseDC(hWnd, hDC);
 }
 
-
-static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6], GLfloat bufA[64][6],
-				  int& bufNCount, int& bufACount)
-{
-	bufNCount = 0;
-	bufACount = 0;
-	CVector3f p(-0.1f, 1.0f, 0.0f);
-	CVector3f n(-1.0f, -0.1f, 0.0f);
-	//CVector3f n(1.0f, 0.1f, 0.0f);
-	CPlane plane(n, p);
-
-	SliceResult3v sliceResult;
-	list<CLine> intersections;
-	for(int vertCount = 0; vertCount < len; vertCount+=3)
-	{
-		CVertex a(normalsAndVertices + (vertCount+0) * 6);
-		CVertex b(normalsAndVertices + (vertCount+1) * 6);
-		CVertex c(normalsAndVertices + (vertCount+2) * 6);
-		CTriangle3v tri(a,b,c);
-
-		SliceTriangle3v(tri, plane, sliceResult);
-
-		for(int i = 0; i < sliceResult.NormalSideCount; i++) {
-			sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
-			sliceResult.NormalSides[i][CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
-			sliceResult.NormalSides[i][CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
-		}
-
-		for(int i = 0; i < sliceResult.AntinormalSideCount; i++) {
-			sliceResult.AntinormalSides[i][CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
-			sliceResult.AntinormalSides[i][CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
-			sliceResult.AntinormalSides[i][CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
-		}
-
-		if( 2 == sliceResult.InterSectionCount) {
-			CLine line(sliceResult.Intersections[0].GetPoint(), sliceResult.Intersections[1].GetPoint());
-			intersections.push_back(line);
-		}
-	}
-
-	list<CTriangle3v> triangles;
-	vector<CVector3f> closedIntersections;
-	if(!GetClosedIntersections(intersections, closedIntersections)) {
-		return;
-	}
-
-	CVector3f refNormal = GetNormal(closedIntersections);
-
-	while(closedIntersections.size() > 2) {
-		for(int i = 0; i < closedIntersections.size()-1; i++) {
-			int size = closedIntersections.size();
-			int preIdx = (i+0)%size;
-			int curIdx = (i+1)%size;
-			int nxtIdx = (i+2)%size;
-			if(CanSnip(preIdx, curIdx, nxtIdx, closedIntersections, refNormal)) {
-				Snip(preIdx, curIdx, nxtIdx, closedIntersections, triangles);
-				i = size; // break inner loop
-			}
-		}
-	}
-
-	list<CTriangle3v>::iterator it = triangles.begin();
-	CVector3f normalN = n * -1.0f;	// normal side face expected to face this direction
-	CVector3f normalA = n;			// anti-normal side expected face direction
-
-	bool samedirN = normalN.IsSameDirection(refNormal);
-	bool samedirA = !samedirN;
-	while(it != triangles.end()) {
-		CTriangle3v tri = *it;
-		if(bufNCount + 2 < 64) {
-			tri.SetNormal(normalN);
-			if(samedirN) {
-				tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
-				tri[CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
-				tri[CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
-			}
-			else {
-				tri[CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
-				tri[CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
-				tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
-			}
-		}
-		if(bufACount + 2 < 64) {
-			tri.SetNormal(normalA);
-			if(samedirA) {
-				tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
-				tri[CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
-				tri[CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
-			}
-			else {
-				tri[CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
-				tri[CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
-				tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
-			}
-		}
-		it++;
-	}
-
-	for(int i = 0; i < bufNCount; i++)
-		bufN[i][5] -= 0.25;
-}
 
 static void OnSize(HWND hWnd, int nWidth, int nHeight)
 {

@@ -61,3 +61,7 @@ bool IsInside(const int idxp, const int idxa, const int idxb, const int idxc,
 void Snip(const int idxa, const int idxb, const int idxc,
 		  vector<CVector3f>& closedIntersections,
 		  list<CTriangle3v>& triangles);
+
+void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
+		  float bufN[64][6], float bufA[64][6],
+		  int& bufNCount, int& bufACount);
