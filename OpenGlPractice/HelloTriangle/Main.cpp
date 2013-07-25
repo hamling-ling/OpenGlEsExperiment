@@ -365,13 +365,13 @@ static void OnPaint(HWND hWnd)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glBindTexture(GL_TEXTURE_2D, pOrigObj->GetTextureObject());
-
-	glBindVertexArray(pOrigObj->GetVertexArrayObject());
+	//glBindTexture(GL_TEXTURE_2D, pOrigObj->GetTextureObject());
+	//glBindVertexArray(pOrigObj->GetVertexArrayObject());
 	//glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, pOrigObj->GetTextureObject());
 
 	GLfloat color[3] = {1.0f, 0.0f, 0.0f};
 	vector<SimpleObject*>::iterator it = objects.begin();
@@ -389,6 +389,7 @@ static void OnPaint(HWND hWnd)
 		glBindVertexArray(0);
 		it++;
 	}
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glFlush();
 
