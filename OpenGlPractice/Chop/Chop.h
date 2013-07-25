@@ -63,5 +63,5 @@ void Snip(const int idxa, const int idxb, const int idxc,
 		  list<CTriangle3v>& triangles);
 
 void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
-		  float bufN[64][6], float bufA[64][6],
+		  float bufN[64][8], float bufA[64][8],
 		  int& bufNCount, int& bufACount);

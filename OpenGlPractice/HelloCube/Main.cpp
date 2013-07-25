@@ -127,61 +127,61 @@ static void OnCreate(HWND hWnd)
 	BOOL bResult;
 	HGLRC hGLRC;
 
-	const GLfloat normalsAndVertices[][6] =
+	const GLfloat normalsAndVertices[][8] =
 	{
 		/* ‘O */
-		{ 0.0f,  0.0f,  1.0f, -0.5f, -0.5f,  0.5f},
-		{ 0.0f,  0.0f,  1.0f,  0.5f, -0.5f,  0.5f},
-		{ 0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f},
+		{ -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+		{  0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+		{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
 
-		{ 0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f},
-		{ 0.0f,  0.0f,  1.0f, -0.5f,  0.5f,  0.5f},
-		{ 0.0f,  0.0f,  1.0f, -0.5f, -0.5f,  0.5f},
+		{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+		{ -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
 
 		/* Œã */
-		{ 0.0f,  0.0f, -1.0f,  0.5f, -0.5f, -0.5f},
-		{ 0.0f,  0.0f, -1.0f, -0.5f, -0.5f, -0.5f},
-		{ 0.0f,  0.0f, -1.0f, -0.5f,  0.5f, -0.5f},
+		{  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
+		{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
 
-		{ 0.0f,  0.0f, -1.0f, -0.5f,  0.5f, -0.5f},
-		{ 0.0f,  0.0f, -1.0f,  0.5f,  0.5f, -0.5f},
-		{ 0.0f,  0.0f, -1.0f,  0.5f, -0.5f, -0.5f},
+		{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
+		{  0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
+		{  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
 
 		/* ‰E */
-		{ 1.0f,  0.0f,  0.0f,  0.5f, -0.5f,  0.5f},
-		{ 1.0f,  0.0f,  0.0f,  0.5f, -0.5f, -0.5f},
-		{ 1.0f,  0.0f,  0.0f,  0.5f,  0.5f, -0.5f},
+		{  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
 
-		{ 1.0f,  0.0f,  0.0f,  0.5f,  0.5f, -0.5f},
-		{ 1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.5f},
-		{ 1.0f,  0.0f,  0.0f,  0.5f, -0.5f,  0.5f},
+		{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
 
 		/* ¶ */
-		{-1.0f,  0.0f,  0.0f, -0.5f, -0.5f, -0.5f},
-		{-1.0f,  0.0f,  0.0f, -0.5f, -0.5f,  0.5f},
-		{-1.0f,  0.0f,  0.0f, -0.5f,  0.5f,  0.5f},
+		{ -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
 
-		{-1.0f,  0.0f,  0.0f, -0.5f,  0.5f,  0.5f},
-		{-1.0f,  0.0f,  0.0f, -0.5f,  0.5f, -0.5f},
-		{-1.0f,  0.0f,  0.0f, -0.5f, -0.5f, -0.5f},
+		{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
 
 		/* ã */
-		{ 0.0f,  1.0f,  0.0f, -0.5f,  0.5f,  0.5f},
-		{ 0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f},
-		{ 0.0f,  1.0f,  0.0f,  0.5f,  0.5f, -0.5f},
+		{ -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
 
-		{ 0.0f,  1.0f,  0.0f,  0.5f,  0.5f, -0.5f},
-		{ 0.0f,  1.0f,  0.0f, -0.5f,  0.5f, -0.5f},
-		{ 0.0f,  1.0f,  0.0f, -0.5f,  0.5f,  0.5f},
+		{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
 
 		/* ‰º */
-		{ 0.0f, -1.0f,  0.0f,  0.5f, -0.5f,  0.5f},
-		{ 0.0f, -1.0f,  0.0f, -0.5f, -0.5f,  0.5f},
-		{ 0.0f, -1.0f,  0.0f, -0.5f, -0.5f, -0.5f},
+		{  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
 
-		{ 0.0f, -1.0f,  0.0f, -0.5f, -0.5f, -0.5f},
-		{ 0.0f, -1.0f,  0.0f,  0.5f, -0.5f, -0.5f},
-		{ 0.0f, -1.0f,  0.0f,  0.5f, -0.5f,  0.5f}
+		{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f}
 	};
 
 	const PIXELFORMATDESCRIPTOR pfd = {
@@ -259,7 +259,7 @@ static void OnCreate(HWND hWnd)
 
 	pOrigObj = new SimpleObject();
 	pOrigObj->BindBuffer(normalLocation, vertexLocation, &(normalsAndVertices[0][0]),
-		sizeof(normalsAndVertices)/6/sizeof(GLfloat));
+		sizeof(normalsAndVertices)/8/sizeof(GLfloat));
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -272,16 +272,16 @@ static void OnCreate(HWND hWnd)
 
 	//--------------------
 	// slice
-	GLfloat bufN[64][6] = {0.0f};
-	GLfloat bufA[64][6] = {0.0f};
+	GLfloat bufN[64][8] = {0.0f};
+	GLfloat bufA[64][8] = {0.0f};
 	int bufNCount = 0;
 	int bufACount = 0;
 	CPlane plane(CVector3f(-1.0f, -0.1f, 0.0f), CVector3f(-0.1f, 1.0f, 0.0f));
-	Chop(plane, &(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/6/sizeof(GLfloat)
+	Chop(plane, &(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/8/sizeof(GLfloat)
 		, bufN, bufA, bufNCount, bufACount);
 
 	for(int i = 0; i < bufNCount; i++)
-		bufN[i][5] += 0.25;
+		bufN[i][2] += 0.25;
 
 	hDC = GetDC(hWnd);
 	wglMakeCurrent(hDC, g_hGLRC);
@@ -396,9 +396,8 @@ static void OnPaint(HWND hWnd)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	GLfloat color[3] = {1.0f, 0.0f, 0.0f};
-	glUniform3fv(glGetUniformLocation(g_shaderProgram, "Color"), 1, color);
-	//glBindVertexArray(pOrigObj->GetVertexArrayObject());
-	//glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
+	//glUniform3fv(glGetUniformLocation(g_shaderProgram, "Color"), 1, color);
+	//glBindVertexArray(pOrigObj->GetVertexArrayObject());glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
 	//glBindVertexArray(0);
 
 	vector<SimpleObject*>::iterator it = objects.begin();

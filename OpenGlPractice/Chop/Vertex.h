@@ -1,18 +1,21 @@
 #pragma once
 
 #include "Vector3f.h"
+#include "Vector2f.h"
 
 class CVertex
 {
 public:
 	enum {
-		NX = 0,
-		NY = 1,
-		NZ = 2,
-		VX = 3,
-		VY = 4,
-		VZ = 5,
-		DIMENSION = 6
+		VX = 0,
+		VY = 1,
+		VZ = 2,
+		NX = 3,
+		NY = 4,
+		NZ = 5,
+		TX = 6,
+		TY = 7,
+		DIMENSION = 8
 	};
 
 private:
@@ -22,20 +25,21 @@ public:
 	CVertex();
 	CVertex(const CVertex& vec);
 	CVertex(const float vec[DIMENSION]);
-	CVertex(const CVector3f& normal, const CVector3f &point);
-	CVertex(float nx, float ny, float nz, float vx, float vy, float vz);
+	CVertex(const CVector3f& point, const CVector3f &normal, const CVector2f &tex);
+	CVertex(float vx, float vy, float vz, float nx, float ny, float nz, float tx, float ty);
 	virtual ~CVertex();
 
 	void SetValue(const float vec[DIMENSION]);
-	void SetValue(const CVector3f& normal, const CVector3f &point);
-	void SetValue(float nx, float ny, float nz, float vx, float vy, float vz);
+	void SetValue(const CVector3f& point, const CVector3f &normal, const CVector2f &tex);
+	void SetValue(float vx, float vy, float vz, float nx, float ny, float nz, float tx, float ty);
 	void SetNormal(const CVector3f& n);
 
 	void GetValue(float vec[DIMENSION]) const;
-	void GetValue(CVector3f& normal, CVector3f &point) const;
-	void GetValue(float &nx, float &ny, float &nz, float &vx, float &vy, float &vz) const;
+	void GetValue(CVector3f &point, CVector3f& normal, CVector2f &tex) const;
+	void GetValue(float& vx, float& vy, float& vz, float& nx, float& ny, float& nz, float& tx, float& ty) const;
 	CVector3f GetNormal() const;
 	CVector3f GetPoint() const;
+	CVector2f GetTex() const;
 
 	float& operator[](int i);
 	float operator[](int i) const;

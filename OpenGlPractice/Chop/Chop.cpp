@@ -68,7 +68,12 @@ IntersectionType TryGetIntersection3v(const CVertex& r0, const CVertex& r1, cons
 		result = OnSecondEnd;
 	}
 
-	i0.SetValue(r0.GetNormal(), i0v);
+	float r0_i0_len = (i0v - r0v).Length();
+	float r0_r1_len = r0_r1.Length();
+	float ratio = r0_i0_len / r0_r1_len;
+
+	CVector2f tex = (r0.GetTex() - r1.GetTex())/ratio;
+	i0.SetValue(i0v, r0.GetNormal(), tex);
 
 	return result;
 }
@@ -329,9 +334,9 @@ void Snip(const int idxa, const int idxb, const int idxc,
 		  list<CTriangle3v>& triangles)
 {
 	CVector3f normal;
-	CVertex va(normal, contour[idxa]);
-	CVertex vb(normal, contour[idxb]);
-	CVertex vc(normal, contour[idxc]);
+	CVertex va( contour[idxa], normal, CVector2f());
+	CVertex vb( contour[idxb], normal, CVector2f());
+	CVertex vc( contour[idxc], normal, CVector2f());
 
 	CTriangle3v tri(va, vb, vc);
 	triangles.push_back(tri);
@@ -341,7 +346,7 @@ void Snip(const int idxa, const int idxb, const int idxc,
 
 
 void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
-		  float bufN[64][6], float bufA[64][6],
+		  float bufN[64][8], float bufA[64][8],
 		  int& bufNCount, int& bufACount)
 {
 	bufNCount = 0;
@@ -351,9 +356,9 @@ void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
 	list<CLine> intersections;
 	for(int vertCount = 0; vertCount < len; vertCount+=3)
 	{
-		CVertex a(normalsAndVertices + (vertCount+0) * 6);
-		CVertex b(normalsAndVertices + (vertCount+1) * 6);
-		CVertex c(normalsAndVertices + (vertCount+2) * 6);
+		CVertex a(normalsAndVertices + (vertCount+0) * 8);
+		CVertex b(normalsAndVertices + (vertCount+1) * 8);
+		CVertex c(normalsAndVertices + (vertCount+2) * 8);
 		CTriangle3v tri(a,b,c);
 
 		ChopTriangle3v(tri, plane, sliceResult);
