@@ -10,6 +10,7 @@
 #include "Chop.h"
 #include "SimpleObject.h"
 #include "Texture.h"
+#include "Matrix4x4f.h"
 
 using namespace std;
 

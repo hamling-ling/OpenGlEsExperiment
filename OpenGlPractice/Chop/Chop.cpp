@@ -1,15 +1,27 @@
 ﻿#include "stdafx.h"
 
+#include <list>
+#include <vector>
 #include <algorithm>
 #include "float.h"
 
 #include "Chop.h"
 #include "Vector3f.h"
 #include "Vertex.h"
+#include "Line.h"
 
 using namespace std;
 
 #pragma region Prototypes
+
+typedef struct SLICERESULT3v {
+	int NormalSideCount;
+	int AntinormalSideCount;
+	CTriangle3v NormalSides[2];
+	CTriangle3v AntinormalSides[2];
+	CVertex Intersections[2];
+	int InterSectionCount;
+} SliceResult3v;
 
 typedef enum INTERSECTIONTYPE {
 	NoIntersection,
@@ -415,6 +427,16 @@ void Snip(const int idxa, const int idxb, const int idxc,
 }
 
 
+/**
+ * @brief Cut a mesh with plane.
+ * @param in plane					intersecting plane
+ * @param in normalsAndVertices		mesh to be cut
+ * @param len						num of vertex in the normalsandVertices
+ * @param bufN	resulting vertex that locating normal side of the plane
+ * @param bufA	resulting vertex that locating anti-normal side of the plane
+ * @param bufNCount	num of vertices in bufN
+ * @param bufACount num of vertices in bufA
+ */
 void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
 		  float bufN[64][8], float bufA[64][8],
 		  int& bufNCount, int& bufACount)
@@ -433,13 +455,13 @@ void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
 
 		ChopTriangle3v(tri, plane, sliceResult);
 
-		for(int i = 0; i < sliceResult.NormalSideCount; i++) {
+		for(int i = 0; i < sliceResult.NormalSideCount && i < MAX_CHOP_BUF; i++) {
 			sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
 			sliceResult.NormalSides[i][CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
 			sliceResult.NormalSides[i][CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
 		}
 
-		for(int i = 0; i < sliceResult.AntinormalSideCount; i++) {
+		for(int i = 0; i < sliceResult.AntinormalSideCount && i < MAX_CHOP_BUF; i++) {
 			sliceResult.AntinormalSides[i][CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
 			sliceResult.AntinormalSides[i][CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
 			sliceResult.AntinormalSides[i][CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
@@ -480,7 +502,7 @@ void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
 	bool samedirA = !samedirN;
 	while(it != triangles.end()) {
 		CTriangle3v tri = *it;
-		if(bufNCount + 2 < 64) {
+		if(bufNCount + 2 < MAX_CHOP_BUF) {
 			tri.SetNormal(normalN);
 			if(samedirN) {
 				tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
@@ -493,7 +515,7 @@ void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
 				tri[CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
 			}
 		}
-		if(bufACount + 2 < 64) {
+		if(bufACount + 2 < MAX_CHOP_BUF) {
 			tri.SetNormal(normalA);
 			if(samedirA) {
 				tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
