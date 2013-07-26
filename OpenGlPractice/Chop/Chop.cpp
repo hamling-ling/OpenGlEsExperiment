@@ -68,11 +68,14 @@ IntersectionType TryGetIntersection3v(const CVertex& r0, const CVertex& r1, cons
 		result = OnSecondEnd;
 	}
 
+	// compute texture location
 	float r0_i0_len = (i0v - r0v).Length();
 	float r0_r1_len = r0_r1.Length();
 	float ratio = r0_i0_len / r0_r1_len;
 
-	CVector2f tex = (r0.GetTex() - r1.GetTex())/ratio;
+	CVector2f t0 = r0.GetTex();
+	CVector2f t1 = r1.GetTex();
+	CVector2f tex = t0 + ((t1 - t0) * ratio);
 	i0.SetValue(i0v, r0.GetNormal(), tex);
 
 	return result;
