@@ -400,8 +400,8 @@ static void OnPaint(HWND hWnd)
 	const GLfloat lightAmbient[4] = {0.25f, 0.25f, 0.25f, 1.0f};
 	const GLfloat lightSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-	const GLfloat cubeDiffuse[4] = {0.75f, 0.0f, 1.0f, 1.0f};
-	const GLfloat cubeAmbient[4] = {0.3f, 0.25f, 0.4f, 1.0f};
+	const GLfloat cubeDiffuse[4] = {0.5f, 0.5f, 0.5f, 1.0f};
+	const GLfloat cubeAmbient[4] = {0.5f, 0.5f, 0.5f, 1.0f};
 	const GLfloat cubeSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 	const GLfloat cubeShininess[1] = {32.0f};
 
