@@ -43,9 +43,13 @@ void Decompose3v(const CVertex &a, const CVertex &b, const CVertex &c,
 
 bool ChopTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v& sliceResult);
 
-bool GetContour(const list<CLine>& intersections, vector<CVector3f>& closedIntersections);
+bool GetContours(const list<CLine>& lines, list<vector<CVector3f> >& contours);
 
-bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& connection, CVector3f nonconnection);
+bool GetContour(list<CLine>& intersections, vector<CVector3f>& contour);
+
+bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& adjacent, CVector3f& overlapped);
+
+bool FindConnection(const CVector3f& p, const list<CLine>& intersections, list<CLine>::const_iterator& foundPos, CVector3f& adjacent, CVector3f& overlapped);
 
 CVector3f GetNormal(vector<CVector3f>& closedIntersections);
 
@@ -59,6 +63,10 @@ bool IsInside(const int idxp, const int idxa, const int idxb, const int idxc,
 void Snip(const int idxa, const int idxb, const int idxc,
 		  vector<CVector3f>& closedIntersections,
 		  list<CTriangle3v>& triangles);
+
+void ContourToVertices(vector<CVector3f> contour, const CPlane& plane,
+					 float bufN[MAX_CHOP_BUF][8], float bufA[MAX_CHOP_BUF][8],
+					 int& bufNCount, int& bufACount);
 
 #pragma endregion
 
@@ -277,39 +285,59 @@ bool ChopTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v& 
 }
 
 
-bool GetContour(const list<CLine>& lines, vector<CVector3f>& contour)
+bool FindConnection(const CVector3f& p, const list<CLine>& intersections, list<CLine>::const_iterator& foundPos, CVector3f& adjacent, CVector3f& overlapped)
+{
+	list<CLine>::const_iterator it = intersections.begin();
+	while(it != intersections.end()) {
+		if(IsConnecting(p, *it, adjacent, overlapped)) {
+			foundPos = it;
+			return true;
+		}
+		it++;
+	}
+	return false;
+}
+
+
+bool GetContours(const list<CLine>& lines, list<vector<CVector3f> >& contours)
+{
+	list<CLine> intersections(lines.begin(), lines.end());
+	vector<CVector3f> contour;
+	bool found = false;
+
+	while(GetContour(intersections, contour)) {
+		contours.push_back(contour);
+	}
+
+	return !contours.empty();
+}
+
+
+bool GetContour(list<CLine>& intersections, vector<CVector3f>& contour)
 {
 	contour.clear();
 
-	if(lines.size() < 3) {
+	if(intersections.size() < 3) {
 		return false;
 	}
 
-	list<CLine> intersections(lines.begin(), lines.end());
 	list<CLine>::iterator it = intersections.begin();
 	contour.push_back((*it)[CLine::A]);
 	contour.push_back((*it)[CLine::B]);
 	intersections.pop_front();
 
-	it = intersections.begin();
-	CVector3f connection, nonconnection;
+	CVector3f adjacent, overlapped;
 
 	while(intersections.size() > 0) {
-		
-		list<CLine>::iterator inner_it = it;
-		bool found = false;
-		while(inner_it != intersections.end()) {
-			CVector3f connection, nonconnection;
-			if(IsConnecting(*(contour.rbegin()), *inner_it, connection, nonconnection)) {
-				contour.push_back(connection);
-				intersections.erase(inner_it);
-				found = true;
-				break;
-			}
-			inner_it++;
+		CVector3f connection, nonconnection;
+		list<CLine>::const_iterator foundPos;
+		if(FindConnection(*(contour.rbegin()), intersections, foundPos, adjacent, overlapped)) {
+			contour.push_back(adjacent);
+			intersections.erase(foundPos);
 		}
-		if(!found)
+		else {
 			break;
+		}
 	}
 
 	// if it is closed
@@ -327,16 +355,16 @@ bool GetContour(const list<CLine>& lines, vector<CVector3f>& contour)
 }
 
 
-bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& connection, CVector3f nonconnection)
+bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& adjacent, CVector3f& overlapped)
 {
 	if(line[CLine::A].NearlyEquals(p)) {
-		connection = line[CLine::B];
-		nonconnection = line[CLine::A];
+		adjacent = line[CLine::B];
+		overlapped = line[CLine::A];
 		return true;
 	}
 	else if(line[CLine::B].NearlyEquals(p)) {
-		connection = line[CLine::A];
-		nonconnection = line[CLine::B];
+		adjacent = line[CLine::A];
+		overlapped = line[CLine::B];
 		return true;
 	}
 	return false;
@@ -427,58 +455,11 @@ void Snip(const int idxa, const int idxb, const int idxc,
 }
 
 
-/**
- * @brief Cut a mesh with plane.
- * @param in plane					intersecting plane
- * @param in normalsAndVertices		mesh to be cut
- * @param len						num of vertex in the normalsandVertices
- * @param bufN	resulting vertex that locating normal side of the plane
- * @param bufA	resulting vertex that locating anti-normal side of the plane
- * @param bufNCount	num of vertices in bufN
- * @param bufACount num of vertices in bufA
- */
-void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
-		  float bufN[64][8], float bufA[64][8],
-		  int& bufNCount, int& bufACount)
+void ContourToVertices(vector<CVector3f> contour, const CPlane& plane,
+					 float bufN[MAX_CHOP_BUF][8], float bufA[MAX_CHOP_BUF][8],
+					 int& bufNCount, int& bufACount)
 {
-	bufNCount = 0;
-	bufACount = 0;
-
-	SliceResult3v sliceResult;
-	list<CLine> intersections;
-	for(int vertCount = 0; vertCount < len; vertCount+=3)
-	{
-		CVertex a(normalsAndVertices + (vertCount+0) * 8);
-		CVertex b(normalsAndVertices + (vertCount+1) * 8);
-		CVertex c(normalsAndVertices + (vertCount+2) * 8);
-		CTriangle3v tri(a,b,c);
-
-		ChopTriangle3v(tri, plane, sliceResult);
-
-		for(int i = 0; i < sliceResult.NormalSideCount && i < MAX_CHOP_BUF; i++) {
-			sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
-			sliceResult.NormalSides[i][CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
-			sliceResult.NormalSides[i][CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
-		}
-
-		for(int i = 0; i < sliceResult.AntinormalSideCount && i < MAX_CHOP_BUF; i++) {
-			sliceResult.AntinormalSides[i][CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
-			sliceResult.AntinormalSides[i][CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
-			sliceResult.AntinormalSides[i][CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
-		}
-
-		if( 2 == sliceResult.InterSectionCount) {
-			CLine line(sliceResult.Intersections[0].GetPoint(), sliceResult.Intersections[1].GetPoint());
-			intersections.push_back(line);
-		}
-	}
-
 	list<CTriangle3v> triangles;
-	vector<CVector3f> contour;
-	if(!GetContour(intersections, contour)) {
-		return;
-	}
-
 	CVector3f refNormal = GetNormal(contour);
 
 	while(contour.size() > 2) {
@@ -528,6 +509,66 @@ void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
 				tri[CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
 			}
 		}
+		it++;
+	}
+}
+
+
+/**
+ * @brief Cut a mesh with plane.
+ * @param in plane					intersecting plane
+ * @param in normalsAndVertices		mesh to be cut
+ * @param len						num of vertex in the normalsandVertices
+ * @param bufN	resulting vertex that locating normal side of the plane
+ * @param bufA	resulting vertex that locating anti-normal side of the plane
+ * @param bufNCount	num of vertices in bufN
+ * @param bufACount num of vertices in bufA
+ */
+void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
+		  float bufN[MAX_CHOP_BUF][8], float bufA[MAX_CHOP_BUF][8],
+		  int& bufNCount, int& bufACount)
+{
+	bufNCount = 0;
+	bufACount = 0;
+
+	SliceResult3v sliceResult;
+	list<CLine> intersections;
+	for(int vertCount = 0; vertCount < len; vertCount+=3)
+	{
+		CVertex a(normalsAndVertices + (vertCount+0) * 8);
+		CVertex b(normalsAndVertices + (vertCount+1) * 8);
+		CVertex c(normalsAndVertices + (vertCount+2) * 8);
+		CTriangle3v tri(a,b,c);
+
+		ChopTriangle3v(tri, plane, sliceResult);
+
+		for(int i = 0; i < sliceResult.NormalSideCount && bufNCount+2 < MAX_CHOP_BUF; i++) {
+			sliceResult.NormalSides[i][CTriangle3v::A].GetValue(&(bufN[bufNCount++][0]));
+			sliceResult.NormalSides[i][CTriangle3v::B].GetValue(&(bufN[bufNCount++][0]));
+			sliceResult.NormalSides[i][CTriangle3v::C].GetValue(&(bufN[bufNCount++][0]));
+		}
+
+		for(int i = 0; i < sliceResult.AntinormalSideCount && bufACount+2 < MAX_CHOP_BUF; i++) {
+			sliceResult.AntinormalSides[i][CTriangle3v::A].GetValue(&(bufA[bufACount++][0]));
+			sliceResult.AntinormalSides[i][CTriangle3v::B].GetValue(&(bufA[bufACount++][0]));
+			sliceResult.AntinormalSides[i][CTriangle3v::C].GetValue(&(bufA[bufACount++][0]));
+		}
+
+		if( 2 == sliceResult.InterSectionCount) {
+			CLine line(sliceResult.Intersections[0].GetPoint(), sliceResult.Intersections[1].GetPoint());
+			intersections.push_back(line);
+		}
+	}
+
+
+	list<vector<CVector3f> > contours;
+	if(!GetContours(intersections, contours)) {
+		return;
+	}
+
+	list<vector<CVector3f> >::iterator it = contours.begin();
+	while(it != contours.end()) {
+		ContourToVertices(*it, plane, bufN, bufA, bufNCount, bufACount);
 		it++;
 	}
 }

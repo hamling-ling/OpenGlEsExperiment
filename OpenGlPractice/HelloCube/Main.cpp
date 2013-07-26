@@ -43,6 +43,63 @@ static void DisplayLinkError(GLuint program, HWND hWnd);
 SimpleObject* pOrigObj;
 vector<SimpleObject*> objects;
 
+const GLfloat normalsAndVertices[][8] =
+{
+	// Front
+	{ -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+	{  0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f},
+	{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f},
+
+	{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f},
+	{ -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f},
+	{ -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+
+	// Back
+	{  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
+	{ -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 0.0f},
+	{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, .0f},
+
+	{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 1.0f},
+	{  0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 1.0f},
+	{  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
+
+	// Right
+	{  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+	{  0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 0.0f},
+	{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+
+	{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+	{  0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 1.0f},
+	{  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+
+	// Left
+	{ -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+	{ -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f},
+	{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+
+	{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+	{ -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f},
+	{ -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+
+	// Top
+	{ -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+	{  0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f},
+	{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
+
+	{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
+	{ -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f},
+	{ -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+
+	// Bottom
+	{  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
+	{ -0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f},
+	{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 1.0f},
+
+	{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 1.0f},
+	{  0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 1.0f},
+	{  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f}
+};
+
 int WINAPI WinMain(HINSTANCE hCurrInstance, HINSTANCE hPrevInstance, LPSTR szArgs, int nWinMode)
 {
 	HWND hWnd;
@@ -129,66 +186,6 @@ static void OnCreate(HWND hWnd)
 	BOOL bResult;
 	HGLRC hGLRC;
 
-	const GLfloat normalsAndVertices[][8] =
-	{
-		// Front
-		{ -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
-		{  0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f},
-		{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f},
-
-		{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f},
-		{ -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f},
-		{ -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
-
-		// Back
-		{  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
-		{ -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 0.0f},
-		{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, .0f},
-
-		{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 1.0f},
-		{  0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 1.0f},
-		{  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
-
-		// Right
-		{  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
-		{  0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 0.0f},
-		{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
-
-		{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
-		{  0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 1.0f},
-		{  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
-
-		// Left
-		{ -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
-		{ -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f},
-		{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
-
-		{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
-		{ -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f},
-		{ -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
-
-		// Top
-		{ -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
-		{  0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f},
-		{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
-
-		{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
-		{ -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f},
-		{ -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
-
-		// Bottom
-		{  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
-		{ -0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f},
-		{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 1.0f},
-
-		{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 1.0f},
-		{  0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 1.0f},
-		{  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f}
-		//{ -0.5f, -0.5f, 0.5f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
-		//{  0.5f, -0.5f, 0.5f, 0.0f,  0.0f,  1.0f, 1.0f, 0.0f},
-		//{  0.0f,  1.0f, 0.5f, 0.0f,  0.0f,  1.0f, 0.5f, 1.0f},
-	};
-
 	const PIXELFORMATDESCRIPTOR pfd = {
 		sizeof (PIXELFORMATDESCRIPTOR),
 		1,
@@ -272,10 +269,20 @@ static void OnCreate(HWND hWnd)
 	GLint normalLocation = glGetAttribLocation(g_shaderProgram, "Normal");
 	GLint texCoordLocation = glGetAttribLocation(g_shaderProgram, "TexCoord");
 
+	int cube_len = sizeof(normalsAndVertices)/sizeof(float)/8;
+	float mesh[1024][8] = {0.0f};
+	memcpy(mesh, normalsAndVertices, sizeof(normalsAndVertices));
+	memcpy(&(mesh[cube_len][0]), normalsAndVertices, sizeof(normalsAndVertices));
+
+	for(int i = cube_len; i < cube_len * 2; i++) {
+		mesh[i][2] -= 1.5;
+	}
+	int mesh_len = cube_len * 2;
+
 	texture.LoadBitmap("texture.bmp");
 	pOrigObj = new SimpleObject();
 	pOrigObj->BindBuffer(vertexLocation, normalLocation, texCoordLocation, 
-		&(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/sizeof(float)/8,
+		&(mesh[0][0]), mesh_len,
 		texture);
 
 	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Vertex"));
@@ -297,12 +304,12 @@ static void OnCreate(HWND hWnd)
 
 	//--------------------
 	// slice
-	GLfloat bufN[64][8] = {0.0f};
-	GLfloat bufA[64][8] = {0.0f};
+	GLfloat bufN[MAX_CHOP_BUF][8] = {0.0f};
+	GLfloat bufA[MAX_CHOP_BUF][8] = {0.0f};
 	int bufNCount = 0;
 	int bufACount = 0;
 	CPlane plane(CVector3f(-1.0f, -0.1f, 0.0f), CVector3f(-0.1f, 1.0f, 0.0f));
-	Chop(plane, &(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/8/sizeof(GLfloat)
+	Chop(plane, &(mesh[0][0]), mesh_len
 		, bufN, bufA, bufNCount, bufACount);
 
 	for(int i = 0; i < bufNCount; i++)

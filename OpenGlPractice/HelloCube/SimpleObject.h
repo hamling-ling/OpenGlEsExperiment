@@ -16,7 +16,6 @@ private:
 	GLuint g_vertexArrayObject;
 	GLuint g_textureObject;
 	GLuint m_verticesLen;
-	vector<CTriangle3v> m_vertices;
 
 public:
 	SimpleObject();
@@ -24,7 +23,6 @@ public:
 	GLuint GetVertexArrayObject();
 	GLuint GetVertexArrayLen();
 	GLuint GetTextureObject();
-	vector<CTriangle3v> &GetVertexArray();
 
 	void SimpleObject::BindBuffer(GLint vertexLocation, GLint normalLocation, GLint texCoordLocation,
 							  const GLfloat *normalsAndVertices, GLuint verticesLen,

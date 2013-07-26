@@ -28,11 +28,6 @@ GLuint SimpleObject::GetTextureObject()
 	return g_textureObject;
 }
 
-vector<CTriangle3v>& SimpleObject::GetVertexArray()
-{
-	return m_vertices;
-}
-
 void SimpleObject::BindBuffer(GLint vertexLocation, GLint normalLocation, GLint texCoordLocation,
 							  const GLfloat *normalsAndVertices, GLuint verticesLen,
 							  CTexture& texture)
@@ -66,15 +61,4 @@ void SimpleObject::BindBuffer(GLint vertexLocation, GLint normalLocation, GLint 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	m_verticesLen = verticesLen;
-
-	for(GLuint i = 0; i < verticesLen; i=i+3) {
-		CVertex a(normalsAndVertices);
-		normalsAndVertices += 6;
-		CVertex b(normalsAndVertices);
-		normalsAndVertices += 6;
-		CVertex c(normalsAndVertices);
-		CTriangle3v tri(a,b,c);
-
-		m_vertices.push_back(tri);
-	}
 }
