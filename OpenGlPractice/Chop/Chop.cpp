@@ -82,6 +82,19 @@ IntersectionType TryGetIntersection3v(const CVertex& r0, const CVertex& r1, cons
 }
 
 
+/**
+ * @bfief decompose a triangle into three triangles.
+ * given triangle consists of three points a,b,c and two intersections
+ * i0 and i1. i0 should be between a and b. i1 also be between b and c.
+ *
+ * a-----i0-----b
+ *  \          /
+ *   \        /
+ *    i1     /
+ *      \   /
+         \ /
+ *        c
+ */
 void Decompose3(const CVertex &a, const CVertex &b, const CVertex &c,
 				const CVertex &i0, const CVertex &i1,
 				CTriangle3v* tris)
@@ -92,11 +105,21 @@ void Decompose3(const CVertex &a, const CVertex &b, const CVertex &c,
 }
 
 
+/**
+ * @bfief decompose a triangle into two triangles.
+ * given triangle consists of three points a,b,c and two intersections
+ * a and i1. i1 should be between b and c.
+ *
+ *   a
+ *  /  \
+ * /    \
+ *c--i1--b
+ */
 void Decompose2(const CVertex &a, const CVertex &b, const CVertex &c,
 				const CVertex &i1, CTriangle3v* tris)
 {
 	tris[0].SetValue(a, b, i1);
-	tris[1].SetValue(a, i1, b);
+	tris[1].SetValue(a, i1, c);
 }
 
 
