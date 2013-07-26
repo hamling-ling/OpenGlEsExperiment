@@ -9,6 +9,50 @@
 
 using namespace std;
 
+#pragma region Prototypes
+
+typedef enum INTERSECTIONTYPE {
+	NoIntersection,
+	BetweenEnds,
+	OnFirstEnd,
+	OnSecondEnd,
+	BeforeFirstEnd,
+	BeyondSecondEnd,
+	OnParallel,
+	OffParallel,
+} IntersectionType;
+
+
+IntersectionType TryGetIntersection3v(const CVertex& r0, const CVertex& r1, const CVector3f& n, const CVector3f& p, CVertex& i0);
+
+void Decompose3v(const CVertex &a, const CVertex &b, const CVertex &c,
+				 const CVertex &i0, const CVertex &i1,
+				 CTriangle3v* tris);
+
+bool ChopTriangle3v(const CTriangle3v &tri, const CPlane &plane, SliceResult3v& sliceResult);
+
+bool GetContour(const list<CLine>& intersections, vector<CVector3f>& closedIntersections);
+
+bool IsConnecting(const CVector3f& p, const CLine& line, CVector3f& connection, CVector3f nonconnection);
+
+CVector3f GetNormal(vector<CVector3f>& closedIntersections);
+
+bool CanSnip(const int idxa, const int idxb, const int idxc,
+			 const vector<CVector3f>& closedIntersections,
+			 const CVector3f& normal);
+
+bool IsInside(const int idxp, const int idxa, const int idxb, const int idxc,
+		  const vector<CVector3f>& closedIntersections);
+
+void Snip(const int idxa, const int idxb, const int idxc,
+		  vector<CVector3f>& closedIntersections,
+		  list<CTriangle3v>& triangles);
+
+#pragma endregion
+
+
+#pragma region Definitions
+
 
 bool OnThePlane(const CVector3f& r0, const CVector3f& r1, const CVector3f& n, const CVector3f& p)
 {
@@ -359,7 +403,7 @@ void Snip(const int idxa, const int idxb, const int idxc,
 		  vector<CVector3f>& contour,
 		  list<CTriangle3v>& triangles)
 {
-	CVector3f normal;
+	CVector3f normal; // temporarily set something
 	CVertex va( contour[idxa], normal, CVector2f());
 	CVertex vb( contour[idxb], normal, CVector2f());
 	CVertex vc( contour[idxc], normal, CVector2f());
@@ -465,3 +509,5 @@ void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
 		it++;
 	}
 }
+
+#pragma endregion
