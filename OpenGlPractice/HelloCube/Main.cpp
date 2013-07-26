@@ -14,6 +14,7 @@
 #include "Matrix4x4f.h"
 #include "SimpleObject.h"
 #include "Chop.h"
+#include "Texture.h"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6
 				  int& bufNCount, int& bufACount);
 
 static GLuint g_vertexShader;
+static GLuint g_fragmentShader;
 static GLuint g_shaderProgram;
 
 static void LoadShaderSource(GLuint shader, const char* fileName);
@@ -129,59 +131,62 @@ static void OnCreate(HWND hWnd)
 
 	const GLfloat normalsAndVertices[][8] =
 	{
-		/* ‘O */
+		// Front
 		{ -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
-		{  0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
-		{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+		{  0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f},
+		{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f},
 
-		{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
-		{ -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+		{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f},
+		{ -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f},
 		{ -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
 
-		/* Œã */
+		// Back
 		{  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
-		{ -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
-		{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 0.0f},
+		{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, .0f},
 
-		{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
-		{  0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
+		{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 1.0f},
+		{  0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 1.0f},
 		{  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
 
-		/* ‰E */
+		// Right
 		{  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
-		{  0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
-		{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 0.0f},
+		{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
 
-		{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
-		{  0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+		{  0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 1.0f},
 		{  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
 
-		/* ¶ */
+		// Left
 		{ -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
-		{ -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
-		{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f},
+		{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
 
-		{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
-		{ -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+		{ -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f},
 		{ -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
 
-		/* ã */
+		// Top
 		{ -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
-		{  0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
-		{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f},
+		{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
 
-		{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
-		{ -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
+		{ -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f},
 		{ -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
 
-		/* ‰º */
+		// Bottom
 		{  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
-		{ -0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
-		{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f},
+		{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 1.0f},
 
-		{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
-		{  0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 1.0f},
+		{  0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 1.0f},
 		{  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f}
+		//{ -0.5f, -0.5f, 0.5f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+		//{  0.5f, -0.5f, 0.5f, 0.0f,  0.0f,  1.0f, 1.0f, 0.0f},
+		//{  0.0f,  1.0f, 0.5f, 0.0f,  0.0f,  1.0f, 0.5f, 1.0f},
 	};
 
 	const PIXELFORMATDESCRIPTOR pfd = {
@@ -210,6 +215,8 @@ static void OnCreate(HWND hWnd)
 		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 		0
 	};
+
+	CTexture texture;
 
 	hDC = GetDC(hWnd);
 
@@ -243,23 +250,41 @@ static void OnCreate(HWND hWnd)
 	wglMakeCurrent(hDC, g_hGLRC);
 
 	g_vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	LoadShaderSource(g_vertexShader, "Lighting.vert");
+	LoadShaderSource(g_vertexShader, "Texture.vert");
 	glCompileShader(g_vertexShader);
 	DisplayCompileError(g_vertexShader, hWnd);
 
+	g_fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	LoadShaderSource(g_fragmentShader, "Texture.frag");
+	glCompileShader(g_fragmentShader);
+	DisplayCompileError(g_fragmentShader, hWnd);
+
 	g_shaderProgram = glCreateProgram();
 	glAttachShader(g_shaderProgram, g_vertexShader);
+	glAttachShader(g_shaderProgram, g_fragmentShader);
 
 	glDeleteShader(g_vertexShader);
+	glDeleteShader(g_fragmentShader);
 	glLinkProgram(g_shaderProgram);
 	DisplayLinkError(g_shaderProgram, hWnd);
 
-	GLint normalLocation = glGetAttribLocation(g_shaderProgram, "Normal");
 	GLint vertexLocation = glGetAttribLocation(g_shaderProgram, "Vertex");
+	GLint normalLocation = glGetAttribLocation(g_shaderProgram, "Normal");
+	GLint texCoordLocation = glGetAttribLocation(g_shaderProgram, "TexCoord");
 
+	texture.LoadBitmap("texture.bmp");
 	pOrigObj = new SimpleObject();
-	pOrigObj->BindBuffer(normalLocation, vertexLocation, &(normalsAndVertices[0][0]),
-		sizeof(normalsAndVertices)/8/sizeof(GLfloat));
+	pOrigObj->BindBuffer(vertexLocation, normalLocation, texCoordLocation, 
+		&(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/sizeof(float)/8,
+		texture);
+
+	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Vertex"));
+	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Normal"));
+	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "TexCoord"));
+
+	glUseProgram(g_shaderProgram);
+	glUniform1f(glGetUniformLocation(g_shaderProgram, "surfaceTexture"), 0);
+	glUseProgram(0);
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
@@ -288,21 +313,25 @@ static void OnCreate(HWND hWnd)
 
 	normalLocation = glGetAttribLocation(g_shaderProgram, "Normal");
 	vertexLocation = glGetAttribLocation(g_shaderProgram, "Vertex");
+	texCoordLocation = glGetAttribLocation(g_shaderProgram, "TexCoord");
 
 	if(bufNCount > 0) {
 		SimpleObject *pObj = new SimpleObject();
-		pObj->BindBuffer(normalLocation, vertexLocation, &(bufN[0][0]), bufNCount);
+		pObj->BindBuffer(vertexLocation, normalLocation, texCoordLocation,
+			&(bufN[0][0]), bufNCount, texture);
 		objects.push_back(pObj);
 	}
 
 	if(bufACount > 0) {
 		SimpleObject *pObj = new SimpleObject();
-		pObj->BindBuffer(normalLocation, vertexLocation, &(bufA[0][0]), bufACount);
+		pObj->BindBuffer(vertexLocation, normalLocation, texCoordLocation, 
+			&(bufA[0][0]), bufACount, texture);
 		objects.push_back(pObj);
 	}
 
 	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Normal"));
 	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Vertex"));
+	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "TexCoord"));
 
 	wglMakeCurrent(NULL, NULL);
 
@@ -395,26 +424,26 @@ static void OnPaint(HWND hWnd)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glBindTexture(GL_TEXTURE_2D, pOrigObj->GetTextureObject());
+
+#if 0
 	GLfloat color[3] = {1.0f, 0.0f, 0.0f};
 	//glUniform3fv(glGetUniformLocation(g_shaderProgram, "Color"), 1, color);
-	//glBindVertexArray(pOrigObj->GetVertexArrayObject());glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
-	//glBindVertexArray(0);
+	glBindVertexArray(pOrigObj->GetVertexArrayObject());
+	glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
+	glBindVertexArray(0);
+#endif
 
 	vector<SimpleObject*>::iterator it = objects.begin();
 
 	while(it != objects.end()) {
-		int index = it - objects.begin();
-		color[0] = (float)((index) % 2);
-		color[1] = (float)((index+1)%2);
-		color[2] = (float)((index+2)%2);
-
-		glUniform3fv(glGetUniformLocation(g_shaderProgram, "Color"), 1, color);
-
 		glBindVertexArray((*it)->GetVertexArrayObject());
 		glDrawArrays(GL_TRIANGLES, 0, (*it)->GetVertexArrayLen());
 		glBindVertexArray(0);
 		it++;
 	}
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glFlush();
 

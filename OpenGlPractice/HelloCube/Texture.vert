@@ -14,19 +14,22 @@ uniform float shininess;
 
 in vec3 Normal;
 in vec3 Vertex;
-uniform vec3 Color;
+in vec2 TexCoord;
+
+out vec4 Color;
+out vec2 TexCoord0;
 
 void main(void)
 {
-	//vec4 ambient = Ka * La;
-	vec4 ambient = vec4(Color,1.0);
+	vec4 ambient = Ka * La;
 
 	vec3 N = normalize(mat3(modelViewMatrix) * Normal);
-	vec3 L = normalize(mat3(viewMatrix) * lightPosition.xyz);
+	vec4 position = modelViewMatrix * vec4(Vertex, 1.0);
+	vec3 P = position.xyz;
+	vec3 L = normalize((viewMatrix * lightPosition).xyz - P);
 	float diffuseLighting = max(dot(L, N), 0);
 	vec4 diffuse = Kd * diffuseLighting * Ld;
 
-	vec3 P = (modelViewMatrix * vec4(Vertex, 1.0)).xyz;
 	vec3 V = normalize(-P);
 	vec3 H = normalize(L + V);
 	float specularLighting = pow(max(dot(H, N), 0), shininess);
@@ -35,6 +38,7 @@ void main(void)
 	}
 	vec4 specular = Ks * specularLighting * Ls;
 
-	gl_FrontColor = (ambient + diffuse + specular);
+	Color = ambient + diffuse + specular;
+	TexCoord0 = TexCoord;
 	gl_Position = modelViewProjectionMatrix * vec4(Vertex, 1.0);
 }

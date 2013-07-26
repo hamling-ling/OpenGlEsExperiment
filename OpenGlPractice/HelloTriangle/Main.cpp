@@ -151,8 +151,8 @@ static void OnCreate(HWND hWnd)
 	};
 
 	const int attributes[] = {
-		WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-		WGL_CONTEXT_MINOR_VERSION_ARB, 0, 
+		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+		WGL_CONTEXT_MINOR_VERSION_ARB, 3, 
 		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 		0
 	};
@@ -254,6 +254,7 @@ static void OnCreate(HWND hWnd)
 
 	normalLocation = glGetAttribLocation(g_shaderProgram, "Normal");
 	vertexLocation = glGetAttribLocation(g_shaderProgram, "Vertex");
+	texCoordLocation = glGetAttribLocation(g_shaderProgram, "TexCoord");
 
 	if(bufNCount > 0) {
 		SimpleObject *pObj = new SimpleObject();
@@ -271,6 +272,7 @@ static void OnCreate(HWND hWnd)
 
 	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Normal"));
 	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Vertex"));
+	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "TexCoord"));
 
 	wglMakeCurrent(NULL, NULL);
 

@@ -63,7 +63,10 @@
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)Dlls\glew32.dll" "$(OutDir)"
-copy /Y "$(ProjectDir)Lighting.vert" "$(OutDir)"
+copy /Y "$(ProjectDir)Texture.vert" "$(OutDir)"
+copy /Y "$(ProjectDir)Texture.frag" "$(OutDir)"
+copy /Y "$(ProjectDir)texture.bmp" "$(OutDir)"
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -89,19 +92,30 @@ copy /Y "$(ProjectDir)Lighting.vert" "$(OutDir)"
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)Dlls\glew32.dll" "$(OutDir)"
-copy /Y "$(ProjectDir)Lighting.vert" "$(OutDir)"
+copy /Y "$(ProjectDir)Texture.vert" "$(OutDir)"
+copy /Y "$(ProjectDir)Texture.frag" "$(OutDir)"
+copy /Y "$(ProjectDir)texture.bmp" "$(OutDir)"
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BitmapFile.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SimpleObject.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Lighting.vert" />
+    <None Include="Texture.frag" />
+    <None Include="Texture.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BitmapFile.h" />
     <ClInclude Include="SimpleObject.h" />
+    <ClInclude Include="Texture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="texture.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
