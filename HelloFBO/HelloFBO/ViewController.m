@@ -16,6 +16,7 @@ enum
     UNIFORM_MVP_MATRIX,
     UNIFORM_TEXTURE0,
     UNIFORM_NORMAL_MATRIX,
+    UNIFORM_SCREENSIZE,
     NUM_UNIFORMS
 };
 GLint uniforms[NUM_UNIFORMS];
@@ -149,6 +150,7 @@ const GLfloat gTriangleData[][8] =
         
         uniforms2[UNIFORM_MVP_MATRIX] = glGetUniformLocation(_program2, [@"modelViewProjectionMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
         uniforms2[UNIFORM_TEXTURE0] = glGetUniformLocation(_program2, [@"texture0" cStringUsingEncoding:NSUTF8StringEncoding]);
+        uniforms2[UNIFORM_SCREENSIZE] = glGetUniformLocation(_program2, [@"screensize" cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     
     // setup triangle to be drawn in 1st path
@@ -369,6 +371,12 @@ const GLfloat gTriangleData[][8] =
     GLKMatrix4 mvpMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     
     glUniformMatrix4fv(uniforms2[UNIFORM_MVP_MATRIX], 1, 0, mvpMatrix.m);
+    
+    // pass screen size to shader
+    GLKVector2 screensize = {0.0};
+    screensize.x = self.view.bounds.size.width * self.view.contentScaleFactor;
+    screensize.y = self.view.bounds.size.height * self.view.contentScaleFactor;
+    glUniform2fv(uniforms2[UNIFORM_SCREENSIZE], 1, &(screensize.v[0]));
     
     // draw. no need to clear since drawing entire screen.
     glBindVertexArrayOES(_vertexArray2);
