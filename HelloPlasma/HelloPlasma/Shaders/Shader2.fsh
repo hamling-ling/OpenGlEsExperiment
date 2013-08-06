@@ -40,9 +40,6 @@ void main()
     destColor += texture2D(texture0, f_texCoord + vec2( 9.0,  0.0) * tFrag);
 
     vec4 finalColor = destColor / 19.0;
-    //if(finalColor.r < 0.5) {
-        //finalColor.a = 0.0;
-    //}
     
     gl_FragColor  = finalColor;
 }
