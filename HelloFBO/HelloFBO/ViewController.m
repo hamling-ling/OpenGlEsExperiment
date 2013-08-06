@@ -75,8 +75,8 @@ const GLfloat gTriangleData[][8] =
                                   texId:(GLuint*)texId
                              attachment:(GLenum)attachment
                              scaledSize:(CGSize)viewSize;
-- (void)drawPass1;
-- (void)drawPass2;
+- (void)drawPath1;
+- (void)drawPath2;
 - (BOOL)loadShadersWithProgram:(GLuint*)program vshFileName:(NSString*) vshFileName fshFileName:(NSString*) fshFileName;
 - (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
 - (BOOL)linkProgram:(GLuint)prog;
@@ -135,7 +135,7 @@ const GLfloat gTriangleData[][8] =
 
 - (void)setupGL
 {
-    // パス1用プログラムの作成
+    // create a program for path1
     {
         [self loadShadersWithProgram:&_program1 vshFileName:@"Shader" fshFileName:@"Shader"];
         
@@ -144,7 +144,7 @@ const GLfloat gTriangleData[][8] =
         uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program1, [@"normalMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     
-    // パス2用プログラムの作成
+    // create a program for path2
     {
         [self loadShadersWithProgram:&_program2 vshFileName:@"Shader" fshFileName:@"Shader2"];
         
@@ -303,17 +303,17 @@ const GLfloat gTriangleData[][8] =
     // draw path1
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
     glUseProgram(_program1);
-    [self drawPass1];
+    [self drawPath1];
     
     // draw path2
     [view bindDrawable];
     glUseProgram(_program2);
-    [self drawPass2];
+    [self drawPath2];
 }
 
 #pragma mark - Drawing path
 
-- (void)drawPass1
+- (void)drawPath1
 {
     // set for 3D drawing
     glEnable(GL_DEPTH_TEST);
@@ -348,9 +348,9 @@ const GLfloat gTriangleData[][8] =
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-- (void)drawPass2
+- (void)drawPath2
 {
-    // set for 3D drawing
+    // set for 2D drawing
     glDisable(GL_DEPTH_TEST);
     
     // binding texture
