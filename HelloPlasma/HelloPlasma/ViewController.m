@@ -50,12 +50,23 @@ const GLfloat gTriangleData[][8] =
 	{  0.0f,  1.0f, 0.0f, 0.0f,  0.0f,  1.0f, 0.5f, 1.0f},
 };
 
-@interface ViewController () {
-    GLuint  _vertexArray1, _vertexArray2;
-    GLuint  _vertexBuffer1, _vertexBuffer2;
+const GLfloat gRectangleData[][8] =
+{
+    { -0.1f, -1.2f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
+    {  0.1f, -1.2f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},
+    {  0.1f,  1.2f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
     
-    GLuint  _framebuffer;
-    GLuint  _fbColTex, _fbDepTex;
+    {  0.1f,  1.2f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
+    { -0.1f,  1.2f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+    { -0.1f, -1.2f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f}
+};
+
+@interface ViewController () {
+    GLuint  _vertexArray1, _vertexArray2, _vertexArray3;
+    GLuint  _vertexBuffer1, _vertexBuffer2, _vertexBuffer3;
+    
+    GLuint  _framebuffer, _framebuffer2;
+    GLuint  _fbColTex, _fbDepTex, _fbColTex2, _fbDepTex2;
     
     // shader programs
     GLuint _program1, _program2, _program3;
@@ -66,18 +77,22 @@ const GLfloat gTriangleData[][8] =
     // rotation
     float           _rotation;
 }
+
 @property (strong, nonatomic) EAGLContext *context;
 
 - (void)setupGL;
 - (void)tearDownGL;
-- (void)pepareTextureWithInternalFormat:(GLint)internalFormat
-                                 format:(GLenum)format
-                                   type:(GLenum)type
-                                  texId:(GLuint*)texId
-                             attachment:(GLenum)attachment
-                             scaledSize:(CGSize)viewSize;
-- (void)drawPath1;
-- (void)drawPath2;
+- (void)pepareTextureForFrameBuffer:(GLuint)framebuffer
+                     internalFormat:(GLint)internalFormat
+                             format:(GLenum)format
+                               type:(GLenum)type
+                              texId:(GLuint*)texId
+                         attachment:(GLenum)attachment
+                         scaledSize:(CGSize)viewSize;
+- (void)drawObj2Fb1;
+- (void)drawRect2Fb2;
+- (void)drawFb2Fb1;
+- (void)draFb1DefaultFb;
 - (BOOL)loadShadersWithProgram:(GLuint*)program vshFileName:(NSString*) vshFileName fshFileName:(NSString*) fshFileName;
 - (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
 - (BOOL)linkProgram:(GLuint)prog;
@@ -196,44 +211,84 @@ const GLfloat gTriangleData[][8] =
     
     glBindVertexArrayOES(0);
     
+    // setup rectangle
+    glGenVertexArraysOES(1, &_vertexArray3);
+    glBindVertexArrayOES(_vertexArray3);
+    
+    glGenBuffers(1, &_vertexBuffer3);
+    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer3);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(gRectangleData), &gRectangleData[0], GL_STATIC_DRAW);
+    
+    glEnableVertexAttribArray(ATTRIB_VERTEX);
+    glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)0);
+    glEnableVertexAttribArray(ATTRIB_NORMAL);
+    glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)(sizeof(float)*3));
+    glEnableVertexAttribArray(ATTRIB_TEXCOORD);
+    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)(sizeof(float)*6));
+    
+    glBindVertexArrayOES(0);
+    
     //// setup texture
     
     // load texture（image size doesn't have to be power of 2 in GLES2.0）
     NSURL *imageURL0 = [[NSBundle mainBundle] URLForResource:@"shinden" withExtension:@"png"];
     _texInfo0 = [GLKTextureLoader textureWithContentsOfURL:imageURL0 options:nil error:NULL];
     
-    // prepare for texture and rendering
+    /// prepare for texture and rendering
     CGSize viewSize = self.view.bounds.size;
     CGFloat scale = self.view.contentScaleFactor;
     viewSize.width *= scale;
     viewSize.height *= scale;
     
+    // setup framebuffer
     glGenFramebuffers(1, &_framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
     
-    [self pepareTextureWithInternalFormat:GL_RGBA
-                                   format:GL_RGBA
-                                     type:GL_UNSIGNED_BYTE
-                                    texId:&_fbColTex
-                               attachment:GL_COLOR_ATTACHMENT0
-                               scaledSize:viewSize];
-    [self pepareTextureWithInternalFormat:GL_DEPTH_COMPONENT
-                                   format:GL_DEPTH_COMPONENT
-                                     type:GL_UNSIGNED_SHORT
-                                    texId:&_fbDepTex
-                               attachment:GL_DEPTH_ATTACHMENT
-                               scaledSize:viewSize];
+    [self pepareTextureForFrameBuffer:_framebuffer
+                       internalFormat:GL_RGBA
+                               format:GL_RGBA
+                                 type:GL_UNSIGNED_BYTE
+                                texId:&_fbColTex
+                           attachment:GL_COLOR_ATTACHMENT0
+                           scaledSize:viewSize];
+    [self pepareTextureForFrameBuffer:_framebuffer
+                       internalFormat:GL_DEPTH_COMPONENT
+                               format:GL_DEPTH_COMPONENT
+                                 type:GL_UNSIGNED_SHORT
+                                texId:&_fbDepTex
+                           attachment:GL_DEPTH_ATTACHMENT
+                           scaledSize:viewSize];
+    
+    // setup framebuffer2
+    glGenFramebuffers(1, &_framebuffer2);
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer2);
+    
+    [self pepareTextureForFrameBuffer:_framebuffer2
+                       internalFormat:GL_RGBA
+                               format:GL_RGBA
+                                 type:GL_UNSIGNED_BYTE
+                                texId:&_fbColTex2
+                           attachment:GL_COLOR_ATTACHMENT0
+                           scaledSize:viewSize];
+    [self pepareTextureForFrameBuffer:_framebuffer2
+                       internalFormat:GL_DEPTH_COMPONENT
+                               format:GL_DEPTH_COMPONENT
+                                 type:GL_UNSIGNED_SHORT
+                                texId:&_fbDepTex2
+                           attachment:GL_DEPTH_ATTACHMENT
+                           scaledSize:viewSize];
     
     //// initialize variables
     _rotation = 0.0;
 }
 
-- (void)pepareTextureWithInternalFormat:(GLint)internalFormat
-                                 format:(GLenum)format
-                                   type:(GLenum)type
-                                  texId:(GLuint*)texId
-                             attachment:(GLenum)attachment
-                             scaledSize:(CGSize)viewSize
+- (void)pepareTextureForFrameBuffer:(GLuint)framebuffer
+                     internalFormat:(GLint)internalFormat
+                             format:(GLenum)format
+                               type:(GLenum)type
+                              texId:(GLuint*)texId
+                         attachment:(GLenum)attachment
+                         scaledSize:(CGSize)viewSize
 {
     glEnable(GL_TEXTURE_2D);
     glGenTextures(1, texId);
@@ -267,7 +322,7 @@ const GLfloat gTriangleData[][8] =
                  0);                // Specifies a pointer to the image data in memory
     
     glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, *texId, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -278,8 +333,10 @@ const GLfloat gTriangleData[][8] =
     
     glDeleteBuffers(1, &_vertexBuffer1);
     glDeleteBuffers(1, &_vertexBuffer2);
+    glDeleteBuffers(1, &_vertexBuffer3);
     glDeleteVertexArraysOES(1, &_vertexArray1);
     glDeleteVertexArraysOES(1, &_vertexArray2);
+    glDeleteVertexArraysOES(1, &_vertexArray3);
     
     if (_fbColTex != GL_INVALID_VALUE) {
         glDeleteTextures(1, &_fbColTex);
@@ -287,7 +344,14 @@ const GLfloat gTriangleData[][8] =
     if (_fbDepTex != GL_INVALID_VALUE) {
         glDeleteTextures(1, &_fbDepTex);
     }
+    if (_fbColTex2 != GL_INVALID_VALUE) {
+        glDeleteTextures(1, &_fbColTex2);
+    }
+    if (_fbDepTex2 != GL_INVALID_VALUE) {
+        glDeleteTextures(1, &_fbDepTex2);
+    }
     glDeleteFramebuffers(1, &_framebuffer);
+    glDeleteFramebuffers(1, &_framebuffer2);
     
     if (_program1) {
         glDeleteProgram(_program1);
@@ -316,22 +380,28 @@ const GLfloat gTriangleData[][8] =
     // draw path1
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
     glUseProgram(_program1);
-    [self drawPath1];
+    [self drawObj2Fb1];
     
     // draw path2
-    [view bindDrawable];
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer2);
+    glUseProgram(_program3);// yellow rectangle
+    [self drawRect2Fb2];
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
     glUseProgram(_program2);
-    [self drawPath2];
+    [self drawFb2Fb1];
     
     // draw path3
-    //[view bindDrawable];
-    glUseProgram(_program3);
-    [self drawPath3];
+    [view bindDrawable];
+    glUseProgram(_program1);
+    [self draFb1DefaultFb];
 }
 
 #pragma mark - Drawing path
 
-- (void)drawPath1
+// draw triangle to framebuffer1
+// using _program1(draw polygon with texture)
+- (void)drawObj2Fb1
 {
     // set for 3D drawing
     glEnable(GL_DEPTH_TEST);
@@ -366,14 +436,55 @@ const GLfloat gTriangleData[][8] =
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-- (void)drawPath2
+// draw rectangle to framebuffer2
+// using _program3(fill polygon with yellow)
+- (void)drawRect2Fb2
 {
-    // set for 2D drawing
-    glDisable(GL_DEPTH_TEST);
+    // set for 3D drawing
+    glEnable(GL_DEPTH_TEST);
     
     // binding texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _fbColTex);
+    glBindTexture(_texInfo0.target, _texInfo0.name);
+    glUniform1i(uniforms3[UNIFORM_TEXTURE0], 0);
+    
+    // setup camera
+    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
+    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(0.0f, 0.0f, -0.8f,
+                                                 0.0f, 0.0f, 0.0f,
+                                                 0.0f, 1.0f, 0.0f);
+    GLKMatrix4 modelMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 1.5f);
+    modelMatrix = GLKMatrix4Rotate(modelMatrix, -M_PI/6, 1.0f, 0.0f, 0.0f);
+    modelMatrix = GLKMatrix4Rotate(modelMatrix, _rotation, 0.0f, 1.0f, 0.0f);
+    
+    // compute matrices
+    GLKMatrix4 modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelMatrix);
+    GLKMatrix4 mvpMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
+    GLKMatrix3 normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
+    
+    glUniformMatrix4fv(uniforms3[UNIFORM_MVP_MATRIX], 1, 0, mvpMatrix.m);
+    glUniformMatrix3fv(uniforms3[UNIFORM_NORMAL_MATRIX], 1, 0, normalMatrix.m);
+    
+    // draw
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindVertexArrayOES(_vertexArray3);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
+// draw framebuffer2 to framebuffer3
+// using program2(blur)
+- (void)drawFb2Fb1
+{
+    // set for 2D drawing
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE);
+    
+    // binding texture
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _fbColTex2);
     glUniform1i(uniforms2[UNIFORM_TEXTURE0], 0);
     
     // setup camera(2D)
@@ -397,23 +508,22 @@ const GLfloat gTriangleData[][8] =
     glUniform2fv(uniforms2[UNIFORM_SCREENSIZE], 1, &(screensize.v[0]));
     
     // draw. no need to clear since drawing entire screen.
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT);
     glBindVertexArrayOES(_vertexArray2);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-- (void)drawPath3
+// draw framebuffer1 to screen
+// using program1(draw polygon with texture)
+- (void)draFb1DefaultFb
 {
     // set for 2D drawing
     glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_BLEND);
     
     // binding texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _fbColTex);
-    glUniform1i(uniforms2[UNIFORM_TEXTURE0], 0);
+    glUniform1i(uniforms[UNIFORM_TEXTURE0], 0);
     
     // setup camera(2D)
     GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0.0, 320, 480, 0.0, 0.001, 100.0);
@@ -427,7 +537,7 @@ const GLfloat gTriangleData[][8] =
     GLKMatrix4 modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelMatrix);
     GLKMatrix4 mvpMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
     
-    glUniformMatrix4fv(uniforms3[UNIFORM_MVP_MATRIX], 1, 0, mvpMatrix.m);
+    glUniformMatrix4fv(uniforms[UNIFORM_MVP_MATRIX], 1, 0, mvpMatrix.m);
 
     
     // draw. no need to clear since drawing entire screen.
