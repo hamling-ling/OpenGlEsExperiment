@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Express 2012 for Windows Desktop
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloOepnGl", "HelloOepnGl\HelloOepnGl.vcxproj", "{17174A18-5527-4928-9FBF-D622EF4B018D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F1B65432-9C94-4F8F-B0C0-0908064F5C8B} = {F1B65432-9C94-4F8F-B0C0-0908064F5C8B}
@@ -19,6 +19,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Chop", "Chop\Chop.vcxproj", "{F1B65432-9C94-4F8F-B0C0-0908064F5C8B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChopTest", "ChopTest\ChopTest.vcxproj", "{C2280AFA-5E8B-4033-A1F1-DA8AAF767DDE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F1B65432-9C94-4F8F-B0C0-0908064F5C8B} = {F1B65432-9C94-4F8F-B0C0-0908064F5C8B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChopPeko", "ChopPeko\ChopPeko.vcxproj", "{220CD942-E3DB-437B-9899-75710F59993F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F1B65432-9C94-4F8F-B0C0-0908064F5C8B} = {F1B65432-9C94-4F8F-B0C0-0908064F5C8B}
 	EndProjectSection
@@ -73,6 +78,14 @@ Global
 		{C2280AFA-5E8B-4033-A1F1-DA8AAF767DDE}.Release|Win32.ActiveCfg = Release|Win32
 		{C2280AFA-5E8B-4033-A1F1-DA8AAF767DDE}.Release|Win32.Build.0 = Release|Win32
 		{C2280AFA-5E8B-4033-A1F1-DA8AAF767DDE}.Release|x64.ActiveCfg = Release|Win32
+		{220CD942-E3DB-437B-9899-75710F59993F}.Debug|ARM.ActiveCfg = Debug|Win32
+		{220CD942-E3DB-437B-9899-75710F59993F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{220CD942-E3DB-437B-9899-75710F59993F}.Debug|Win32.Build.0 = Debug|Win32
+		{220CD942-E3DB-437B-9899-75710F59993F}.Debug|x64.ActiveCfg = Debug|Win32
+		{220CD942-E3DB-437B-9899-75710F59993F}.Release|ARM.ActiveCfg = Release|Win32
+		{220CD942-E3DB-437B-9899-75710F59993F}.Release|Win32.ActiveCfg = Release|Win32
+		{220CD942-E3DB-437B-9899-75710F59993F}.Release|Win32.Build.0 = Release|Win32
+		{220CD942-E3DB-437B-9899-75710F59993F}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,9 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{83394A8F-278D-4BB8-A001-B1109D56AB2F}</ProjectGuid>
-    <Keyword>Win32Proj</Keyword>
-    <RootNamespace>HelloCube</RootNamespace>
+    <ProjectGuid>{220CD942-E3DB-437B-9899-75710F59993F}</ProjectGuid>
+    <RootNamespace>ChopPeko</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -39,65 +38,36 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)$(Configuration)\Chop</AdditionalIncludeDirectories>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)Chop</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)glew\lib;$(SolutionDir)$(Configuration)\Chop;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);opengl32.lib;glew32.lib;Chop.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;opengl32.lib;glew32.lib;Chop.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)Dlls\glew32.dll" "$(OutDir)"
-copy /Y "$(ProjectDir)Texture.vert" "$(OutDir)"
-copy /Y "$(ProjectDir)Texture.frag" "$(OutDir)"
-copy /Y "$(ProjectDir)texture.bmp" "$(OutDir)"
-
-</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)$(Configuration)\Chop</AdditionalIncludeDirectories>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)Chop</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)glew\lib;$(SolutionDir)$(Configuration)\Chop;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);opengl32.lib;glew32.lib;Chop.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;opengl32.lib;glew32.lib;Chop.lib;;glew32.lib;Chop.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)Dlls\glew32.dll" "$(OutDir)"
-copy /Y "$(ProjectDir)Texture.vert" "$(OutDir)"
-copy /Y "$(ProjectDir)Texture.frag" "$(OutDir)"
-copy /Y "$(ProjectDir)texture.bmp" "$(OutDir)"
-
-</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BitmapFile.cpp" />
@@ -106,17 +76,16 @@ copy /Y "$(ProjectDir)texture.bmp" "$(OutDir)"
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Texture.frag">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="Texture.vert">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="BitmapFile.h" />
+    <ClInclude Include="GlTypes.h" />
     <ClInclude Include="SimpleObject.h" />
     <ClInclude Include="Texture.h" />
+    <ClInclude Include="Vertex_Pko.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Dlls\glew32.dll" />
+    <None Include="Texture.frag" />
+    <None Include="Texture.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="texture.bmp" />

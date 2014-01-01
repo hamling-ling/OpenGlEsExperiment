@@ -231,6 +231,17 @@ bool CVector3f::NearlyEquals(const CVector3f& vec) const
 }
 
 
+bool CVector3f::NearlyEqualsLow(const CVector3f& vec) const
+{
+	bool isNearlyEquals = true;
+	for (int i = 0; i < CVector3f::DIMENSION; i++) {
+		isNearlyEquals &= FEQLOW(m_vec[i],vec[i]);
+	}
+
+	return isNearlyEquals;
+}
+
+
 bool CVector3f::IsSameDirection(const CVector3f v) const
 {
 	float denom = Length() * v.Length();
@@ -243,6 +254,17 @@ bool CVector3f::IsSameDirection(const CVector3f v) const
 	return false;
 }
 
+bool CVector3f::IsRoughlySameDirection(const CVector3f& v) const
+{
+	float denom = Length() * v.Length();
+	if(FEQ(denom, 0.0f))
+		return false;
+
+	float cosT = Dot(v)/denom;
+	if(FEQLOW(cosT, 1.0f))
+		return true;
+	return false;
+}
 
 CVector3f operator+(const CVector3f& vec1, const CVector3f& vec2)
 {

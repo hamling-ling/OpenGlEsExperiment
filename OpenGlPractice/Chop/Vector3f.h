@@ -57,7 +57,9 @@ public:
 	float Angle(const CVector3f& vec) const;
 
 	bool NearlyEquals(const CVector3f& vec) const;
+	bool NearlyEqualsLow(const CVector3f& vec) const;
 	bool IsSameDirection(const CVector3f v) const;
+	bool IsRoughlySameDirection(const CVector3f& v) const;
 
 	friend CVector3f operator+(const CVector3f& vec1, const CVector3f& vec2);
 	friend CVector3f operator-(const CVector3f& vec1, const CVector3f& vec2);

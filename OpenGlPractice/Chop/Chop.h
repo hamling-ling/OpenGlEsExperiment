@@ -4,7 +4,7 @@
 #include "Triangle3v.h"
 #include "Plane.h"
 
-#define MAX_CHOP_BUF	256
+#define MAX_CHOP_BUF	8192
 
 /**
  * @brief Cut a mesh with plane.
