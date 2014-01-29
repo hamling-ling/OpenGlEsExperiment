@@ -6,9 +6,6 @@
 #include <cmath>
 #include "float.h"
 
-// debug
-#include <Windows.h>
-
 #include "Chop.h"
 #include "Vector3f.h"
 #include "Vertex.h"
@@ -332,7 +329,6 @@ bool GetContours(const list<CLine>& lines, list<vector<CVector3f> >& contours)
 {
 	list<CLine> intersections(lines.begin(), lines.end());
 	vector<CVector3f> contour;
-	bool found = false;
 
 	while(GetContour(intersections, contour)) {
 		contours.push_back(contour);
@@ -615,6 +611,59 @@ void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
 		ContourToVertices(*it, plane, bufN, bufA, bufNCount, bufACount);
 		it++;
 	}
+}
+
+/**
+ * @brief Compute minimum box and center position and centering the vertex
+ * @param in buf		vertex
+ * @param in bufCount	vertex count
+ * @param out box		minimum size box to compose the vertex
+ * @param out cg        center of the box
+ */
+void AlignCenter(float buf[MAX_CHOP_BUF][8], const int bufCount, CVector3f (&box)[8], CVector3f &cg)
+{
+    if(bufCount <= 0)
+        return;
+    
+    float minmax_x[2] = {buf[0][0]};
+    float minmax_y[2] = {buf[0][1]};
+    float minmax_z[2] = {buf[0][2]};
+    for(int i = 1; i < bufCount && i < MAX_CHOP_BUF; i++) {
+        minmax_x[0] = min(minmax_x[0], buf[i][0]);
+        minmax_x[1] = max(minmax_x[1], buf[i][0]);
+        minmax_y[0] = min(minmax_y[0], buf[i][1]);
+        minmax_y[1] = max(minmax_y[1], buf[i][1]);
+        minmax_z[0] = min(minmax_z[0], buf[i][2]);
+        minmax_z[1] = max(minmax_z[1], buf[i][2]);
+    }
+
+    // 3D box
+    box[0] = CVector3f(minmax_x[0], minmax_y[0], minmax_z[0]);// min,min,min
+    box[1] = CVector3f(minmax_x[0], minmax_y[1], minmax_z[0]);// min,max,min
+    box[2] = CVector3f(minmax_x[1], minmax_y[1], minmax_z[0]);// max,max,min
+    box[3] = CVector3f(minmax_x[1], minmax_y[0], minmax_z[0]);// max,min,min
+        
+    box[4] = CVector3f(minmax_x[0], minmax_y[0], minmax_z[1]);// min,min,max
+    box[5] = CVector3f(minmax_x[0], minmax_y[1], minmax_z[1]);// min,max,max
+    box[6] = CVector3f(minmax_x[1], minmax_y[1], minmax_z[1]);// max,max,max
+    box[7] = CVector3f(minmax_x[1], minmax_y[0], minmax_z[1]);// max,min,max
+    
+    // center
+    cg = CVector3f( (minmax_x[0]+ minmax_x[1])/2.0,
+                    (minmax_y[0]+ minmax_y[1])/2.0,
+                    (minmax_z[0]+ minmax_z[1])/2.0);
+    
+    // centering vertex
+    for(int i = 0; i < bufCount && i < MAX_CHOP_BUF; i++) {
+        buf[i][0] -= cg[CVector3f::X];
+        buf[i][1] -= cg[CVector3f::Y];
+        buf[i][2] -= cg[CVector3f::Z];
+    }
+    
+    // centering box
+    for(int i = 0; i < 8; i++) {
+        box[i] = box[i] - cg;
+    }
 }
 
 #pragma endregion

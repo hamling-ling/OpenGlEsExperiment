@@ -19,3 +19,12 @@
 void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
 		  float bufN[MAX_CHOP_BUF][8], float bufA[MAX_CHOP_BUF][8],
 		  int& bufNCount, int& bufACount);
+
+/**
+ * @brief Compute minimum box and center position and centering the vertex
+ * @param in buf		vertex
+ * @param in bufCount	vertex count
+ * @param out box		minimum size box to compose the vertex
+ * @param out cg        center of the box
+ */
+void AlignCenter(float buf[MAX_CHOP_BUF][8], const int bufCount, CVector3f (&box)[8], CVector3f &cg);
