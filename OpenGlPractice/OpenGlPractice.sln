@@ -28,6 +28,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChopPeko", "ChopPeko\ChopPe
 		{F1B65432-9C94-4F8F-B0C0-0908064F5C8B} = {F1B65432-9C94-4F8F-B0C0-0908064F5C8B}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShadowCube", "ShadowCube\ShadowCube.vcxproj", "{27A7BDC9-1243-487B-B43D-EFB3534E60A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM = Debug|ARM
@@ -86,6 +88,14 @@ Global
 		{220CD942-E3DB-437B-9899-75710F59993F}.Release|Win32.ActiveCfg = Release|Win32
 		{220CD942-E3DB-437B-9899-75710F59993F}.Release|Win32.Build.0 = Release|Win32
 		{220CD942-E3DB-437B-9899-75710F59993F}.Release|x64.ActiveCfg = Release|Win32
+		{27A7BDC9-1243-487B-B43D-EFB3534E60A5}.Debug|ARM.ActiveCfg = Debug|Win32
+		{27A7BDC9-1243-487B-B43D-EFB3534E60A5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{27A7BDC9-1243-487B-B43D-EFB3534E60A5}.Debug|Win32.Build.0 = Debug|Win32
+		{27A7BDC9-1243-487B-B43D-EFB3534E60A5}.Debug|x64.ActiveCfg = Debug|Win32
+		{27A7BDC9-1243-487B-B43D-EFB3534E60A5}.Release|ARM.ActiveCfg = Release|Win32
+		{27A7BDC9-1243-487B-B43D-EFB3534E60A5}.Release|Win32.ActiveCfg = Release|Win32
+		{27A7BDC9-1243-487B-B43D-EFB3534E60A5}.Release|Win32.Build.0 = Release|Win32
+		{27A7BDC9-1243-487B-B43D-EFB3534E60A5}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
