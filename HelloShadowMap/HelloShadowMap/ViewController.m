@@ -38,22 +38,72 @@ enum
     NUM_ATTRIBUTES
 };
 
-const GLfloat gVertexData[][8] =
+const GLfloat cubeVertices[][8] =
 {
-    {  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
-    {  1.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},
-    {  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
+    // Front
+    { -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+    {  0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f},
+    {  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f},
     
-    {  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
-    {  0.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
-    {  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f}
+    {  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f},
+    { -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f},
+    { -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+    
+    // Back
+    {  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 0.0f},
+    { -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
+    { -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 1.0f},
+    
+    { -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 1.0f},
+    {  0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 1.0f},
+    {  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 0.0f},
+    
+    // Right
+    {  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 0.0f},
+    {  0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+    {  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 1.0f},
+    
+    {  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 1.0f},
+    {  0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+    {  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 0.0f},
+    
+    // Left
+    { -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+    { -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f},
+    { -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+    
+    { -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+    { -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f},
+    { -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+    
+    // Top
+    { -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+    {  0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f},
+    {  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
+    
+    {  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
+    { -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f},
+    { -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+    
+    // Bottom
+    {  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
+    { -0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f},
+    { -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 1.0f},
+    
+    { -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 1.0f},
+    {  0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 1.0f},
+    {  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f}
 };
 
-const GLfloat gTriangleData[][8] =
+const GLfloat floorVertices[][8] =
 {
-	{ -0.5f, -0.5f, 0.0f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
-	{  0.5f, -0.5f, 0.0f, 0.0f,  0.0f,  1.0f, 1.0f, 0.0f},
-	{  0.0f,  1.0f, 0.0f, 0.0f,  0.0f,  1.0f, 0.5f, 1.0f},
+    {-5.0f, -0.5f,  5.0f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f},
+    { 5.0f, -0.5f,  5.0f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
+    { 5.0f, -0.5f, -5.0f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f},
+    
+    { 5.0f, -0.5f, -5.0f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f},
+    {-5.0f, -0.5f, -5.0f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+    {-5.0f, -0.5f,  5.0f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f}
 };
 
 @interface ViewController () {
@@ -166,14 +216,14 @@ const GLfloat gTriangleData[][8] =
     
     glGenBuffers(1, &_vertexBuffer1);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer1);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(gTriangleData), &gTriangleData[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices[0], GL_STATIC_DRAW);
     
     glEnableVertexAttribArray(ATTRIB_VERTEX);
-    glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)0);
+    glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*8, (void*)0);
     glEnableVertexAttribArray(ATTRIB_NORMAL);
-    glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)(sizeof(float)*3));
+    glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*8, (void*)(sizeof(GLfloat)*3));
     glEnableVertexAttribArray(ATTRIB_TEXCOORD);
-    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)(sizeof(float)*6));
+    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*8, (void*)(sizeof(GLfloat)*6));
     
     glBindVertexArrayOES(0);
     
@@ -183,14 +233,14 @@ const GLfloat gTriangleData[][8] =
     
     glGenBuffers(1, &_vertexBuffer2);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(gVertexData), &gVertexData[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(floorVertices), &floorVertices[0], GL_STATIC_DRAW);
     
     glEnableVertexAttribArray(ATTRIB_VERTEX);
-    glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)0);
+    glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*8, (void*)0);
     glEnableVertexAttribArray(ATTRIB_NORMAL);
-    glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)(sizeof(float)*3));
+    glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*8, (void*)(sizeof(GLfloat)*3));
     glEnableVertexAttribArray(ATTRIB_TEXCOORD);
-    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(float)*8, (void*)(sizeof(float)*6));
+    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*8, (void*)(sizeof(GLfloat)*6));
     
     glBindVertexArrayOES(0);
     
@@ -215,12 +265,12 @@ const GLfloat gTriangleData[][8] =
                                     texId:&_fbColTex
                                attachment:GL_COLOR_ATTACHMENT0
                                scaledSize:viewSize];
-    [self pepareTextureWithInternalFormat:GL_DEPTH_COMPONENT
+    /*[self pepareTextureWithInternalFormat:GL_DEPTH_COMPONENT
                                    format:GL_DEPTH_COMPONENT
                                      type:GL_UNSIGNED_SHORT
                                     texId:&_fbDepTex
                                attachment:GL_DEPTH_ATTACHMENT
-                               scaledSize:viewSize];
+                               scaledSize:viewSize];*/
     
     //// initialize variables
     _rotation = 0.0;
@@ -308,14 +358,15 @@ const GLfloat gTriangleData[][8] =
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     // draw path1
-    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+    //glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+    [view bindDrawable];
     glUseProgram(_program1);
     [self drawPath1];
     
     // draw path2
-    [view bindDrawable];
-    glUseProgram(_program2);
-    [self drawPath2];
+    //[view bindDrawable];
+    //glUseProgram(_program2);
+    //[self drawPath2];
 }
 
 #pragma mark - Drawing path
@@ -324,7 +375,8 @@ const GLfloat gTriangleData[][8] =
 {
     // set for 3D drawing
     glEnable(GL_DEPTH_TEST);
-    
+    glEnable(GL_CULL_FACE);
+
     // binding texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(_texInfo0.target, _texInfo0.name);
@@ -348,11 +400,17 @@ const GLfloat gTriangleData[][8] =
     glUniformMatrix4fv(uniforms[UNIFORM_MVP_MATRIX], 1, 0, mvpMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, normalMatrix.m);
     
-    // draw
+    // clear
     glClearColor(0.392*0.5, 0.584*0.7, 0.929, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // draw floor
+    glBindVertexArrayOES(_vertexArray2);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(floorVertices)/sizeof(GLfloat)/8);
+
+    // draw cube
     glBindVertexArrayOES(_vertexArray1);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeVertices)/sizeof(GLfloat)/8);
 }
 
 - (void)drawPath2
