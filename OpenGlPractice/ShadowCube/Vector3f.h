@@ -1,7 +1,11 @@
 #ifndef _VECTOR3F_H_
 #define _VECTOR3F_H_
 
-#include "CommonTool.h"
+
+#ifndef PI
+#define PI  3.14159265358979323846f
+#endif
+
 
 class CVector3f
 {
@@ -55,11 +59,6 @@ public:
 	float Normalize();
 
 	float Angle(const CVector3f& vec) const;
-
-	bool NearlyEquals(const CVector3f& vec) const;
-	bool NearlyEqualsLow(const CVector3f& vec) const;
-	bool IsSameDirection(const CVector3f v) const;
-	bool IsRoughlySameDirection(const CVector3f& v) const;
 
 	friend CVector3f operator+(const CVector3f& vec1, const CVector3f& vec2);
 	friend CVector3f operator-(const CVector3f& vec1, const CVector3f& vec2);

@@ -297,11 +297,12 @@ static void OnCreate(HWND hWnd)
 
 	//--------------------
 	// slice
-	GLfloat bufN[64][8] = {0.0f};
-	GLfloat bufA[64][8] = {0.0f};
+	GLfloat bufN[MAX_CHOP_BUF][8] = {0.0f};
+	GLfloat bufA[MAX_CHOP_BUF][8] = {0.0f};
 	int bufNCount = 0;
 	int bufACount = 0;
-	CPlane plane(CVector3f(-1.0f, -0.1f, 0.0f), CVector3f(-0.1f, 1.0f, 0.0f));
+	CPlane plane(CVector3f(1.0f, -0.1f, 0.0f), CVector3f(-0.1f, 1.0f, 0.0f));
+	//CPlane plane(CVector3f(1.0f, 0.0f, 0.0f), CVector3f(0.0f, 1.0f, 0.0f));
 	Chop(plane, &(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/8/sizeof(GLfloat)
 		, bufN, bufA, bufNCount, bufACount);
 

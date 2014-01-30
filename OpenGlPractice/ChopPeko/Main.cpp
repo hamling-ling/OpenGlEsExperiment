@@ -1,23 +1,28 @@
 #include <windows.h>
-#include <stdio.h>
-#include <vector>
+#include <cstdio>
+#include <cmath>
+#include <list>
+#include <algorithm>
 
 #include <GL/glew.h>
 #include <GL/wglew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "Chop.h"
-#include "SimpleObject.h"
-#include "Texture.h"
+#include "Line.h"
+#include "Vector3f.h"
 #include "Matrix4x4f.h"
+#include "SimpleObject.h"
+#include "Chop.h"
+#include "Texture.h"
+#include "Vertex_Pko.h"
 
 using namespace std;
 
 static HGLRC g_hGLRC;
 
-static TCHAR szClassName[] = TEXT("SimpleTrianle");
-static TCHAR szWindowName[] = TEXT("SimpleTrianle");
+static TCHAR szClassName[] = TEXT("DirectionalLightCube");
+static TCHAR szWindowName[] = TEXT("DirectionalLightCube");
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
 
@@ -25,6 +30,8 @@ static void OnCreate(HWND hWnd);
 static void OnSize(HWND hWnd, int nWidth, int nHeight);
 static void OnPaint(HWND hWnd);
 static void OnDestroy(HWND hWnd);
+static void Slice(const GLfloat* normalsAndVertices, int len, GLfloat bufN[64][6], GLfloat bufA[64][6],
+				  int& bufNCount, int& bufACount);
 
 static GLuint g_vertexShader;
 static GLuint g_fragmentShader;
@@ -33,13 +40,6 @@ static GLuint g_shaderProgram;
 static void LoadShaderSource(GLuint shader, const char* fileName);
 static void DisplayCompileError(GLuint shader, HWND hWnd);
 static void DisplayLinkError(GLuint program, HWND hWnd);
-
-const GLfloat normalsAndVertices[3][8] =
-{
-	{ -0.5f, -0.5f, 0.5f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
-	{  0.5f, -0.5f, 0.5f, 0.0f,  0.0f,  1.0f, 1.0f, 0.0f},
-	{  0.0f,  1.0f, 0.5f, 0.0f,  0.0f,  1.0f, 0.5f, 1.0f},
-};
 
 SimpleObject* pOrigObj;
 vector<SimpleObject*> objects;
@@ -122,7 +122,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lPar
 	return 0;
 }
 
-static void foo(int &i) { i = 3;};
 
 static void OnCreate(HWND hWnd)
 {
@@ -130,6 +129,66 @@ static void OnCreate(HWND hWnd)
 	int nPfdID;
 	BOOL bResult;
 	HGLRC hGLRC;
+
+	const GLfloat normalsAndVertices[][8] =
+	{
+		// Front
+		{ -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+		{  0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f},
+		{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f},
+
+		{  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f},
+		{ -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f},
+		{ -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+
+		// Back
+		{  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 0.0f},
+		{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, .0f},
+
+		{ -0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 1.0f, 1.0f},
+		{  0.5f,  0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 1.0f},
+		{  0.5f, -0.5f, -0.5f, 0.0f,  0.0f, -1.0f, 0.0f, 0.0f},
+
+		// Right
+		{  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f, -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 0.0f},
+		{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+
+		{  0.5f,  0.5f, -0.5f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+		{  0.5f,  0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 1.0f},
+		{  0.5f, -0.5f,  0.5f, 1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+
+		// Left
+		{ -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f},
+		{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+
+		{ -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f},
+		{ -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f},
+		{ -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f},
+
+		// Top
+		{ -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+		{  0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f},
+		{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
+
+		{  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
+		{ -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f},
+		{ -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
+
+		// Bottom
+		{  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f},
+		{ -0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f},
+		{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 1.0f},
+
+		{ -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 1.0f, 1.0f},
+		{  0.5f, -0.5f, -0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 1.0f},
+		{  0.5f, -0.5f,  0.5f, 0.0f, -1.0f,  0.0f, 0.0f, 0.0f}
+		//{ -0.5f, -0.5f, 0.5f, 0.0f,  0.0f,  1.0f, 0.0f, 0.0f},
+		//{  0.5f, -0.5f, 0.5f, 0.0f,  0.0f,  1.0f, 1.0f, 0.0f},
+		//{  0.0f,  1.0f, 0.5f, 0.0f,  0.0f,  1.0f, 0.5f, 1.0f},
+	};
 
 	const PIXELFORMATDESCRIPTOR pfd = {
 		sizeof (PIXELFORMATDESCRIPTOR),
@@ -217,8 +276,7 @@ static void OnCreate(HWND hWnd)
 	texture.LoadBitmap("texture.bmp");
 	pOrigObj = new SimpleObject();
 	pOrigObj->BindBuffer(vertexLocation, normalLocation, texCoordLocation, 
-		&(normalsAndVertices[0][0]), 3,
-		texture);
+		&(PkoVertexData[0].vertex.x), sizeof(PkoVertexData)/sizeof(vertexData), texture);
 
 	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Vertex"));
 	glDisableVertexAttribArray(glGetAttribLocation(g_shaderProgram, "Normal"));
@@ -243,8 +301,9 @@ static void OnCreate(HWND hWnd)
 	GLfloat bufA[MAX_CHOP_BUF][8] = {0.0f};
 	int bufNCount = 0;
 	int bufACount = 0;
-	CPlane plane(CVector3f(1.0f, 0.1f, 0.0f), CVector3f(-0.1f, 1.0f, 0.0f));
-	Chop(plane, &(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/8/sizeof(GLfloat)
+	//CPlane plane(CVector3f(1.0f, -0.1f, 0.0f), CVector3f(-0.1f, 1.0f, 0.0f));
+	CPlane plane(CVector3f(1.0f, 0.0f, 0.0f), CVector3f(0.0f, 1.0f, 0.0f));
+	Chop(plane, &(PkoVertexData[0].vertex.x), sizeof(PkoVertexData)/sizeof(vertexData)
 		, bufN, bufA, bufNCount, bufACount);
 
 	for(int i = 0; i < bufNCount; i++)
@@ -299,8 +358,6 @@ static void OnSize(HWND hWnd, int nWidth, int nHeight)
 	r = t * (float)nWidth / (float)nHeight;
 	l = -r;
 	perspective.MakePerspective(l, r, b, t, n, f);
-	float projection[16];
-	perspective.GetGLMat(projection);
 
 	CMatrix4x4f rotationX;
 	CMatrix4x4f rotationY;
@@ -312,7 +369,7 @@ static void OnSize(HWND hWnd, int nWidth, int nHeight)
 
 	translation.MakeTranslation(CVector3f(0.0f, 0.0f, -distance));
 	rotationX.MakeRotation(CVector3f(1.0f, 0.0f, 0.0f), angle);
-	rotationY.MakeRotation(CVector3f(0.0f, 1.0f, 0.0f), 0.0f);
+	rotationY.MakeRotation(CVector3f(0.0f, 1.0f, 0.0f), -45.0f);
 	lookAt = translation * rotationX * rotationY;
 	float modelViewMatrix[16];
 	float viewMatrix[16];
@@ -344,8 +401,8 @@ static void OnPaint(HWND hWnd)
 	const GLfloat lightAmbient[4] = {0.25f, 0.25f, 0.25f, 1.0f};
 	const GLfloat lightSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-	const GLfloat cubeDiffuse[4] = {0.75f, 0.0f, 1.0f, 1.0f};
-	const GLfloat cubeAmbient[4] = {0.3f, 0.25f, 0.4f, 1.0f};
+	const GLfloat cubeDiffuse[4] = {0.5f, 0.5f, 0.5f, 1.0f};
+	const GLfloat cubeAmbient[4] = {0.5f, 0.5f, 0.5f, 1.0f};
 	const GLfloat cubeSpecular[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 	const GLfloat cubeShininess[1] = {32.0f};
 
@@ -368,30 +425,25 @@ static void OnPaint(HWND hWnd)
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//glBindTexture(GL_TEXTURE_2D, pOrigObj->GetTextureObject());
-	//glBindVertexArray(pOrigObj->GetVertexArrayObject());
-	//glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
-	//glBindVertexArray(0);
-	//glBindTexture(GL_TEXTURE_2D, 0);
-
 	glBindTexture(GL_TEXTURE_2D, pOrigObj->GetTextureObject());
 
+#if 0
 	GLfloat color[3] = {1.0f, 0.0f, 0.0f};
+	//glUniform3fv(glGetUniformLocation(g_shaderProgram, "Color"), 1, color);
+	glBindVertexArray(pOrigObj->GetVertexArrayObject());
+	glDrawArrays(GL_TRIANGLES, 0, pOrigObj->GetVertexArrayLen());
+	glBindVertexArray(0);
+#endif
+
 	vector<SimpleObject*>::iterator it = objects.begin();
+
 	while(it != objects.end()) {
-
-		int index = it - objects.begin();
-		color[0] = (float)((index) % 2);
-		color[1] = (float)((index+1)%2);
-		color[2] = (float)((index+2)%2);
-
-		glUniform3fv(glGetUniformLocation(g_shaderProgram, "Color"), 1, color);
-
 		glBindVertexArray((*it)->GetVertexArrayObject());
 		glDrawArrays(GL_TRIANGLES, 0, (*it)->GetVertexArrayLen());
 		glBindVertexArray(0);
 		it++;
 	}
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glFlush();
@@ -412,7 +464,7 @@ static void OnDestroy(HWND hWnd)
 	wglMakeCurrent(hDC, g_hGLRC);
 	delete pOrigObj;
 
-	vector<SimpleObject*>::iterator it = objects.begin();
+		vector<SimpleObject*>::iterator it = objects.begin();
 	while(it != objects.end()) {
 		SimpleObject *p = (*it);
 		objects.erase(it);
@@ -437,8 +489,7 @@ static void LoadShaderSource(GLuint shader, const char* fileName)
 	int size;
 	char* buf;
 
-	errno_t err = fopen_s(&fp, fileName, "rb");
-	if(err != 0)
+	if(fopen_s(&fp,fileName, "rb") != 0)
 		return;
 
 	fseek(fp, 0, SEEK_END);

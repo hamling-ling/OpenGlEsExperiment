@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <cmath>
 #include "Vector3f.h"
 
@@ -32,13 +31,15 @@ CVector3f::~CVector3f()
 }
 
 
-void CVector3f::SetValue(const float vec[DIMENSION])
+void
+CVector3f::SetValue(const float vec[DIMENSION])
 {
 	SetValue(vec[X], vec[Y], vec[Z]);
 }
 
 
-void CVector3f::SetValue(float x, float y, float z)
+void
+CVector3f::SetValue(float x, float y, float z)
 {
 	m_vec[X] = x;
 	m_vec[Y] = y;
@@ -46,13 +47,15 @@ void CVector3f::SetValue(float x, float y, float z)
 }
 
 
-void CVector3f::GetValue(float vec[DIMENSION]) const
+void
+CVector3f::GetValue(float vec[DIMENSION]) const
 {
 	GetValue(vec[X], vec[Y], vec[Z]);
 }
 
 
-void CVector3f::GetValue(float&x, float& y, float& z) const
+void
+CVector3f::GetValue(float&x, float& y, float& z) const
 {
 	x = m_vec[X];
 	y = m_vec[Y];
@@ -60,26 +63,30 @@ void CVector3f::GetValue(float&x, float& y, float& z) const
 }
 
 
-CVector3f& CVector3f::operator=(const CVector3f& vec)
+CVector3f&
+CVector3f::operator=(const CVector3f& vec)
 {
 	SetValue(vec.m_vec);
 	return *this;
 }
 
 
-float& CVector3f::operator[](int i)
+float&
+CVector3f::operator[](int i)
 {
 	return m_vec[i];
 }
 
 
-float CVector3f::operator[](int i) const
+float
+CVector3f::operator[](int i) const
 {
 	return m_vec[i];
 }
 
 
-CVector3f& CVector3f::operator*=(float scalar)
+CVector3f&
+CVector3f::operator*=(float scalar)
 {
 	for (int i = 0; i < DIMENSION; i++) {
 		m_vec[i] *= scalar;
@@ -89,7 +96,8 @@ CVector3f& CVector3f::operator*=(float scalar)
 }
 
 
-CVector3f& CVector3f::operator/=(float scalar)
+CVector3f&
+CVector3f::operator/=(float scalar)
 {
 	if (scalar == 0.0f) {
 		scalar = 1.0f;
@@ -102,7 +110,8 @@ CVector3f& CVector3f::operator/=(float scalar)
 }
 
 
-CVector3f& CVector3f::operator+=(const CVector3f& vec)
+CVector3f&
+CVector3f::operator+=(const CVector3f& vec)
 {
 	for (int i = 0; i < DIMENSION; i++) {
 		m_vec[i] += vec[i];
@@ -112,7 +121,8 @@ CVector3f& CVector3f::operator+=(const CVector3f& vec)
 }
 
 
-CVector3f& CVector3f::operator-=(const CVector3f& vec)
+CVector3f&
+CVector3f::operator-=(const CVector3f& vec)
 {
 	for (int i = 0; i < DIMENSION; i++) {
 		m_vec[i] -= vec[i];
@@ -122,7 +132,8 @@ CVector3f& CVector3f::operator-=(const CVector3f& vec)
 }
 
 
-CVector3f CVector3f::operator-() const
+CVector3f
+CVector3f::operator-() const
 {
 	CVector3f vec;
 	for (int i = 0; i < DIMENSION; i++) {
@@ -133,7 +144,8 @@ CVector3f CVector3f::operator-() const
 }
 
 
-CVector3f CVector3f::operator+() const
+CVector3f
+CVector3f::operator+() const
 {
 	CVector3f vec;
 	for (int i = 0; i < DIMENSION; i++) {
@@ -144,7 +156,8 @@ CVector3f CVector3f::operator+() const
 }
 
 
-float CVector3f::Dot(const CVector3f& vec) const
+float
+CVector3f::Dot(const CVector3f& vec) const
 {
 	float dot = 0.0f;
 	for (int i = 0; i < DIMENSION; i++) {
@@ -155,7 +168,8 @@ float CVector3f::Dot(const CVector3f& vec) const
 }
 
 
-CVector3f CVector3f::Cross(const CVector3f& vec) const
+CVector3f
+CVector3f::Cross(const CVector3f& vec) const
 {
 	CVector3f cross;
 	for (int i = 0; i < DIMENSION; i++) {
@@ -167,7 +181,8 @@ CVector3f CVector3f::Cross(const CVector3f& vec) const
 }
 
 
-float CVector3f::Length() const
+float
+CVector3f::Length() const
 {
 	float dot = 0.0f;
 	for (int i = 0; i < DIMENSION; i++) {
@@ -178,13 +193,15 @@ float CVector3f::Length() const
 }
 
 
-void CVector3f::MakeZero()
+void
+CVector3f::MakeZero()
 {
 	SetValue(0.0f, 0.0f, 0.0f);
 }
 
 
-void CVector3f::Negate()
+void
+CVector3f::Negate()
 {
 	for (int i = 0; i < DIMENSION; i++) {
 		m_vec[i] = - m_vec[i];
@@ -192,7 +209,8 @@ void CVector3f::Negate()
 }
 
 
-float CVector3f::Normalize()
+float
+CVector3f::Normalize()
 {
 	float length = Length();
 
@@ -206,7 +224,8 @@ float CVector3f::Normalize()
 }
 
 
-float CVector3f::Angle(const CVector3f& vec) const
+float
+CVector3f::Angle(const CVector3f& vec) const
 {
 	CVector3f normal1(m_vec);
 	normal1.Normalize();
@@ -220,53 +239,8 @@ float CVector3f::Angle(const CVector3f& vec) const
 }
 
 
-bool CVector3f::NearlyEquals(const CVector3f& vec) const
-{
-	bool isNearlyEquals = true;
-	for (int i = 0; i < CVector3f::DIMENSION; i++) {
-		isNearlyEquals &= FEQ(m_vec[i],vec[i]);
-	}
-
-	return isNearlyEquals;
-}
-
-
-bool CVector3f::NearlyEqualsLow(const CVector3f& vec) const
-{
-	bool isNearlyEquals = true;
-	for (int i = 0; i < CVector3f::DIMENSION; i++) {
-		isNearlyEquals &= FEQLOW(m_vec[i],vec[i]);
-	}
-
-	return isNearlyEquals;
-}
-
-
-bool CVector3f::IsSameDirection(const CVector3f v) const
-{
-	float denom = Length() * v.Length();
-	if(FEQ(denom, 0.0f))
-		return false;
-
-	float cosT = Dot(v)/denom;
-	if(FEQ(cosT, 1.0f))
-		return true;
-	return false;
-}
-
-bool CVector3f::IsRoughlySameDirection(const CVector3f& v) const
-{
-	float denom = Length() * v.Length();
-	if(FEQ(denom, 0.0f))
-		return false;
-
-	float cosT = Dot(v)/denom;
-	if(FEQLOW(cosT, 1.0f))
-		return true;
-	return false;
-}
-
-CVector3f operator+(const CVector3f& vec1, const CVector3f& vec2)
+CVector3f
+operator+(const CVector3f& vec1, const CVector3f& vec2)
 {
 	CVector3f vec;
 	for (int i = 0; i < CVector3f::DIMENSION; i++) {
@@ -277,7 +251,8 @@ CVector3f operator+(const CVector3f& vec1, const CVector3f& vec2)
 }
 
 
-CVector3f operator-(const CVector3f& vec1, const CVector3f& vec2)
+CVector3f
+operator-(const CVector3f& vec1, const CVector3f& vec2)
 {
 	CVector3f vec;
 	for (int i = 0; i < CVector3f::DIMENSION; i++) {
@@ -288,7 +263,8 @@ CVector3f operator-(const CVector3f& vec1, const CVector3f& vec2)
 }
 
 
-CVector3f operator*(float scalar, const CVector3f& vec2)
+CVector3f
+operator*(float scalar, const CVector3f& vec2)
 {
 	CVector3f vec;
 	for (int i = 0; i < CVector3f::DIMENSION; i++) {
@@ -299,7 +275,8 @@ CVector3f operator*(float scalar, const CVector3f& vec2)
 }
 
 
-CVector3f operator*(const CVector3f& vec1, float scalar)
+CVector3f
+operator*(const CVector3f& vec1, float scalar)
 {
 	CVector3f vec;
 	for (int i = 0; i < CVector3f::DIMENSION; i++) {
@@ -310,7 +287,8 @@ CVector3f operator*(const CVector3f& vec1, float scalar)
 }
 
 
-CVector3f operator/(const CVector3f& vec1, float scalar)
+CVector3f
+operator/(const CVector3f& vec1, float scalar)
 {
 	CVector3f vec;
 	if (scalar == 0.0f) {
@@ -324,7 +302,8 @@ CVector3f operator/(const CVector3f& vec1, float scalar)
 }
 
 
-bool operator==(const CVector3f& vec1, const CVector3f& vec2)
+bool
+operator==(const CVector3f& vec1, const CVector3f& vec2)
 {
 	bool equal;
 	equal = (vec1.m_vec[CVector3f::X] == vec2.m_vec[CVector3f::X]) &&
@@ -335,7 +314,8 @@ bool operator==(const CVector3f& vec1, const CVector3f& vec2)
 }
 
 
-bool operator!=(const CVector3f& vec1, const CVector3f& vec2)
+bool
+operator!=(const CVector3f& vec1, const CVector3f& vec2)
 {
 	bool notEqual;
 	notEqual = (vec1.m_vec[CVector3f::X] != vec2.m_vec[CVector3f::X]) ||
