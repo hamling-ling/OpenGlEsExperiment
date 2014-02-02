@@ -22,7 +22,9 @@ enum
 {
     UNIFORM_MVP_MATRIX,
     UNIFORM_TEXTURE0,
+    UNIFORM_TEXTURE1,
     UNIFORM_NORMAL_MATRIX,
+    UNIFORM_BIASEDSHADOW_MATRIX,
     UNIFORM_SCREENSIZE,
     NUM_UNIFORMS
 };
@@ -80,7 +82,6 @@ const GLfloat cubeVertices[][8] =
     { -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
     {  0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 0.0f},
     {  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
-    
     {  0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 1.0f, 1.0f},
     { -0.5f,  0.5f, -0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f},
     { -0.5f,  0.5f,  0.5f, 0.0f,  1.0f,  0.0f, 0.0f, 0.0f},
@@ -106,10 +107,21 @@ const GLfloat floorVertices[][8] =
     {-5.0f, -0.5f,  5.0f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f}
 };
 
-@interface ViewController () {
-    GLuint  _vertexArray1, _vertexArray2;
-    GLuint  _vertexBuffer1, _vertexBuffer2;
+const GLfloat screenVertices[][8] =
+{
+    {  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
+    {  1.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},
+    {  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
     
+    {  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
+    {  0.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+    {  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f}
+};
+
+@interface ViewController () {
+    GLuint  _vertexArray1, _vertexArray2, _vertexArray3;
+    GLuint  _vertexBuffer1, _vertexBuffer2, _vertexBuffer3;
+
     GLuint  _framebuffer;
     GLuint  _fbColTex, _fbDepTex;
     
@@ -124,7 +136,7 @@ const GLfloat floorVertices[][8] =
 }
 @property (strong, nonatomic) EAGLContext *context;
 
-- (void)setupGL;
+/*- (void)setupGL;
 - (void)tearDownGL;
 - (void)pepareTextureWithInternalFormat:(GLint)internalFormat
                                  format:(GLenum)format
@@ -137,7 +149,7 @@ const GLfloat floorVertices[][8] =
 - (BOOL)loadShadersWithProgram:(GLuint*)program vshFileName:(NSString*) vshFileName fshFileName:(NSString*) fshFileName;
 - (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
 - (BOOL)linkProgram:(GLuint)prog;
-- (BOOL)validateProgram:(GLuint)prog;
+- (BOOL)validateProgram:(GLuint)prog;*/
 @end
 
 @implementation ViewController
@@ -194,23 +206,25 @@ const GLfloat floorVertices[][8] =
 {
     // create a program for path1
     {
-        [self loadShadersWithProgram:&_program1 vshFileName:@"Shader" fshFileName:@"Shader"];
+        [self loadShadersWithProgram:&_program1 vshFileName:@"DepthShader" fshFileName:@"DepthShader"];
         
         uniforms[UNIFORM_MVP_MATRIX] = glGetUniformLocation(_program1, [@"modelViewProjectionMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
-        uniforms[UNIFORM_TEXTURE0] = glGetUniformLocation(_program1, [@"texture0" cStringUsingEncoding:NSUTF8StringEncoding]);
-        uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program1, [@"normalMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
+        //uniforms[UNIFORM_TEXTURE0] = glGetUniformLocation(_program1, [@"texture0" cStringUsingEncoding:NSUTF8StringEncoding]);
+        //uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program1, [@"normalMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     
     // create a program for path2
     {
-        [self loadShadersWithProgram:&_program2 vshFileName:@"Shader" fshFileName:@"Shader2"];
+        [self loadShadersWithProgram:&_program2 vshFileName:@"Shader" fshFileName:@"Shader"];
         
         uniforms2[UNIFORM_MVP_MATRIX] = glGetUniformLocation(_program2, [@"modelViewProjectionMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
         uniforms2[UNIFORM_TEXTURE0] = glGetUniformLocation(_program2, [@"texture0" cStringUsingEncoding:NSUTF8StringEncoding]);
-        uniforms2[UNIFORM_SCREENSIZE] = glGetUniformLocation(_program2, [@"screensize" cStringUsingEncoding:NSUTF8StringEncoding]);
+        //uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program1, [@"normalMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
+        //uniforms2[UNIFORM_TEXTURE1] = glGetUniformLocation(_program2, [@"shadowMap" cStringUsingEncoding:NSUTF8StringEncoding]);
+        //uniforms2[UNIFORM_BIASEDSHADOW_MATRIX] = glGetUniformLocation(_program2, [@"depthBiasMVP" cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     
-    // setup triangle to be drawn in 1st path
+    // setup cube vertex
     glGenVertexArraysOES(1, &_vertexArray1);
     glBindVertexArrayOES(_vertexArray1);
     
@@ -227,7 +241,7 @@ const GLfloat floorVertices[][8] =
     
     glBindVertexArrayOES(0);
     
-    // setup plane to draw in 2nd path
+    // setup floor vertex
     glGenVertexArraysOES(1, &_vertexArray2);
     glBindVertexArrayOES(_vertexArray2);
     
@@ -243,7 +257,24 @@ const GLfloat floorVertices[][8] =
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*8, (void*)(sizeof(GLfloat)*6));
     
     glBindVertexArrayOES(0);
+
+    // setup screen vertex. for debug use
+    glGenVertexArraysOES(1, &_vertexArray3);
+    glBindVertexArrayOES(_vertexArray3);
     
+    glGenBuffers(1, &_vertexBuffer3);
+    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer3);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(screenVertices), &screenVertices[0], GL_STATIC_DRAW);
+    
+    glEnableVertexAttribArray(ATTRIB_VERTEX);
+    glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*8, (void*)0);
+    glEnableVertexAttribArray(ATTRIB_NORMAL);
+    glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*8, (void*)(sizeof(GLfloat)*3));
+    glEnableVertexAttribArray(ATTRIB_TEXCOORD);
+    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*8, (void*)(sizeof(GLfloat)*6));
+    
+    glBindVertexArrayOES(0);
+
     //// setup texture
     
     // load texture（image size doesn't have to be power of 2 in GLES2.0）
@@ -326,9 +357,11 @@ const GLfloat floorVertices[][8] =
     
     glDeleteBuffers(1, &_vertexBuffer1);
     glDeleteBuffers(1, &_vertexBuffer2);
+    glDeleteBuffers(1, &_vertexBuffer3);
     glDeleteVertexArraysOES(1, &_vertexArray1);
     glDeleteVertexArraysOES(1, &_vertexArray2);
-    
+    glDeleteVertexArraysOES(1, &_vertexArray3);
+
     if (_fbColTex != GL_INVALID_VALUE) {
         glDeleteTextures(1, &_fbColTex);
     }
@@ -361,17 +394,55 @@ const GLfloat floorVertices[][8] =
     //glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
     [view bindDrawable];
     glUseProgram(_program1);
-    [self drawPath1];
-    
+    GLKMatrix4 depthMVP = [self drawPath1];
+    //[self drawPath1_];
+
     // draw path2
     //[view bindDrawable];
     //glUseProgram(_program2);
-    //[self drawPath2];
+    ////[self drawPath2WithDepthMVP:depthMVP];
+    //[self drawDepthBufferForDebug];
 }
 
 #pragma mark - Drawing path
 
-- (void)drawPath1
+- (GLKMatrix4)drawPath1
+{
+    // set for 3D drawing
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    
+    // binding texture
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(_texInfo0.target, _texInfo0.name);
+    //glUniform1i(uniforms[UNIFORM_TEXTURE0], 0);
+    
+    // setup camera
+    GLKVector3 lightInvDir = GLKVector3Make(0.5, 2.0, 2.0);
+    GLKMatrix4 depthProjectionMatrix = GLKMatrix4MakeOrtho(-10, 10, -10, 10, -10, 20);
+    GLKMatrix4 depthViewMatrix = GLKMatrix4MakeLookAt(lightInvDir.x, lightInvDir.y, lightInvDir.z,
+                                                      0.0f, 0.0f, 0.0f,
+                                                      0.0f, 1.0f, 0.0f);
+    GLKMatrix4 depthMVP = GLKMatrix4Multiply(depthProjectionMatrix,depthViewMatrix);
+
+    glUniformMatrix4fv(uniforms[UNIFORM_MVP_MATRIX], 1, 0, depthMVP.m);
+    
+    // clear
+    glClearColor(0.392*0.5, 0.584*0.7, 0.929, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    // draw floor
+    glBindVertexArrayOES(_vertexArray2);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(floorVertices)/sizeof(GLfloat)/8);
+    
+    // draw cube
+    glBindVertexArrayOES(_vertexArray1);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeVertices)/sizeof(GLfloat)/8);
+    
+    return depthMVP;
+}
+
+- (void)drawPath1_
 {
     // set for 3D drawing
     glEnable(GL_DEPTH_TEST);
@@ -399,7 +470,7 @@ const GLfloat floorVertices[][8] =
     
     glUniformMatrix4fv(uniforms[UNIFORM_MVP_MATRIX], 1, 0, mvpMatrix.m);
     glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, normalMatrix.m);
-    
+
     // clear
     glClearColor(0.392*0.5, 0.584*0.7, 0.929, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -413,7 +484,63 @@ const GLfloat floorVertices[][8] =
     glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeVertices)/sizeof(GLfloat)/8);
 }
 
-- (void)drawPath2
+- (void)drawPath2WithDepthMVP:(GLKMatrix4)depthMVP
+{
+    // set for 2D drawing
+    glDisable(GL_DEPTH_TEST);
+    
+    // binding texture
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, _fbColTex);
+    glUniform1i(uniforms2[UNIFORM_TEXTURE1], 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(_texInfo0.target, _texInfo0.name);
+    glUniform1i(uniforms2[UNIFORM_TEXTURE0], 0);
+
+    // setup camera
+    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
+    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(0.0f, 0.0f, -0.8f,
+                                                 0.0f, 0.0f, 0.0f,
+                                                 0.0f, 1.0f, 0.0f);
+    GLKMatrix4 modelMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 1.5f);
+    modelMatrix = GLKMatrix4Rotate(modelMatrix, -M_PI/6, 1.0f, 0.0f, 0.0f);
+    modelMatrix = GLKMatrix4Rotate(modelMatrix, _rotation, 0.0f, 1.0f, 0.0f);
+    
+    // compute matrices
+    GLKMatrix4 modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelMatrix);
+    GLKMatrix4 mvpMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
+    GLKMatrix3 normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
+    
+    glUniformMatrix4fv(uniforms[UNIFORM_MVP_MATRIX], 1, 0, mvpMatrix.m);
+    glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, normalMatrix.m);
+    
+    // compute depth bias
+    GLKMatrix4 scaledShadowMVP = GLKMatrix4Scale(depthMVP, 0.5, 0.5, 0.5);
+    GLKMatrix4 biasedShadowMVP = GLKMatrix4Translate( scaledShadowMVP ,0.5, 0.5, 0.5);
+
+    glUniformMatrix4fv(uniforms2[UNIFORM_BIASEDSHADOW_MATRIX], 1, 0, biasedShadowMVP.m);
+
+    // pass screen size to shader
+    GLKVector2 screensize = {0.0};
+    screensize.x = self.view.bounds.size.width * self.view.contentScaleFactor;
+    screensize.y = self.view.bounds.size.height * self.view.contentScaleFactor;
+    glUniform2fv(uniforms2[UNIFORM_SCREENSIZE], 1, &(screensize.v[0]));
+
+    // clear
+    glClearColor(0.392*0.5, 0.584*0.7, 0.929, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // draw floor
+    glBindVertexArrayOES(_vertexArray2);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(floorVertices)/sizeof(GLfloat)/8);
+    
+    // draw cube
+    //glBindVertexArrayOES(_vertexArray1);
+    //glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeVertices)/sizeof(GLfloat)/8);
+}
+
+- (void)drawDepthBufferForDebug
 {
     // set for 2D drawing
     glDisable(GL_DEPTH_TEST);
@@ -422,6 +549,9 @@ const GLfloat floorVertices[][8] =
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _fbColTex);
     glUniform1i(uniforms2[UNIFORM_TEXTURE0], 0);
+    /*glActiveTexture(GL_TEXTURE0);
+    glBindTexture(_texInfo0.target, _texInfo0.name);
+    glUniform1i(uniforms[UNIFORM_TEXTURE0], 0);*/
     
     // setup camera(2D)
     GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0.0, 320, 480, 0.0, 0.001, 100.0);
@@ -437,15 +567,9 @@ const GLfloat floorVertices[][8] =
     
     glUniformMatrix4fv(uniforms2[UNIFORM_MVP_MATRIX], 1, 0, mvpMatrix.m);
     
-    // pass screen size to shader
-    GLKVector2 screensize = {0.0};
-    screensize.x = self.view.bounds.size.width * self.view.contentScaleFactor;
-    screensize.y = self.view.bounds.size.height * self.view.contentScaleFactor;
-    glUniform2fv(uniforms2[UNIFORM_SCREENSIZE], 1, &(screensize.v[0]));
-    
     // draw. no need to clear since drawing entire screen.
-    glBindVertexArrayOES(_vertexArray2);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glBindVertexArrayOES(_vertexArray3);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(screenVertices)/sizeof(GLfloat)/8);
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation
@@ -461,14 +585,14 @@ const GLfloat floorVertices[][8] =
     // Create and compile vertex shader.
     vertShaderPathname = [[NSBundle mainBundle] pathForResource:vshFileName ofType:@"vsh"];
     if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname]) {
-        NSLog(@"Failed to compile vertex shader");
+        NSLog(@"Failed to compile vertex shader %@", vshFileName);
         return NO;
     }
     
     // Create and compile fragment shader.
     fragShaderPathname = [[NSBundle mainBundle] pathForResource:fshFileName ofType:@"fsh"];
     if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
-        NSLog(@"Failed to compile fragment shader");
+        NSLog(@"Failed to compile fragment shader %@", fshFileName);
         return NO;
     }
     
@@ -482,10 +606,11 @@ const GLfloat floorVertices[][8] =
     // This needs to be done prior to linking.
     glBindAttribLocation(*program, ATTRIB_VERTEX, "position");
     glBindAttribLocation(*program, ATTRIB_NORMAL, "normal");
+    glBindAttribLocation(*program, ATTRIB_TEXCOORD, "texCoord");
     
     // Link program.
     if (![self linkProgram:*program]) {
-        NSLog(@"Failed to link program: %d", *program);
+        NSLog(@"Failed to link program: %d for %@ and %@", *program, fshFileName, vshFileName);
         
         if (vertShader) {
             glDeleteShader(vertShader);
@@ -524,7 +649,7 @@ const GLfloat floorVertices[][8] =
     
     source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
     if (!source) {
-        NSLog(@"Failed to load vertex shader");
+        NSLog(@"Failed to load vertex shader %@", file);
         return NO;
     }
     
@@ -538,7 +663,7 @@ const GLfloat floorVertices[][8] =
     if (logLength > 0) {
         GLchar *log = (GLchar *)malloc(logLength);
         glGetShaderInfoLog(*shader, logLength, &logLength, log);
-        NSLog(@"Shader compile log:\n%s", log);
+        NSLog(@"Shader compile log for %@ :\n%s", file, log);
         free(log);
     }
 #endif

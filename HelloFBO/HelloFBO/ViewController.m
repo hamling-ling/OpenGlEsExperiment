@@ -409,6 +409,7 @@ const GLfloat gTriangleData[][8] =
     // This needs to be done prior to linking.
     glBindAttribLocation(*program, ATTRIB_VERTEX, "position");
     glBindAttribLocation(*program, ATTRIB_NORMAL, "normal");
+    //glBindAttribLocation(*program, ATTRIB_TEXCOORD, "texCoord");
     
     // Link program.
     if (![self linkProgram:*program]) {

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C2159693189CC29100EC82AF /* DepthShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = C2159691189CBAA300EC82AF /* DepthShader.vsh */; };
+		C2159694189E9C0A00EC82AF /* Shader.fsh in Sources */ = {isa = PBXBuildFile; fileRef = C236C938189A8B4300A01F49 /* Shader.fsh */; };
+		C2159695189E9C1100EC82AF /* DepthShader.vsh in Sources */ = {isa = PBXBuildFile; fileRef = C2159691189CBAA300EC82AF /* DepthShader.vsh */; };
 		C236C8F9189A8A6B00A01F49 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C236C8F8189A8A6B00A01F49 /* Foundation.framework */; };
 		C236C8FB189A8A6B00A01F49 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C236C8FA189A8A6B00A01F49 /* CoreGraphics.framework */; };
 		C236C8FD189A8A6B00A01F49 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C236C8FC189A8A6B00A01F49 /* UIKit.framework */; };
@@ -17,7 +20,7 @@
 		C236C90D189A8A6B00A01F49 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C236C90C189A8A6B00A01F49 /* AppDelegate.m */; };
 		C236C910189A8A6B00A01F49 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C236C90E189A8A6B00A01F49 /* Main_iPhone.storyboard */; };
 		C236C913189A8A6B00A01F49 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C236C911189A8A6B00A01F49 /* Main_iPad.storyboard */; };
-		C236C915189A8A6B00A01F49 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C236C914189A8A6B00A01F49 /* Shader.fsh */; };
+		C236C915189A8A6B00A01F49 /* DepthShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C236C914189A8A6B00A01F49 /* DepthShader.fsh */; };
 		C236C917189A8A6B00A01F49 /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = C236C916189A8A6B00A01F49 /* Shader.vsh */; };
 		C236C91A189A8A6B00A01F49 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C236C919189A8A6B00A01F49 /* ViewController.m */; };
 		C236C91C189A8A6B00A01F49 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C236C91B189A8A6B00A01F49 /* Images.xcassets */; };
@@ -26,8 +29,7 @@
 		C236C925189A8A6B00A01F49 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C236C8FC189A8A6B00A01F49 /* UIKit.framework */; };
 		C236C92D189A8A6B00A01F49 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C236C92B189A8A6B00A01F49 /* InfoPlist.strings */; };
 		C236C92F189A8A6B00A01F49 /* HelloShadowMapTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C236C92E189A8A6B00A01F49 /* HelloShadowMapTests.m */; };
-		C236C939189A8B4300A01F49 /* Shader2.fsh in Sources */ = {isa = PBXBuildFile; fileRef = C236C938189A8B4300A01F49 /* Shader2.fsh */; };
-		C236C93C189A8C2200A01F49 /* Shader2.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C236C938189A8B4300A01F49 /* Shader2.fsh */; };
+		C236C93C189A8C2200A01F49 /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C236C938189A8B4300A01F49 /* Shader.fsh */; };
 		C236C93E189A929D00A01F49 /* peko.png in Resources */ = {isa = PBXBuildFile; fileRef = C236C93D189A929D00A01F49 /* peko.png */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +44,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C2159691189CBAA300EC82AF /* DepthShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DepthShader.vsh; path = Shaders/DepthShader.vsh; sourceTree = "<group>"; };
 		C236C8F5189A8A6B00A01F49 /* HelloShadowMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloShadowMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C236C8F8189A8A6B00A01F49 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C236C8FA189A8A6B00A01F49 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -56,7 +59,7 @@
 		C236C90C189A8A6B00A01F49 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		C236C90F189A8A6B00A01F49 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPhone.storyboard; sourceTree = "<group>"; };
 		C236C912189A8A6B00A01F49 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main_iPad.storyboard; sourceTree = "<group>"; };
-		C236C914189A8A6B00A01F49 /* Shader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.fsh; path = Shaders/Shader.fsh; sourceTree = "<group>"; };
+		C236C914189A8A6B00A01F49 /* DepthShader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = DepthShader.fsh; path = Shaders/DepthShader.fsh; sourceTree = "<group>"; };
 		C236C916189A8A6B00A01F49 /* Shader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.vsh; path = Shaders/Shader.vsh; sourceTree = "<group>"; };
 		C236C918189A8A6B00A01F49 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		C236C919189A8A6B00A01F49 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
@@ -66,7 +69,7 @@
 		C236C92A189A8A6B00A01F49 /* HelloShadowMapTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "HelloShadowMapTests-Info.plist"; sourceTree = "<group>"; };
 		C236C92C189A8A6B00A01F49 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C236C92E189A8A6B00A01F49 /* HelloShadowMapTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HelloShadowMapTests.m; sourceTree = "<group>"; };
-		C236C938189A8B4300A01F49 /* Shader2.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Shader2.fsh; path = Shaders/Shader2.fsh; sourceTree = "<group>"; };
+		C236C938189A8B4300A01F49 /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = Shader.fsh; path = Shaders/Shader.fsh; sourceTree = "<group>"; };
 		C236C93D189A929D00A01F49 /* peko.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = peko.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -132,13 +135,14 @@
 			isa = PBXGroup;
 			children = (
 				C236C93D189A929D00A01F49 /* peko.png */,
-				C236C938189A8B4300A01F49 /* Shader2.fsh */,
 				C236C90B189A8A6B00A01F49 /* AppDelegate.h */,
 				C236C90C189A8A6B00A01F49 /* AppDelegate.m */,
 				C236C90E189A8A6B00A01F49 /* Main_iPhone.storyboard */,
 				C236C911189A8A6B00A01F49 /* Main_iPad.storyboard */,
-				C236C914189A8A6B00A01F49 /* Shader.fsh */,
+				C2159691189CBAA300EC82AF /* DepthShader.vsh */,
+				C236C914189A8A6B00A01F49 /* DepthShader.fsh */,
 				C236C916189A8A6B00A01F49 /* Shader.vsh */,
+				C236C938189A8B4300A01F49 /* Shader.fsh */,
 				C236C918189A8A6B00A01F49 /* ViewController.h */,
 				C236C919189A8A6B00A01F49 /* ViewController.m */,
 				C236C91B189A8A6B00A01F49 /* Images.xcassets */,
@@ -252,9 +256,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C236C93C189A8C2200A01F49 /* Shader2.fsh in Resources */,
+				C2159693189CC29100EC82AF /* DepthShader.vsh in Resources */,
+				C236C93C189A8C2200A01F49 /* Shader.fsh in Resources */,
 				C236C93E189A929D00A01F49 /* peko.png in Resources */,
-				C236C915189A8A6B00A01F49 /* Shader.fsh in Resources */,
+				C236C915189A8A6B00A01F49 /* DepthShader.fsh in Resources */,
 				C236C913189A8A6B00A01F49 /* Main_iPad.storyboard in Resources */,
 				C236C910189A8A6B00A01F49 /* Main_iPhone.storyboard in Resources */,
 				C236C91C189A8A6B00A01F49 /* Images.xcassets in Resources */,
@@ -278,10 +283,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C2159694189E9C0A00EC82AF /* Shader.fsh in Sources */,
 				C236C91A189A8A6B00A01F49 /* ViewController.m in Sources */,
+				C2159695189E9C1100EC82AF /* DepthShader.vsh in Sources */,
 				C236C90D189A8A6B00A01F49 /* AppDelegate.m in Sources */,
 				C236C909189A8A6B00A01F49 /* main.m in Sources */,
-				C236C939189A8B4300A01F49 /* Shader2.fsh in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -500,6 +506,7 @@
 				C236C934189A8A6B00A01F49 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C236C935189A8A6B00A01F49 /* Build configuration list for PBXNativeTarget "HelloShadowMapTests" */ = {
 			isa = XCConfigurationList;
@@ -508,6 +515,7 @@
 				C236C937189A8A6B00A01F49 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
