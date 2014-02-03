@@ -54,7 +54,7 @@ const GLfloat gTriangleData[][8] =
     GLuint  _vertexBuffer1, _vertexBuffer2;
     
     GLuint  _framebuffer;
-    GLuint  _fbColTex;
+    GLuint  _fbColTex, _fbDepTex;
     
     // shader programs
     GLuint _program1, _program2;
@@ -208,7 +208,13 @@ const GLfloat gTriangleData[][8] =
                                     texId:&_fbColTex
                                attachment:GL_COLOR_ATTACHMENT0
                                scaledSize:viewSize];
-    
+    [self pepareTextureWithInternalFormat:GL_DEPTH_COMPONENT
+                                   format:GL_DEPTH_COMPONENT
+                                     type:GL_UNSIGNED_SHORT
+                                    texId:&_fbDepTex
+                               attachment:GL_DEPTH_ATTACHMENT
+                               scaledSize:viewSize];
+
     //// initialize variables
     _rotation = 0.0;
 }
