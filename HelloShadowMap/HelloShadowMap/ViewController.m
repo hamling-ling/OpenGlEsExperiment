@@ -8,6 +8,8 @@
 
 #import "ViewController.h"
 
+//#define FBODEBUG
+
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 // Uniform index.
@@ -22,6 +24,9 @@ enum
 };
 GLint uniforms[NUM_UNIFORMS];
 GLint uniforms2[NUM_UNIFORMS];
+#ifdef FBODEBUG
+GLint uniforms3[NUM_UNIFORMS];
+#endif
 
 // Attribute index.
 enum
@@ -99,7 +104,7 @@ const GLfloat floorVertices[][8] =
     {-5.0f, -0.5f,  5.0f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f}
 };
 
-// for debug
+#ifdef FBODEBUG
 const GLfloat screenVertices[][8] =
 {
     {  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
@@ -110,13 +115,11 @@ const GLfloat screenVertices[][8] =
     {  0.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
     {  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f}
 };
+#endif
 
 @interface ViewController () {
     GLuint  _vertexArray1, _vertexArray2;
     GLuint  _vertexBuffer1, _vertexBuffer2;
-
-    // for debug
-    GLuint _vertexArray3, _vertexBuffer3;
 
     GLuint  _framebuffer;
     GLuint  _fbColTex, _fbDepTex;
@@ -129,6 +132,11 @@ const GLfloat screenVertices[][8] =
     
     // rotation
     float           _rotation;
+
+#ifdef FBODEBUG
+    // for debug
+    GLuint _vertexArray3, _vertexBuffer3, _program3;
+#endif
 }
 @property (strong, nonatomic) EAGLContext *context;
 
@@ -202,6 +210,16 @@ const GLfloat screenVertices[][8] =
         uniforms2[UNIFORM_TEXTURE1] = glGetUniformLocation(_program2, [@"shadowMap" cStringUsingEncoding:NSUTF8StringEncoding]);
         uniforms2[UNIFORM_BIASEDSHADOW_MATRIX] = glGetUniformLocation(_program2, [@"depthBiasMVP" cStringUsingEncoding:NSUTF8StringEncoding]);
     }
+
+#ifdef FBODEBUG
+    // for debug
+    {
+        [self loadShadersWithProgram:&_program3 vshFileName:@"SimpleShader" fshFileName:@"SimpleShader"];
+        
+        uniforms3[UNIFORM_MVP_MATRIX] = glGetUniformLocation(_program3, [@"modelViewProjectionMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
+        uniforms3[UNIFORM_TEXTURE0] = glGetUniformLocation(_program3, [@"texture0" cStringUsingEncoding:NSUTF8StringEncoding]);
+    }
+#endif
     
     // setup cube vertex
     glGenVertexArraysOES(1, &_vertexArray1);
@@ -237,6 +255,7 @@ const GLfloat screenVertices[][8] =
     
     glBindVertexArrayOES(0);
 
+#ifdef FBODEBUG
     // setup screen vertex. for debug use
     glGenVertexArraysOES(1, &_vertexArray3);
     glBindVertexArrayOES(_vertexArray3);
@@ -253,6 +272,7 @@ const GLfloat screenVertices[][8] =
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*8, (void*)(sizeof(GLfloat)*6));
     
     glBindVertexArrayOES(0);
+#endif
 
     //// setup texture
     
@@ -338,10 +358,8 @@ const GLfloat screenVertices[][8] =
     
     glDeleteBuffers(1, &_vertexBuffer1);
     glDeleteBuffers(1, &_vertexBuffer2);
-    glDeleteBuffers(1, &_vertexBuffer3);
     glDeleteVertexArraysOES(1, &_vertexArray1);
     glDeleteVertexArraysOES(1, &_vertexArray2);
-    glDeleteVertexArraysOES(1, &_vertexArray3);
 
     if (_fbColTex != GL_INVALID_VALUE) {
         glDeleteTextures(1, &_fbColTex);
@@ -360,6 +378,15 @@ const GLfloat screenVertices[][8] =
         glDeleteProgram(_program2);
         _program2 = 0;
     }
+
+#if FBODEBUG
+    glDeleteBuffers(1, &_vertexBuffer3);
+    glDeleteVertexArraysOES(1, &_vertexArray3);
+    if (_program3) {
+        glDeleteProgram(_program3);
+        _program3 = 0;
+    }
+#endif
 }
 
 #pragma mark - GLKView and GLKViewController delegate methods
@@ -373,16 +400,20 @@ const GLfloat screenVertices[][8] =
 {
     // draw path1
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
-    //[view bindDrawable];
     glUseProgram(_program1);
     GLKMatrix4 depthMVP = [self drawPath1];
     glBindFramebufferOES(GL_FRAMEBUFFER_OES, 0);
-    
+
+#ifndef FBODEBUG
     // draw path2
     [view bindDrawable];
     glUseProgram(_program2);
     [self drawPath2WithDepthMVP:depthMVP];
-    //[self drawDepthBufferForDebug];
+#else
+    [view bindDrawable];
+    glUseProgram(_program3);
+    [self drawDepthBufferForDebug];
+#endif
 }
 
 #pragma mark - Drawing path
@@ -392,6 +423,7 @@ const GLfloat screenVertices[][8] =
     // set for 3D drawing
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 
     // setup camera
     GLKVector3 lightPos = GLKVector3Make(0.5, 2.0, 2.0);
@@ -414,6 +446,7 @@ const GLfloat screenVertices[][8] =
     // draw cube
     glBindVertexArrayOES(_vertexArray1);
     glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeVertices)/sizeof(GLfloat)/8);
+    glBindVertexArrayOES(0);
     
     return depthMVP;
 }
@@ -468,16 +501,17 @@ const GLfloat screenVertices[][8] =
     glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeVertices)/sizeof(GLfloat)/8);
 }
 
+#ifdef FBODEBUG
 - (void)drawDepthBufferForDebug
 {
     // set for 2D drawing
     glDisable(GL_DEPTH_TEST);
-    glCullFace(GL_BACK);
+    glCullFace(GL_FRONT);// why GL_BACK doesn't work ?
     
     // binding texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _fbColTex);
-    glUniform1i(uniforms2[UNIFORM_TEXTURE0], 0);
+    glUniform1i(uniforms3[UNIFORM_TEXTURE0], 0);
     
     // setup camera(2D)
     GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0.0, 320, 480, 0.0, 0.001, 100.0);
@@ -497,6 +531,7 @@ const GLfloat screenVertices[][8] =
     glBindVertexArrayOES(_vertexArray3);
     glDrawArrays(GL_TRIANGLES, 0, sizeof(screenVertices)/sizeof(GLfloat)/8);
 }
+#endif
 
 #pragma mark -  OpenGL ES 2 shader compilation
 

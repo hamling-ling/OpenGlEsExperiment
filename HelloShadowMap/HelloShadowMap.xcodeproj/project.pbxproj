@@ -10,6 +10,10 @@
 		C2159693189CC29100EC82AF /* DepthShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = C2159691189CBAA300EC82AF /* DepthShader.vsh */; };
 		C2159694189E9C0A00EC82AF /* Shader.fsh in Sources */ = {isa = PBXBuildFile; fileRef = C236C938189A8B4300A01F49 /* Shader.fsh */; };
 		C2159695189E9C1100EC82AF /* DepthShader.vsh in Sources */ = {isa = PBXBuildFile; fileRef = C2159691189CBAA300EC82AF /* DepthShader.vsh */; };
+		C220C945189FFC34001F31F9 /* SimpleShader.fsh in Sources */ = {isa = PBXBuildFile; fileRef = C220C943189FFC34001F31F9 /* SimpleShader.fsh */; };
+		C220C946189FFC34001F31F9 /* SimpleShader.vsh in Sources */ = {isa = PBXBuildFile; fileRef = C220C944189FFC34001F31F9 /* SimpleShader.vsh */; };
+		C220C947189FFC46001F31F9 /* SimpleShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C220C943189FFC34001F31F9 /* SimpleShader.fsh */; };
+		C220C948189FFC46001F31F9 /* SimpleShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = C220C944189FFC34001F31F9 /* SimpleShader.vsh */; };
 		C236C8F9189A8A6B00A01F49 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C236C8F8189A8A6B00A01F49 /* Foundation.framework */; };
 		C236C8FB189A8A6B00A01F49 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C236C8FA189A8A6B00A01F49 /* CoreGraphics.framework */; };
 		C236C8FD189A8A6B00A01F49 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C236C8FC189A8A6B00A01F49 /* UIKit.framework */; };
@@ -45,6 +49,8 @@
 
 /* Begin PBXFileReference section */
 		C2159691189CBAA300EC82AF /* DepthShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = DepthShader.vsh; path = Shaders/DepthShader.vsh; sourceTree = "<group>"; };
+		C220C943189FFC34001F31F9 /* SimpleShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = SimpleShader.fsh; path = Shaders/SimpleShader.fsh; sourceTree = "<group>"; };
+		C220C944189FFC34001F31F9 /* SimpleShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = SimpleShader.vsh; path = Shaders/SimpleShader.vsh; sourceTree = "<group>"; };
 		C236C8F5189A8A6B00A01F49 /* HelloShadowMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloShadowMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C236C8F8189A8A6B00A01F49 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C236C8FA189A8A6B00A01F49 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -134,6 +140,8 @@
 		C236C902189A8A6B00A01F49 /* HelloShadowMap */ = {
 			isa = PBXGroup;
 			children = (
+				C220C943189FFC34001F31F9 /* SimpleShader.fsh */,
+				C220C944189FFC34001F31F9 /* SimpleShader.vsh */,
 				C236C93D189A929D00A01F49 /* peko.png */,
 				C236C90B189A8A6B00A01F49 /* AppDelegate.h */,
 				C236C90C189A8A6B00A01F49 /* AppDelegate.m */,
@@ -256,6 +264,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C220C947189FFC46001F31F9 /* SimpleShader.fsh in Resources */,
+				C220C948189FFC46001F31F9 /* SimpleShader.vsh in Resources */,
 				C2159693189CC29100EC82AF /* DepthShader.vsh in Resources */,
 				C236C93C189A8C2200A01F49 /* Shader.fsh in Resources */,
 				C236C93E189A929D00A01F49 /* peko.png in Resources */,
@@ -283,7 +293,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C220C945189FFC34001F31F9 /* SimpleShader.fsh in Sources */,
 				C2159694189E9C0A00EC82AF /* Shader.fsh in Sources */,
+				C220C946189FFC34001F31F9 /* SimpleShader.vsh in Sources */,
 				C236C91A189A8A6B00A01F49 /* ViewController.m in Sources */,
 				C2159695189E9C1100EC82AF /* DepthShader.vsh in Sources */,
 				C236C90D189A8A6B00A01F49 /* AppDelegate.m in Sources */,
