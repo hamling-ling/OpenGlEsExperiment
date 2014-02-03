@@ -391,17 +391,17 @@ const GLfloat screenVertices[][8] =
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     // draw path1
-    //glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
-    [view bindDrawable];
+    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+    //[view bindDrawable];
     glUseProgram(_program1);
     GLKMatrix4 depthMVP = [self drawPath1];
     //[self drawPath1_];
 
     // draw path2
-    //[view bindDrawable];
-    //glUseProgram(_program2);
+    [view bindDrawable];
+    glUseProgram(_program2);
     ////[self drawPath2WithDepthMVP:depthMVP];
-    //[self drawDepthBufferForDebug];
+    [self drawDepthBufferForDebug];
 }
 
 #pragma mark - Drawing path
@@ -410,7 +410,8 @@ const GLfloat screenVertices[][8] =
 {
     // set for 3D drawing
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    //glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     
     // binding texture
     //glActiveTexture(GL_TEXTURE0);
@@ -445,7 +446,7 @@ const GLfloat screenVertices[][8] =
 - (void)drawPath1_
 {
     // set for 3D drawing
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
     // binding texture
@@ -544,14 +545,15 @@ const GLfloat screenVertices[][8] =
 {
     // set for 2D drawing
     glDisable(GL_DEPTH_TEST);
+    glCullFace(GL_BACK);
     
     // binding texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _fbColTex);
     glUniform1i(uniforms2[UNIFORM_TEXTURE0], 0);
     /*glActiveTexture(GL_TEXTURE0);
-    glBindTexture(_texInfo0.target, _texInfo0.name);
-    glUniform1i(uniforms[UNIFORM_TEXTURE0], 0);*/
+     glBindTexture(_texInfo0.target, _texInfo0.name);
+     glUniform1i(uniforms[UNIFORM_TEXTURE0], 0);*/
     
     // setup camera(2D)
     GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0.0, 320, 480, 0.0, 0.001, 100.0);

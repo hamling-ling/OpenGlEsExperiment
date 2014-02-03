@@ -309,6 +309,7 @@ const GLfloat gTriangleData[][8] =
 {
     // set for 3D drawing
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BACK);
     
     // binding texture
     glActiveTexture(GL_TEXTURE0);
@@ -343,7 +344,8 @@ const GLfloat gTriangleData[][8] =
 - (void)drawPath2
 {
     // set for 2D drawing
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
+    //glEnable(GL_CULL_FACE);
     
     // binding texture
     glActiveTexture(GL_TEXTURE0);
