@@ -5,13 +5,6 @@
 //  Created by Nobuhiro Kuroiwa on 2014/01/30.
 //  Copyright (c) 2014年 Nobuhiro Kuroiwa. All rights reserved.
 //
-//
-//  ViewController.m
-//  HelloFBO
-//
-//  Created by nobu on 13/08/04.
-//  Copyright (c) 2013年 Nobuhiro Kuroiwa. All rights reserved.
-//
 
 #import "ViewController.h"
 
@@ -25,7 +18,6 @@ enum
     UNIFORM_TEXTURE1,
     UNIFORM_NORMAL_MATRIX,
     UNIFORM_BIASEDSHADOW_MATRIX,
-    UNIFORM_SCREENSIZE,
     NUM_UNIFORMS
 };
 GLint uniforms[NUM_UNIFORMS];
@@ -107,6 +99,7 @@ const GLfloat floorVertices[][8] =
     {-5.0f, -0.5f,  5.0f, 0.0f,  1.0f,  0.0f, 0.0f, 1.0f}
 };
 
+// for debug
 const GLfloat screenVertices[][8] =
 {
     {  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
@@ -119,8 +112,11 @@ const GLfloat screenVertices[][8] =
 };
 
 @interface ViewController () {
-    GLuint  _vertexArray1, _vertexArray2, _vertexArray3;
-    GLuint  _vertexBuffer1, _vertexBuffer2, _vertexBuffer3;
+    GLuint  _vertexArray1, _vertexArray2;
+    GLuint  _vertexBuffer1, _vertexBuffer2;
+
+    // for debug
+    GLuint _vertexArray3, _vertexBuffer3;
 
     GLuint  _framebuffer;
     GLuint  _fbColTex, _fbDepTex;
@@ -136,20 +132,6 @@ const GLfloat screenVertices[][8] =
 }
 @property (strong, nonatomic) EAGLContext *context;
 
-/*- (void)setupGL;
-- (void)tearDownGL;
-- (void)pepareTextureWithInternalFormat:(GLint)internalFormat
-                                 format:(GLenum)format
-                                   type:(GLenum)type
-                                  texId:(GLuint*)texId
-                             attachment:(GLenum)attachment
-                             scaledSize:(CGSize)viewSize;
-- (void)drawPath1;
-- (void)drawPath2;
-- (BOOL)loadShadersWithProgram:(GLuint*)program vshFileName:(NSString*) vshFileName fshFileName:(NSString*) fshFileName;
-- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
-- (BOOL)linkProgram:(GLuint)prog;
-- (BOOL)validateProgram:(GLuint)prog;*/
 @end
 
 @implementation ViewController
@@ -209,8 +191,6 @@ const GLfloat screenVertices[][8] =
         [self loadShadersWithProgram:&_program1 vshFileName:@"DepthShader" fshFileName:@"DepthShader"];
         
         uniforms[UNIFORM_MVP_MATRIX] = glGetUniformLocation(_program1, [@"modelViewProjectionMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
-        //uniforms[UNIFORM_TEXTURE0] = glGetUniformLocation(_program1, [@"texture0" cStringUsingEncoding:NSUTF8StringEncoding]);
-        //uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program1, [@"normalMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     
     // create a program for path2
@@ -219,9 +199,8 @@ const GLfloat screenVertices[][8] =
         
         uniforms2[UNIFORM_MVP_MATRIX] = glGetUniformLocation(_program2, [@"modelViewProjectionMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
         uniforms2[UNIFORM_TEXTURE0] = glGetUniformLocation(_program2, [@"texture0" cStringUsingEncoding:NSUTF8StringEncoding]);
-        //uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program1, [@"normalMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
-        //uniforms2[UNIFORM_TEXTURE1] = glGetUniformLocation(_program2, [@"shadowMap" cStringUsingEncoding:NSUTF8StringEncoding]);
-        //uniforms2[UNIFORM_BIASEDSHADOW_MATRIX] = glGetUniformLocation(_program2, [@"depthBiasMVP" cStringUsingEncoding:NSUTF8StringEncoding]);
+        uniforms2[UNIFORM_TEXTURE1] = glGetUniformLocation(_program2, [@"shadowMap" cStringUsingEncoding:NSUTF8StringEncoding]);
+        uniforms2[UNIFORM_BIASEDSHADOW_MATRIX] = glGetUniformLocation(_program2, [@"depthBiasMVP" cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     
     // setup cube vertex
@@ -290,29 +269,31 @@ const GLfloat screenVertices[][8] =
     glGenFramebuffers(1, &_framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
     
-    [self pepareTextureWithInternalFormat:GL_RGBA
-                                   format:GL_RGBA
-                                     type:GL_UNSIGNED_BYTE
-                                    texId:&_fbColTex
-                               attachment:GL_COLOR_ATTACHMENT0
-                               scaledSize:viewSize];
-    /*[self pepareTextureWithInternalFormat:GL_DEPTH_COMPONENT
-                                   format:GL_DEPTH_COMPONENT
-                                     type:GL_UNSIGNED_SHORT
-                                    texId:&_fbDepTex
-                               attachment:GL_DEPTH_ATTACHMENT
-                               scaledSize:viewSize];*/
-    
+    [self pepareTextureForFrameBuffer:_framebuffer
+                       internalFormat:GL_RGBA
+                               format:GL_RGBA
+                                 type:GL_UNSIGNED_BYTE
+                                texId:&_fbColTex
+                           attachment:GL_COLOR_ATTACHMENT0
+                           scaledSize:viewSize];
+    [self pepareTextureForFrameBuffer:_framebuffer
+                       internalFormat:GL_DEPTH_COMPONENT
+                               format:GL_DEPTH_COMPONENT
+                                 type:GL_UNSIGNED_SHORT
+                                texId:&_fbDepTex
+                           attachment:GL_DEPTH_ATTACHMENT
+                           scaledSize:viewSize];
     //// initialize variables
     _rotation = 0.0;
 }
 
-- (void)pepareTextureWithInternalFormat:(GLint)internalFormat
-                                 format:(GLenum)format
-                                   type:(GLenum)type
-                                  texId:(GLuint*)texId
-                             attachment:(GLenum)attachment
-                             scaledSize:(CGSize)viewSize
+- (void)pepareTextureForFrameBuffer:(GLuint)framebuffer
+                     internalFormat:(GLint)internalFormat
+                             format:(GLenum)format
+                               type:(GLenum)type
+                              texId:(GLuint*)texId
+                         attachment:(GLenum)attachment
+                         scaledSize:(CGSize)viewSize
 {
     glEnable(GL_TEXTURE_2D);
     glGenTextures(1, texId);
@@ -346,7 +327,7 @@ const GLfloat screenVertices[][8] =
                  0);                // Specifies a pointer to the image data in memory
     
     glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, _framebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, *texId, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -395,13 +376,13 @@ const GLfloat screenVertices[][8] =
     //[view bindDrawable];
     glUseProgram(_program1);
     GLKMatrix4 depthMVP = [self drawPath1];
-    //[self drawPath1_];
-
+    glBindFramebufferOES(GL_FRAMEBUFFER_OES, 0);
+    
     // draw path2
     [view bindDrawable];
     glUseProgram(_program2);
-    ////[self drawPath2WithDepthMVP:depthMVP];
-    [self drawDepthBufferForDebug];
+    [self drawPath2WithDepthMVP:depthMVP];
+    //[self drawDepthBufferForDebug];
 }
 
 #pragma mark - Drawing path
@@ -410,18 +391,12 @@ const GLfloat screenVertices[][8] =
 {
     // set for 3D drawing
     glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    
-    // binding texture
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(_texInfo0.target, _texInfo0.name);
-    //glUniform1i(uniforms[UNIFORM_TEXTURE0], 0);
-    
+    glEnable(GL_CULL_FACE);
+
     // setup camera
-    GLKVector3 lightInvDir = GLKVector3Make(0.5, 2.0, 2.0);
+    GLKVector3 lightPos = GLKVector3Make(0.5, 2.0, 2.0);
     GLKMatrix4 depthProjectionMatrix = GLKMatrix4MakeOrtho(-10, 10, -10, 10, -10, 20);
-    GLKMatrix4 depthViewMatrix = GLKMatrix4MakeLookAt(lightInvDir.x, lightInvDir.y, lightInvDir.z,
+    GLKMatrix4 depthViewMatrix = GLKMatrix4MakeLookAt(lightPos.x, lightPos.y, lightPos.z,
                                                       0.0f, 0.0f, 0.0f,
                                                       0.0f, 1.0f, 0.0f);
     GLKMatrix4 depthMVP = GLKMatrix4Multiply(depthProjectionMatrix,depthViewMatrix);
@@ -441,48 +416,6 @@ const GLfloat screenVertices[][8] =
     glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeVertices)/sizeof(GLfloat)/8);
     
     return depthMVP;
-}
-
-- (void)drawPath1_
-{
-    // set for 3D drawing
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-
-    // binding texture
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(_texInfo0.target, _texInfo0.name);
-    glUniform1i(uniforms[UNIFORM_TEXTURE0], 0);
-    
-    // setup camera
-    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
-    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(0.0f, 0.0f, -0.8f,
-                                                 0.0f, 0.0f, 0.0f,
-                                                 0.0f, 1.0f, 0.0f);
-    GLKMatrix4 modelMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 1.5f);
-    modelMatrix = GLKMatrix4Rotate(modelMatrix, -M_PI/6, 1.0f, 0.0f, 0.0f);
-    modelMatrix = GLKMatrix4Rotate(modelMatrix, _rotation, 0.0f, 1.0f, 0.0f);
-    
-    // compute matrices
-    GLKMatrix4 modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelMatrix);
-    GLKMatrix4 mvpMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
-    GLKMatrix3 normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
-    
-    glUniformMatrix4fv(uniforms[UNIFORM_MVP_MATRIX], 1, 0, mvpMatrix.m);
-    glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, normalMatrix.m);
-
-    // clear
-    glClearColor(0.392*0.5, 0.584*0.7, 0.929, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // draw floor
-    glBindVertexArrayOES(_vertexArray2);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(floorVertices)/sizeof(GLfloat)/8);
-
-    // draw cube
-    glBindVertexArrayOES(_vertexArray1);
-    glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeVertices)/sizeof(GLfloat)/8);
 }
 
 - (void)drawPath2WithDepthMVP:(GLKMatrix4)depthMVP
@@ -522,12 +455,6 @@ const GLfloat screenVertices[][8] =
 
     glUniformMatrix4fv(uniforms2[UNIFORM_BIASEDSHADOW_MATRIX], 1, 0, biasedShadowMVP.m);
 
-    // pass screen size to shader
-    GLKVector2 screensize = {0.0};
-    screensize.x = self.view.bounds.size.width * self.view.contentScaleFactor;
-    screensize.y = self.view.bounds.size.height * self.view.contentScaleFactor;
-    glUniform2fv(uniforms2[UNIFORM_SCREENSIZE], 1, &(screensize.v[0]));
-
     // clear
     glClearColor(0.392*0.5, 0.584*0.7, 0.929, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -537,8 +464,8 @@ const GLfloat screenVertices[][8] =
     glDrawArrays(GL_TRIANGLES, 0, sizeof(floorVertices)/sizeof(GLfloat)/8);
     
     // draw cube
-    //glBindVertexArrayOES(_vertexArray1);
-    //glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeVertices)/sizeof(GLfloat)/8);
+    glBindVertexArrayOES(_vertexArray1);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeVertices)/sizeof(GLfloat)/8);
 }
 
 - (void)drawDepthBufferForDebug
@@ -551,9 +478,6 @@ const GLfloat screenVertices[][8] =
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _fbColTex);
     glUniform1i(uniforms2[UNIFORM_TEXTURE0], 0);
-    /*glActiveTexture(GL_TEXTURE0);
-     glBindTexture(_texInfo0.target, _texInfo0.name);
-     glUniform1i(uniforms[UNIFORM_TEXTURE0], 0);*/
     
     // setup camera(2D)
     GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0.0, 320, 480, 0.0, 0.001, 100.0);

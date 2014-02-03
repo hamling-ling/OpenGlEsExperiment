@@ -9,18 +9,18 @@
 precision mediump float;
 
 varying lowp vec2 f_texCoord;
-//varying lowp vec4 shadowCoord;
+varying lowp vec4 shadowCoord;
 
 uniform sampler2D texture0;
-//uniform sampler2D shadowMap;
+uniform sampler2D shadowMap;
 
 void main()
 {
     vec4 destColor = texture2D(texture0, f_texCoord);
     
-    //if(texture2D(shadowMap, shadowCoord.xy).r < shadowCoord.z)
+    if(texture2D(shadowMap, shadowCoord.xy).r < shadowCoord.z)
     {
-        //destColor = vec4(0,0,0,0);
+        destColor = vec4(0,0,0,0.5);
     }
 
     gl_FragColor = destColor;

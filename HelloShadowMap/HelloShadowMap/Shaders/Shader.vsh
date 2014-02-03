@@ -11,10 +11,10 @@ attribute vec3 normal;
 attribute vec2 texCoord;
 
 varying lowp vec2 f_texCoord;
-//varying lowp vec4 shadowCoord;
+varying lowp vec4 shadowCoord;
 
 uniform mat4 modelViewProjectionMatrix;
-//uniform mat4 depthBiasMVP;
+uniform mat4 depthBiasMVP;
 
 void main()
 {
@@ -23,7 +23,6 @@ void main()
     gl_Position = modelViewProjectionMatrix * position;
     f_texCoord = texCoord;
 
-
-    //shadowCoord = depthBiasMVP * position;
+    shadowCoord = depthBiasMVP * position;
 }
 
