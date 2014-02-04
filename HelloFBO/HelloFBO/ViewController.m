@@ -33,13 +33,13 @@ enum
 
 const GLfloat gVertexData[][8] =
 {
-    {  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
-    {  1.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},
-    {  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
+    {  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
+    {  1.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
+    {  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},
     
-    {  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f},
-    {  0.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
-    {  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f}
+    {  1.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f},
+    {  0.0f,  1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f},
+    {  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f}
 };
 
 const GLfloat gTriangleData[][8] =
@@ -325,11 +325,10 @@ const GLfloat gTriangleData[][8] =
     // setup camera
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
-    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(0.0f, 0.0f, -0.8f,
+    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(0.0f, 0.0f, 3.0f,
                                                  0.0f, 0.0f, 0.0f,
                                                  0.0f, 1.0f, 0.0f);
-    GLKMatrix4 modelMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 1.5f);
-    modelMatrix = GLKMatrix4Rotate(modelMatrix, -M_PI/6, 1.0f, 0.0f, 0.0f);
+    GLKMatrix4 modelMatrix = GLKMatrix4Identity;
     modelMatrix = GLKMatrix4Rotate(modelMatrix, _rotation, 0.0f, 1.0f, 0.0f);
     
     // compute matrices
@@ -350,16 +349,17 @@ const GLfloat gTriangleData[][8] =
 - (void)drawPath2
 {
     // set for 2D drawing
-    //glDisable(GL_DEPTH_TEST);
-    //glEnable(GL_CULL_FACE);
-    
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+
     // binding texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _fbColTex);
     glUniform1i(uniforms2[UNIFORM_TEXTURE0], 0);
     
     // setup camera(2D)
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0.0, 320, 480, 0.0, 0.001, 100.0);
+    GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0.0, 320.0, 0.0, 480.0, 0.001, 100.0);
     GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(0.0f, 0.0f, 1.0f,
                                                  0.0f, 0.0f, 0.0f,
                                                  0.0f, 1.0f, 0.0f);
