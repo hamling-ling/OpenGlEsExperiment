@@ -140,7 +140,6 @@ const GLfloat gTriangleData[][8] =
         [self loadShadersWithProgram:&_program1 vshFileName:@"Shader" fshFileName:@"Shader"];
         
         uniforms[UNIFORM_MVP_MATRIX] = glGetUniformLocation(_program1, [@"modelViewProjectionMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
-        uniforms[UNIFORM_TEXTURE0] = glGetUniformLocation(_program1, [@"texture0" cStringUsingEncoding:NSUTF8StringEncoding]);
         uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program1, [@"normalMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     
@@ -149,7 +148,6 @@ const GLfloat gTriangleData[][8] =
         [self loadShadersWithProgram:&_program2 vshFileName:@"Shader" fshFileName:@"Shader2"];
         
         uniforms2[UNIFORM_MVP_MATRIX] = glGetUniformLocation(_program2, [@"modelViewProjectionMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
-        uniforms2[UNIFORM_TEXTURE0] = glGetUniformLocation(_program2, [@"texture0" cStringUsingEncoding:NSUTF8StringEncoding]);
         uniforms2[UNIFORM_SCREENSIZE] = glGetUniformLocation(_program2, [@"screensize" cStringUsingEncoding:NSUTF8StringEncoding]);
     }
     
@@ -320,7 +318,6 @@ const GLfloat gTriangleData[][8] =
     // binding texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(_texInfo0.target, _texInfo0.name);
-    glUniform1i(uniforms[UNIFORM_TEXTURE0], 0);
     
     // setup camera
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
@@ -356,7 +353,6 @@ const GLfloat gTriangleData[][8] =
     // binding texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, _fbColTex);
-    glUniform1i(uniforms2[UNIFORM_TEXTURE0], 0);
     
     // setup camera(2D)
     GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(0.0, 320.0, 0.0, 480.0, 0.001, 100.0);
@@ -385,7 +381,7 @@ const GLfloat gTriangleData[][8] =
 
 #pragma mark -  OpenGL ES 2 shader compilation
 
-- (BOOL)loadShadersWithProgram:(GLuint*)program vshFileName:(NSString*) vshFileName fshFileName:(NSString*) fshFileName
+- (BOOL)loadShadersWithProgram:(GLuint*)program vshFileName:(NSString*)vshFileName fshFileName:(NSString*)fshFileName
 {
     GLuint vertShader, fragShader;
     NSString *vertShaderPathname, *fragShaderPathname;
@@ -396,14 +392,14 @@ const GLfloat gTriangleData[][8] =
     // Create and compile vertex shader.
     vertShaderPathname = [[NSBundle mainBundle] pathForResource:vshFileName ofType:@"vsh"];
     if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname]) {
-        NSLog(@"Failed to compile vertex shader");
+        NSLog(@"Failed to compile vertex shader %@", vshFileName);
         return NO;
     }
     
     // Create and compile fragment shader.
     fragShaderPathname = [[NSBundle mainBundle] pathForResource:fshFileName ofType:@"fsh"];
     if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
-        NSLog(@"Failed to compile fragment shader");
+        NSLog(@"Failed to compile fragment shader %@", fshFileName);
         return NO;
     }
     
@@ -417,27 +413,10 @@ const GLfloat gTriangleData[][8] =
     // This needs to be done prior to linking.
     glBindAttribLocation(*program, ATTRIB_VERTEX, "position");
     glBindAttribLocation(*program, ATTRIB_NORMAL, "normal");
-    //glBindAttribLocation(*program, ATTRIB_TEXCOORD, "texCoord");
+    glBindAttribLocation(*program, ATTRIB_TEXCOORD, "texCoord");
     
     // Link program.
-    if (![self linkProgram:*program]) {
-        NSLog(@"Failed to link program: %d", *program);
-        
-        if (vertShader) {
-            glDeleteShader(vertShader);
-            vertShader = 0;
-        }
-        if (fragShader) {
-            glDeleteShader(fragShader);
-            fragShader = 0;
-        }
-        if (*program) {
-            glDeleteProgram(*program);
-            *program = 0;
-        }
-        
-        return NO;
-    }
+    BOOL linked = [self linkProgram:*program];
     
     // Release vertex and fragment shaders.
     if (vertShader) {
@@ -449,43 +428,16 @@ const GLfloat gTriangleData[][8] =
         glDeleteShader(fragShader);
     }
     
-    return YES;
-}
-
-
-- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file
-{
-    GLint status;
-    const GLchar *source;
-    
-    source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
-    if (!source) {
-        NSLog(@"Failed to load vertex shader");
-        return NO;
+    if(!linked) {
+        NSLog(@"Failed to link program: %d for %@ and %@", *program, fshFileName, vshFileName);
+        
+        if (*program) {
+            glDeleteProgram(*program);
+            *program = 0;
+        }
     }
     
-    *shader = glCreateShader(type);
-    glShaderSource(*shader, 1, &source, NULL);
-    glCompileShader(*shader);
-    
-#if defined(DEBUG)
-    GLint logLength;
-    glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
-    if (logLength > 0) {
-        GLchar *log = (GLchar *)malloc(logLength);
-        glGetShaderInfoLog(*shader, logLength, &logLength, log);
-        NSLog(@"Shader compile log:\n%s", log);
-        free(log);
-    }
-#endif
-    
-    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
-    if (status == 0) {
-        glDeleteShader(*shader);
-        return NO;
-    }
-    
-    return YES;
+    return linked;
 }
 
 - (BOOL)linkProgram:(GLuint)prog
@@ -506,6 +458,41 @@ const GLfloat gTriangleData[][8] =
     
     glGetProgramiv(prog, GL_LINK_STATUS, &status);
     if (status == 0) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file
+{
+    GLint status;
+    const GLchar *source;
+    
+    source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
+    if (!source) {
+        NSLog(@"Failed to load vertex shader %@", file);
+        return NO;
+    }
+    
+    *shader = glCreateShader(type);
+    glShaderSource(*shader, 1, &source, NULL);
+    glCompileShader(*shader);
+    
+#if defined(DEBUG)
+    GLint logLength;
+    glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
+    if (logLength > 0) {
+        GLchar *log = (GLchar *)malloc(logLength);
+        glGetShaderInfoLog(*shader, logLength, &logLength, log);
+        NSLog(@"Shader compile log for %@ :\n%s", file, log);
+        free(log);
+    }
+#endif
+    
+    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
+    if (status == 0) {
+        glDeleteShader(*shader);
         return NO;
     }
     
