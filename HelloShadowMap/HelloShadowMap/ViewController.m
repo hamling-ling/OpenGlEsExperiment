@@ -18,6 +18,8 @@ enum
     UNIFORM_MVP_MATRIX,
     UNIFORM_NORMAL_MATRIX,
     UNIFORM_BIASEDSHADOW_MATRIX,
+    UNIFORM_TEXTURE0,
+    UNIFORM_TEXTURE1,
     NUM_UNIFORMS
 };
 GLint uniforms[NUM_UNIFORMS];
@@ -202,9 +204,11 @@ const GLfloat screenVertices[][8] =
     // create a program for path2
     {
         [self loadShadersWithProgram:&_program2 vshFileName:@"Shader" fshFileName:@"Shader"];
-        
+
         uniforms2[UNIFORM_MVP_MATRIX] = glGetUniformLocation(_program2, [@"modelViewProjectionMatrix" cStringUsingEncoding:NSUTF8StringEncoding]);
         uniforms2[UNIFORM_BIASEDSHADOW_MATRIX] = glGetUniformLocation(_program2, [@"depthBiasMVP" cStringUsingEncoding:NSUTF8StringEncoding]);
+        uniforms2[UNIFORM_TEXTURE0] = glGetUniformLocation(_program2, [@"texture0" cStringUsingEncoding:NSUTF8StringEncoding]);
+        uniforms2[UNIFORM_TEXTURE1] = glGetUniformLocation(_program2, [@"shadowMap" cStringUsingEncoding:NSUTF8StringEncoding]);
     }
 
 #ifdef FBODEBUG
@@ -435,8 +439,8 @@ const GLfloat screenVertices[][8] =
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // draw floor
-    //glBindVertexArrayOES(_vertexArray2);
-    //glDrawArrays(GL_TRIANGLES, 0, sizeof(floorVertices)/sizeof(GLfloat)/8);
+    glBindVertexArrayOES(_vertexArray2);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(floorVertices)/sizeof(GLfloat)/8);
     
     // draw cube
     glBindVertexArrayOES(_vertexArray1);
@@ -453,8 +457,13 @@ const GLfloat screenVertices[][8] =
     
     // binding texture
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, _fbColTex);
+    glBindTexture(GL_TEXTURE_2D, _texInfo0.name);
+    glUniform1i(uniforms2[UNIFORM_TEXTURE0], 0);
 
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, _fbColTex);
+    glUniform1i(uniforms2[UNIFORM_TEXTURE1], 1);
+    
     // setup camera
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
@@ -467,16 +476,11 @@ const GLfloat screenVertices[][8] =
     // compute matrices
     GLKMatrix4 modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelMatrix);
     GLKMatrix4 mvpMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
-    GLKMatrix3 normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
     
     glUniformMatrix4fv(uniforms2[UNIFORM_MVP_MATRIX], 1, 0, mvpMatrix.m);
-    glUniformMatrix3fv(uniforms2[UNIFORM_NORMAL_MATRIX], 1, 0, normalMatrix.m);
     
-    // compute depth bias
-    GLKMatrix4 scaledShadowMVP = GLKMatrix4Scale(depthMVP, 0.5, 0.5, 0.5);
-    GLKMatrix4 biasedShadowMVP = GLKMatrix4Translate( scaledShadowMVP ,0.5, 0.5, 0.5);
-
-    glUniformMatrix4fv(uniforms2[UNIFORM_BIASEDSHADOW_MATRIX], 1, 0, biasedShadowMVP.m);
+    // pass depthMVP
+    glUniformMatrix4fv(uniforms2[UNIFORM_BIASEDSHADOW_MATRIX], 1, 0, depthMVP.m);
 
     // clear
     glClearColor(0.392*0.5, 0.584*0.7, 0.929, 1.0);
