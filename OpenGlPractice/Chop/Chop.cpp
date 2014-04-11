@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 
 #include <list>
 #include <vector>
@@ -430,8 +430,8 @@ bool CanSnip(const int idxa, const int idxb, const int idxc,
 		}
 	}
 
-	int size = contour.size();
-	for(int idx = 0; idx < size-1; idx++) {
+	int size = static_cast<int>(contour.size());
+	for(int idx = 0; idx < size; idx++) {
 		if(idx == idxa || idx == idxb || idx == idxc) {
 			continue;
 		}
@@ -498,16 +498,25 @@ void ContourToVertices(vector<CVector3f> contour, const CPlane& plane,
 	}
 
 	list<CTriangle3v> triangles;
-	while(contour.size() > 2) {
-		for(int i = 0; i < contour.size()-1; i++) {
-			int size = contour.size();
+	int size = static_cast<int>(contour.size());
+	while(size > 2) {
+		
+		int sizeBeforeSnip = size;
+		
+		for(int i = 0; i < size; i++) {
 			int preIdx = (i+0)%size;
 			int curIdx = (i+1)%size;
 			int nxtIdx = (i+2)%size;
 			if(CanSnip(preIdx, curIdx, nxtIdx, contour, plane[CPlane::N])) {
 				Snip(preIdx, curIdx, nxtIdx, contour, triangles);
-				i = size; // break inner loop
+				size = static_cast<int>(contour.size());
+				break; // break inner loop
 			}
+		}
+		
+		if(size == sizeBeforeSnip) {
+			// nothing snipped
+			break;
 		}
 	}
 
