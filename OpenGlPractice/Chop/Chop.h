@@ -1,10 +1,11 @@
 ﻿#pragma once
 
 
-#include "Triangle3v.h"
-#include "Plane.h"
+#include "modeltool.h"
 
 #define MAX_CHOP_BUF	8192
+
+using namespace osakanaengine;
 
 /**
  * @brief Cut a mesh with plane.
@@ -16,7 +17,7 @@
  * @param bufNCount	num of vertices in bufN
  * @param bufACount num of vertices in bufA
  */
-void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
+void Chop(const MODELPLANE& plane, const float* normalsAndVertices, const int len,
 		  float bufN[MAX_CHOP_BUF][8], float bufA[MAX_CHOP_BUF][8],
 		  int& bufNCount, int& bufACount);
 
@@ -27,4 +28,6 @@ void Chop(const CPlane& plane, const float* normalsAndVertices, const int len,
  * @param out box		minimum size box to compose the vertex
  * @param out cg        center of the box
  */
-void AlignCenter(float buf[MAX_CHOP_BUF][8], const int bufCount, CVector3f (&box)[8], CVector3f &cg);
+void AlignCenter(float buf[MAX_CHOP_BUF][8], const int bufCount, MODELVEC3D (&box)[8], MODELVEC3D &cg);
+
+
