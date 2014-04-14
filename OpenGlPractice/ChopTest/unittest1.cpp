@@ -32,7 +32,7 @@ namespace SliceTest
 
 			MODELVEC3D p = {-0.1f, 1.0f, 0.0f};
 			MODELVEC3D n = {1.0f, 0.1f, 0.0f};
-			MODELPLANE plane = {n, p};
+			MODELPLANE plane = {p, n};
 
 			// slice
 			float bufN[64][8] = {0.0f};
@@ -96,7 +96,7 @@ namespace SliceTest
 
 			MODELVEC3D p = {-1.0f, 0.0f, 0.0f};
 			MODELVEC3D n = {0.0f, 1.0f, 0.0f};
-			MODELPLANE plane = {n, p};
+			MODELPLANE plane = {p, n};
 
 			// slice
 			float bufN[64][8] = {0.0f};
@@ -160,7 +160,7 @@ namespace SliceTest
 
 			MODELVEC3D p = {0.0f, -0.5f, 0.0f};
 			MODELVEC3D n = {(float)(-1.0/sqrt(2.0)), (float)(1.0/sqrt(2.0)), 0.0f};
-			MODELPLANE plane = {n, p};
+			MODELPLANE plane = {p, n};
 
 			// slice
 			float bufN[64][8] = {0.0f};
@@ -224,7 +224,7 @@ namespace SliceTest
 
 			MODELVEC3D p = {-0.5f, -0.5f, 0.0f};
 			MODELVEC3D n = {0.0f, -1.0f, 0.0f};
-			MODELPLANE plane = {n, p};
+			MODELPLANE plane = {p, n};
 
 			// slice
 			float bufN[64][8] = {0.0f};
@@ -318,7 +318,7 @@ namespace SliceTest
 
 			MODELVEC3D p = {-0.1f, 1.0f, 0.0f};
 			MODELVEC3D n = {1.0f, 0.1f, 0.0f};
-			MODELPLANE plane = {n, p};
+			MODELPLANE plane = {p, n};
 			Chop(plane, &(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/8/sizeof(float)
 				, bufN, bufA, bufNCount, bufACount);
 
