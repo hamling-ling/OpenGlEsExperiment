@@ -29,7 +29,7 @@ static inline MODELVEC3D GetCenter(const MODELTRIANGLE& tri)
 	sum = AddVec(sum, tri.b.point);
 	sum = AddVec(sum, tri.c.point);
 	
-	return ScaleVec(1.0/3.0, sum);
+	return ScaleVec(static_cast<MODELFLOAT>(1.0/3.0), sum);
 }
 
 static inline bool IsSameDirection(const MODELVEC3D& a, const MODELVEC3D& b)
@@ -49,14 +49,4 @@ static inline void SetNormal(MODELTRIANGLE& tri, const MODELVEC3D& n)
 	tri.v[0].normal = n;
 	tri.v[1].normal = n;
 	tri.v[2].normal = n;
-}
-
-MODEL_INLINE MODELVERTEX MODELVERTEXMakeWithArray(MODELFLOAT array[8])
-{
-	MODELVEC3D p = { array[0], array[1], array[3]};
-	MODELVEC3D n = { array[4], array[5], array[6]};
-	ModelPoint t = { array[7], array[8]};
-	
-	MODELVERTEX vert = {p,n,t};
-	return vert;
 }

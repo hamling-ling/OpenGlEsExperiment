@@ -40,7 +40,7 @@ struct IntersectionLineComparer {
 	IntersectionLineComparer(const MODELLINE& line )
 	{
 		_line = line;
-		_lineInv = {line.b, line.a};
+		_lineInv = MODELLINEMake(line.b, line.a);
 	}
 
 	bool operator() (const MODELLINE &line)
@@ -164,7 +164,7 @@ IntersectionType TryGetIntersection3v(const MODELVERTEX& r0, const MODELVERTEX& 
 	ModelPoint t1 = r1.texcoord;
 	ModelPoint tex = AddPoint(t0, ScalePoint(ratio, SubtPoint(t1, t0)));
 	
-	i0 = {i0v, r0.normal, tex};
+	i0 = MODELVERTEXMake(i0v, r0.normal, tex);
 
 	return result;
 }
@@ -187,9 +187,9 @@ void Decompose3(const MODELVERTEX &a, const MODELVERTEX &b, const MODELVERTEX &c
 				const MODELVERTEX &i0, const MODELVERTEX &i1,
 				MODELTRIANGLE* tris)
 {
-	tris[0] = {a, i0, i1};
-	tris[1] = {b, c,  i0};
-	tris[2] = {c, i1, i0};
+	tris[0] = MODELTRIANGLEMake(a, i0, i1);
+	tris[1] = MODELTRIANGLEMake(b, c,  i0);
+	tris[2] = MODELTRIANGLEMake(c, i1, i0);
 }
 
 
@@ -206,8 +206,8 @@ void Decompose3(const MODELVERTEX &a, const MODELVERTEX &b, const MODELVERTEX &c
 void Decompose2(const MODELVERTEX &a, const MODELVERTEX &b, const MODELVERTEX &c,
 				const MODELVERTEX &i1, MODELTRIANGLE* tris)
 {
-	tris[0] = {a, b, i1};
-	tris[1] = {a, i1, c};
+	tris[0] = MODELTRIANGLEMake(a, b, i1);
+	tris[1] = MODELTRIANGLEMake(a, i1, c);
 }
 
 
@@ -398,7 +398,7 @@ bool TryGetConnection(const MODELVEC3D& p, const MODELLINE& line, MODELVEC3D& ad
 float GetArea(const vector<MODELVEC3D>& contour, const MODELVEC3D& n)
 {
 	const int size = static_cast<int>(contour.size());
-	MODELVEC3D normal;
+	MODELVEC3D normal = ZEROVEC3D;
 	for(int i = 0; i < size; i++) {
 		int idxa = (i+0)%size; // a
 		int idxb = (i+1)%size; // b
@@ -469,7 +469,7 @@ void Snip(const int idxa, const int idxb, const int idxc,
 		  vector<MODELVEC3D>& contour,
 		  list<MODELTRIANGLE>& triangles)
 {
-	MODELVEC3D normal; // temporarily set something
+	MODELVEC3D normal = ZEROVEC3D; // temporarily set something
 	MODELVERTEX va = {contour[idxa], normal, ZEROPOINT};
 	MODELVERTEX vb = {contour[idxb], normal, ZEROPOINT};
 	MODELVERTEX vc = {contour[idxc], normal, ZEROPOINT};
@@ -643,22 +643,22 @@ void AlignCenter(float buf[MAX_CHOP_BUF][8], const int bufCount, MODELVEC3D (&bo
     }
 
     // 3D box
-    box[0] = {minmax_x[0], minmax_y[0], minmax_z[0]};// min,min,min
-    box[1] = {minmax_x[0], minmax_y[1], minmax_z[0]};// min,max,min
-    box[2] = {minmax_x[1], minmax_y[1], minmax_z[0]};// max,max,min
-	box[3] = {minmax_x[1], minmax_y[0], minmax_z[0]};// max,min,min
+    box[0] = MODELVEC3DMake(minmax_x[0], minmax_y[0], minmax_z[0]);// min,min,min
+    box[1] = MODELVEC3DMake(minmax_x[0], minmax_y[1], minmax_z[0]);// min,max,min
+    box[2] = MODELVEC3DMake(minmax_x[1], minmax_y[1], minmax_z[0]);// max,max,min
+	box[3] = MODELVEC3DMake(minmax_x[1], minmax_y[0], minmax_z[0]);// max,min,min
         
-    box[4] = {minmax_x[0], minmax_y[0], minmax_z[1]};// min,min,max
-    box[5] = {minmax_x[0], minmax_y[1], minmax_z[1]};// min,max,max
-    box[6] = {minmax_x[1], minmax_y[1], minmax_z[1]};// max,max,max
-    box[7] = {minmax_x[1], minmax_y[0], minmax_z[1]};// max,min,max
+    box[4] = MODELVEC3DMake(minmax_x[0], minmax_y[0], minmax_z[1]);// min,min,max
+    box[5] = MODELVEC3DMake(minmax_x[0], minmax_y[1], minmax_z[1]);// min,max,max
+    box[6] = MODELVEC3DMake(minmax_x[1], minmax_y[1], minmax_z[1]);// max,max,max
+    box[7] = MODELVEC3DMake(minmax_x[1], minmax_y[0], minmax_z[1]);// max,min,max
     
     // center
-    cg = {
+    cg = MODELVEC3DMake(
 		(minmax_x[0]+ minmax_x[1])/2.0f,
         (minmax_y[0]+ minmax_y[1])/2.0f,
-		(minmax_z[0]+ minmax_z[1])/2.0f,
-	};
+		(minmax_z[0]+ minmax_z[1])/2.0f
+	);
     
     // centering vertex
     for(int i = 0; i < bufCount && i < MAX_CHOP_BUF; i++) {

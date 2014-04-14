@@ -8,7 +8,7 @@
 #include <algorithm>
 #include "ModelType.h"
 
-#define GRAVITY_CONST		9.8
+#define GRAVITY_CONST		9.8f
 #define BIG_NUMBER			((MODELFLOAT)1e5)
 #define SMALL_NUMBER		((MODELFLOAT)1e-5)
 #define IS_POSITIVE(x)		(x >= 0.0)
@@ -23,8 +23,8 @@ using namespace std;
 
 namespace osakanaengine {
 
-	static const MODELFLOAT TWO_M_PI = 2.0 * M_PI;
-	static const MODELVEC3D G = { 0.0, -GRAVITY_CONST, 0.0};
+	static const MODELFLOAT TWO_M_PI = static_cast<MODELFLOAT>(2.0 * M_PI);
+	static const MODELVEC3D G = { 0.0f, -GRAVITY_CONST, 0.0f};
 	static const MODELVEC3D XAXIS = {1.0, 0.0, 0.0};
 	static const MODELVEC3D YAXIS = {0.0, 1.0, 0.0};
 	static const MODELVEC3D ZAXIS = {0.0, 0.0, 1.0};
@@ -33,7 +33,10 @@ namespace osakanaengine {
 	
     MODEL_INLINE ModelPoint MODELPOINTMake(MODELFLOAT x, MODELFLOAT y);
 	MODEL_INLINE MODELVEC3D MODELVEC3DMake(MODELFLOAT x, MODELFLOAT y, MODELFLOAT z);
+	MODEL_INLINE MODELLINE MODELLINEMake(MODELVEC3D a, MODELVEC3D b);
+	MODEL_INLINE MODELVERTEX MODELVERTEXMake(MODELVEC3D p, MODELVEC3D n, ModelPoint t);
 	MODEL_INLINE MODELVEC3D MODELVEC3DMakeWithArray(MODELFLOAT array[3]);
+	MODEL_INLINE MODELVERTEX MODELVERTEXMakeWithArray(MODELFLOAT array[8]);
 	MODEL_INLINE ModelPoint AddPoint(const ModelPoint a, const ModelPoint b);
     MODEL_INLINE ModelPoint SubtPoint(const ModelPoint a, const ModelPoint b);
 	MODEL_INLINE ModelPoint ScalePoint(const MODELFLOAT f, const ModelPoint v);
@@ -92,16 +95,44 @@ namespace osakanaengine {
     
 	MODEL_INLINE MODELVEC3D MODELVEC3DMake(MODELFLOAT x, MODELFLOAT y, MODELFLOAT z)
 	{
-		MODELVEC3D vec3d { x, y, z};
+		MODELVEC3D vec3d = { x, y, z};
 		return vec3d;
 	}
 	
 	MODEL_INLINE MODELVEC3D MODELVEC3DMakeWithArray(MODELFLOAT array[3])
 	{
-		MODELVEC3D vec3d { array[0], array[1], array[2]};
+		MODELVEC3D vec3d = { array[0], array[1], array[2]};
 		return vec3d;
 	}
 	
+	MODEL_INLINE MODELLINE MODELLINEMake(MODELVEC3D a, MODELVEC3D b)
+	{
+		MODELLINE line = {a,b};
+		return line;
+	}
+
+	MODEL_INLINE MODELVERTEX MODELVERTEXMake(MODELVEC3D p, MODELVEC3D n, ModelPoint t)
+	{
+		MODELVERTEX vert = {p,n,t};
+		return vert;
+	}
+
+	MODEL_INLINE MODELVERTEX MODELVERTEXMakeWithArray(MODELFLOAT array[8])
+	{
+		MODELVEC3D p = { array[0], array[1], array[2]};
+		MODELVEC3D n = { array[3], array[4], array[5]};
+		ModelPoint t = { array[6], array[7]};
+	
+		MODELVERTEX vert = {p,n,t};
+		return vert;
+	}
+
+	MODEL_INLINE MODELTRIANGLE MODELTRIANGLEMake(MODELVERTEX a, MODELVERTEX b, MODELVERTEX c)
+	{
+		MODELTRIANGLE tri = {a,b,c};
+		return tri;
+	}
+
 	MODEL_INLINE ModelPoint AddPoint(const ModelPoint a, const ModelPoint b)
     {
         ModelPoint c = { a.x + b.x, a.y + b.y};
@@ -483,7 +514,7 @@ namespace osakanaengine {
 	{
 		MODELFLOAT a = fmod(original, TWO_M_PI);
 		
-		MODELFLOAT pinum = (double)(int)(a / M_PI);
+		MODELFLOAT pinum = (MODELFLOAT)(int)(a / M_PI);
 		MODELFLOAT ans = (-TWO_M_PI) * pinum + a;
 		
 		return ans;
@@ -602,7 +633,7 @@ namespace osakanaengine {
         MODELVEC3D veloIntoTheOther = SubtVec(*vel, veloIntoPosVec);
 
         // if posVec is left of prj, rotate negative angle
-        MODELFLOAT angle = -2.0*SIGN(xp.y);
+        MODELFLOAT angle = static_cast<MODELFLOAT>(-2.0f*SIGN(xp.y));
         MODELVEC3D veloIntoPosVecRef = RotateY(veloIntoPosVec, angle);
         
         *vel = AddVec(veloIntoPosVecRef, veloIntoTheOther);

@@ -94,6 +94,8 @@ copy /Y "$(ProjectDir)*.cpp" "$(OutDir)"
     <ClInclude Include="CommonTool.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Matrix4x4f.h" />
+    <ClInclude Include="modeltool.h" />
+    <ClInclude Include="ModelType.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Slice.h" />
     <ClInclude Include="stdafx.h" />
@@ -109,6 +111,7 @@ copy /Y "$(ProjectDir)*.cpp" "$(OutDir)"
     <ClCompile Include="CommonTool.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Matrix4x4f.cpp" />
+    <ClCompile Include="modeltool.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

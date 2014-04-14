@@ -4,10 +4,11 @@
 #include <list>
 #include <vector>
 #include "Chop.h"
-#include "Plane.h"
+#include "CommonTool.h"
 
 using namespace std;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace osakanaengine;
 
 namespace SliceTest
 {		
@@ -24,14 +25,14 @@ namespace SliceTest
 				{ 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
 			};
 
-			CVertex a(normalsAndVertices[0]);
-			CVertex b(normalsAndVertices[1]);
-			CVertex c(normalsAndVertices[2]);
-			CTriangle3v tri(a,b,c);
+			MODELVERTEX a = MODELVERTEXMakeWithArray((float*)&normalsAndVertices[0][0]);
+			MODELVERTEX b = MODELVERTEXMakeWithArray((float*)&normalsAndVertices[1][0]);
+			MODELVERTEX c = MODELVERTEXMakeWithArray((float*)&normalsAndVertices[2][0]);
+			MODELTRIANGLE tri = {a,b,c};
 
-			CVector3f p(-0.1f, 1.0f, 0.0f);
-			CVector3f n(1.0f, 0.1f, 0.0f);
-			CPlane plane(n, p);
+			MODELVEC3D p = {-0.1f, 1.0f, 0.0f};
+			MODELVEC3D n = {1.0f, 0.1f, 0.0f};
+			MODELPLANE plane = {n, p};
 
 			// slice
 			float bufN[64][8] = {0.0f};
@@ -93,9 +94,9 @@ namespace SliceTest
 				{ 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
 			};
 
-			CVector3f p(-1.0f, 0.0f, 0.0f);
-			CVector3f n(0.0f, 1.0f, 0.0f);
-			CPlane plane(n, p);
+			MODELVEC3D p = {-1.0f, 0.0f, 0.0f};
+			MODELVEC3D n = {0.0f, 1.0f, 0.0f};
+			MODELPLANE plane = {n, p};
 
 			// slice
 			float bufN[64][8] = {0.0f};
@@ -157,9 +158,9 @@ namespace SliceTest
 				{ 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
 			};
 
-			CVector3f p(0.0f, -0.5f, 0.0f);
-			CVector3f n((float)(-1.0/sqrt(2.0)), (float)(1.0/sqrt(2.0)), 0.0f);
-			CPlane plane(n, p);
+			MODELVEC3D p = {0.0f, -0.5f, 0.0f};
+			MODELVEC3D n = {(float)(-1.0/sqrt(2.0)), (float)(1.0/sqrt(2.0)), 0.0f};
+			MODELPLANE plane = {n, p};
 
 			// slice
 			float bufN[64][8] = {0.0f};
@@ -221,9 +222,9 @@ namespace SliceTest
 				{ 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f},
 			};
 
-			CVector3f p(-0.5f, -0.5f, 0.0f);
-			CVector3f n(0.0f, -1.0f, 0.0f);
-			CPlane plane(n, p);
+			MODELVEC3D p = {-0.5f, -0.5f, 0.0f};
+			MODELVEC3D n = {0.0f, -1.0f, 0.0f};
+			MODELPLANE plane = {n, p};
 
 			// slice
 			float bufN[64][8] = {0.0f};
@@ -315,9 +316,9 @@ namespace SliceTest
 			int bufNCount = 0;
 			int bufACount = 0;
 
-			CVector3f p(-0.1f, 1.0f, 0.0f);
-			CVector3f n(1.0f, 0.1f, 0.0f);
-			CPlane plane(n, p);
+			MODELVEC3D p = {-0.1f, 1.0f, 0.0f};
+			MODELVEC3D n = {1.0f, 0.1f, 0.0f};
+			MODELPLANE plane = {n, p};
 			Chop(plane, &(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/8/sizeof(float)
 				, bufN, bufA, bufNCount, bufACount);
 
