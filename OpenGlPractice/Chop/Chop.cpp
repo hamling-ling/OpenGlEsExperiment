@@ -585,13 +585,13 @@ void Chop(const MODELPLANE& plane, const float* normalsAndVertices, const int le
 		for(int i = 0; i < sliceResult.NormalSideCount && bufNCount+2 < MAX_CHOP_BUF; i++) {
 			memcpy(&(bufN[bufNCount++][0]), &sliceResult.NormalSides[i].a, sizeof(MODELVERTEX));
 			memcpy(&(bufN[bufNCount++][0]), &sliceResult.NormalSides[i].b, sizeof(MODELVERTEX));
-			memcpy(&(bufN[bufNCount++][0]), &sliceResult.NormalSides[i].a, sizeof(MODELVERTEX));
+			memcpy(&(bufN[bufNCount++][0]), &sliceResult.NormalSides[i].c, sizeof(MODELVERTEX));
 		}
 
 		for(int i = 0; i < sliceResult.AntinormalSideCount && bufACount+2 < MAX_CHOP_BUF; i++) {
 			memcpy(&(bufA[bufACount++][0]), &sliceResult.AntinormalSides[i].a, sizeof(MODELVERTEX));
 			memcpy(&(bufA[bufACount++][0]), &sliceResult.AntinormalSides[i].b, sizeof(MODELVERTEX));
-			memcpy(&(bufA[bufACount++][0]), &sliceResult.AntinormalSides[i].a, sizeof(MODELVERTEX));
+			memcpy(&(bufA[bufACount++][0]), &sliceResult.AntinormalSides[i].c, sizeof(MODELVERTEX));
 		}
 
 		if( 2 == sliceResult.InterSectionCount) {
