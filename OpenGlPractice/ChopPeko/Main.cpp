@@ -9,8 +9,6 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "Line.h"
-#include "Vector3f.h"
 #include "Matrix4x4f.h"
 #include "SimpleObject.h"
 #include "Chop.h"
@@ -18,6 +16,7 @@
 #include "Vertex_Pko.h"
 
 using namespace std;
+using namespace osakanaengine;
 
 static HGLRC g_hGLRC;
 
@@ -301,8 +300,8 @@ static void OnCreate(HWND hWnd)
 	GLfloat bufA[MAX_CHOP_BUF][8] = {0.0f};
 	int bufNCount = 0;
 	int bufACount = 0;
-	//CPlane plane(CVector3f(1.0f, -0.1f, 0.0f), CVector3f(-0.1f, 1.0f, 0.0f));
-	CPlane plane(CVector3f(1.0f, 0.0f, 0.0f), CVector3f(0.0f, 1.0f, 0.0f));
+	MODELPLANE plane = MODELPLANEMake(MODELVEC3DMake(1.0f, -0.1f, 0.0f), MODELVEC3DMake(-0.1f, 1.0f, 0.0f));
+	//MODELPLANE plane = MODELPLANEMake(MODELVEC3DMake(1.0f, 0.0f, 0.0f), MODELVEC3DMake(0.0f, 1.0f, 0.0f));
 	Chop(plane, &(PkoVertexData[0].vertex.x), sizeof(PkoVertexData)/sizeof(vertexData)
 		, bufN, bufA, bufNCount, bufACount);
 

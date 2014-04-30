@@ -36,7 +36,8 @@ namespace osakanaengine {
 	MODEL_INLINE MODELLINE MODELLINEMake(MODELVEC3D a, MODELVEC3D b);
 	MODEL_INLINE MODELVERTEX MODELVERTEXMake(MODELVEC3D p, MODELVEC3D n, ModelPoint t);
 	MODEL_INLINE MODELVEC3D MODELVEC3DMakeWithArray(MODELFLOAT array[3]);
-	MODEL_INLINE MODELVERTEX MODELVERTEXMakeWithArray(MODELFLOAT array[8]);
+	MODEL_INLINE MODELVERTEX MODELVERTEXMakeWithArray(const MODELFLOAT array[8]);
+	MODEL_INLINE MODELPLANE MODELPLANEMake(MODELVEC3D p, MODELVEC3D n);
 	MODEL_INLINE ModelPoint AddPoint(const ModelPoint a, const ModelPoint b);
     MODEL_INLINE ModelPoint SubtPoint(const ModelPoint a, const ModelPoint b);
 	MODEL_INLINE ModelPoint ScalePoint(const MODELFLOAT f, const ModelPoint v);
@@ -117,7 +118,7 @@ namespace osakanaengine {
 		return vert;
 	}
 
-	MODEL_INLINE MODELVERTEX MODELVERTEXMakeWithArray(MODELFLOAT array[8])
+	MODEL_INLINE MODELVERTEX MODELVERTEXMakeWithArray(const MODELFLOAT array[8])
 	{
 		MODELVEC3D p = { array[0], array[1], array[2]};
 		MODELVEC3D n = { array[3], array[4], array[5]};
@@ -125,6 +126,12 @@ namespace osakanaengine {
 	
 		MODELVERTEX vert = {p,n,t};
 		return vert;
+	}
+
+	MODEL_INLINE MODELPLANE MODELPLANEMake(MODELVEC3D p, MODELVEC3D n)
+	{
+		MODELPLANE plane = {p, n};
+		return plane;
 	}
 
 	MODEL_INLINE MODELTRIANGLE MODELTRIANGLEMake(MODELVERTEX a, MODELVERTEX b, MODELVERTEX c)
@@ -606,9 +613,9 @@ namespace osakanaengine {
 			return false;
 		}
 		
-		if(std::min(a.x ,b.x) <= cand.x && cand.x <= std::max(a.x, b.x))
+		if((std::min)(a.x ,b.x) <= cand.x && cand.x <= (std::max)(a.x, b.x))
 		{
-			if(std::min(a.z, b.z) <= cand.z && cand.z <= std::max(a.z, b.z))
+			if((std::min)(a.z, b.z) <= cand.z && cand.z <= (std::max)(a.z, b.z))
 			{
 				*ret = cand;
 				return true;

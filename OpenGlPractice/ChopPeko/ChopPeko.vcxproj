@@ -43,7 +43,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)$(Configuration)\Chop</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)Chop;$(SolutionDir)CommonClasses</AdditionalIncludeDirectories>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -58,7 +58,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)$(Configuration)\Chop</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)Chop;$(SolutionDir)CommonClasses</AdditionalIncludeDirectories>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -70,16 +70,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BitmapFile.cpp" />
+    <ClCompile Include="..\CommonClasses\BitmapFile.cpp" />
+    <ClCompile Include="..\CommonClasses\Matrix4x4f.cpp" />
+    <ClCompile Include="..\CommonClasses\SimpleObject.cpp" />
+    <ClCompile Include="..\CommonClasses\Texture.cpp" />
+    <ClCompile Include="..\CommonClasses\Vector3f.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="SimpleObject.cpp" />
-    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BitmapFile.h" />
+    <ClInclude Include="..\CommonClasses\BitmapFile.h" />
+    <ClInclude Include="..\CommonClasses\Matrix4x4f.h" />
+    <ClInclude Include="..\CommonClasses\SimpleObject.h" />
+    <ClInclude Include="..\CommonClasses\Texture.h" />
+    <ClInclude Include="..\CommonClasses\Vector3f.h" />
     <ClInclude Include="GlTypes.h" />
-    <ClInclude Include="SimpleObject.h" />
-    <ClInclude Include="Texture.h" />
     <ClInclude Include="Vertex_Pko.h" />
   </ItemGroup>
   <ItemGroup>

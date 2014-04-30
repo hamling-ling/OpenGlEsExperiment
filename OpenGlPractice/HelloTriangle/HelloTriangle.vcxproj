@@ -53,7 +53,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)\Chop</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)\Chop;$(SolutionDir)\CommonClasses</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -78,7 +78,7 @@ copy /Y "$(ProjectDir)texture.bmp" "$(OutDir)"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)\Chop</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)\Chop;$(SolutionDir)\CommonClasses</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -96,22 +96,26 @@ copy /Y "$(ProjectDir)texture.bmp" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BitmapFile.cpp" />
+    <ClCompile Include="..\CommonClasses\BitmapFile.cpp" />
+    <ClCompile Include="..\CommonClasses\Matrix4x4f.cpp" />
+    <ClCompile Include="..\CommonClasses\SimpleObject.cpp" />
+    <ClCompile Include="..\CommonClasses\Texture.cpp" />
+    <ClCompile Include="..\CommonClasses\Vector3f.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="SimpleObject.cpp" />
-    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Texture.frag" />
     <None Include="Texture.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BitmapFile.h" />
-    <ClInclude Include="SimpleObject.h" />
-    <ClInclude Include="Texture.h" />
+    <Image Include="texture.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="texture.bmp" />
+    <ClInclude Include="..\CommonClasses\BitmapFile.h" />
+    <ClInclude Include="..\CommonClasses\Matrix4x4f.h" />
+    <ClInclude Include="..\CommonClasses\SimpleObject.h" />
+    <ClInclude Include="..\CommonClasses\Texture.h" />
+    <ClInclude Include="..\CommonClasses\Vector3f.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

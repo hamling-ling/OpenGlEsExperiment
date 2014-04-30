@@ -60,7 +60,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)\Chop;$(SolutionDir)\CommonClasses</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -86,7 +86,7 @@ copy /Y "$(ProjectDir)*.frag" "$(OutDir)"
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)\Chop;$(SolutionDir)\CommonClasses</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -105,13 +105,12 @@ copy /Y "$(ProjectDir)*.frag" "$(OutDir)"
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\CommonClasses\BitmapFile.cpp" />
+    <ClCompile Include="..\CommonClasses\Matrix4x4f.cpp" />
+    <ClCompile Include="..\CommonClasses\SimpleObject.cpp" />
+    <ClCompile Include="..\CommonClasses\Texture.cpp" />
+    <ClCompile Include="..\CommonClasses\Vector3f.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Matrix4x4f.cpp" />
-    <ClCompile Include="Vector3f.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Matrix4x4f.h" />
-    <ClInclude Include="Vector3f.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Dlls\glew32.dll" />
@@ -120,6 +119,13 @@ copy /Y "$(ProjectDir)*.frag" "$(OutDir)"
     </None>
     <None Include="Shadow.vert" />
     <None Include="Simple.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\CommonClasses\BitmapFile.h" />
+    <ClInclude Include="..\CommonClasses\Matrix4x4f.h" />
+    <ClInclude Include="..\CommonClasses\SimpleObject.h" />
+    <ClInclude Include="..\CommonClasses\Texture.h" />
+    <ClInclude Include="..\CommonClasses\Vector3f.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
