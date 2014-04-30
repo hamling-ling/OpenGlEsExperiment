@@ -20,7 +20,7 @@ static inline bool NearlyEquals(MODELVEC3D a, MODELVEC3D b)
 
 static inline bool NearlyEquals(MODELLINE a, MODELLINE b)
 {
-	return NearlyEquals(a.a, a.b);
+	return(NearlyEquals(a.a, b.a) && NearlyEquals(a.b, b.b));
 }
 
 static inline MODELVEC3D GetCenter(const MODELTRIANGLE& tri)
