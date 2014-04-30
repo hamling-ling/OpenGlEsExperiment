@@ -243,7 +243,7 @@ static void OnCreate(HWND hWnd)
 	GLfloat bufA[MAX_CHOP_BUF][8] = {0.0f};
 	int bufNCount = 0;
 	int bufACount = 0;
-	MODELPLANE plane = MODELPLANEMake(MODELVEC3DMake(1.0f, 0.1f, 0.0f), MODELVEC3DMake(-0.1f, 1.0f, 0.0f));
+	MODELPLANE plane = MODELPLANEMake(MODELVEC3DMake(-0.1f, 1.0f, 0.0f), MODELVEC3DMake(1.0f, 0.1f, 0.0f));
 
 	Chop(plane, &(normalsAndVertices[0][0]), sizeof(normalsAndVertices)/8/sizeof(GLfloat)
 		, bufN, bufA, bufNCount, bufACount);
