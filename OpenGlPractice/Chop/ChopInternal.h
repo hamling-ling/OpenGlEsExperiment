@@ -3,7 +3,7 @@
 //  ConsoleChop
 //
 //  Created by Nobuhiro Kuroiwa on 2014/05/01.
-//  Copyright (c) 2014年 Pixela Corporation. All rights reserved.
+//  Copyright (c) 2014年 All rights reserved.
 //
 
 #ifndef ConsoleChop_ChopInternal_h
