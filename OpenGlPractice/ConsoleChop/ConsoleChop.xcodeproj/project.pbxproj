@@ -1,0 +1,282 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		677A511C18FBB5D100324E3F /* modeltool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 677A511918FBB5D100324E3F /* modeltool.cpp */; };
+		67EDF6C718E961E600A71CAD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67EDF6C618E961E600A71CAD /* main.cpp */; };
+		67EDF6C918E961E600A71CAD /* ConsoleChop.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 67EDF6C818E961E600A71CAD /* ConsoleChop.1 */; };
+		67EDF6F818E9657200A71CAD /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 67EDF6F718E9657200A71CAD /* OpenGL.framework */; };
+		67EDF71318E9723C00A71CAD /* Chop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67EDF6FA18E9723B00A71CAD /* Chop.cpp */; };
+		67EDF71418E9723C00A71CAD /* CommonTool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67EDF6FE18E9723C00A71CAD /* CommonTool.cpp */; };
+		67EDF71818E9723C00A71CAD /* stdafx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 67EDF70618E9723C00A71CAD /* stdafx.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		67EDF6C118E961E600A71CAD /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				67EDF6C918E961E600A71CAD /* ConsoleChop.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		67762B361912029A00B19FD2 /* ChopInternal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChopInternal.h; sourceTree = "<group>"; };
+		677A511918FBB5D100324E3F /* modeltool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = modeltool.cpp; sourceTree = "<group>"; };
+		677A511A18FBB5D100324E3F /* modeltool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = modeltool.h; sourceTree = "<group>"; };
+		677A511B18FBB5D100324E3F /* ModelType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelType.h; sourceTree = "<group>"; };
+		677A511D18FBB5E000324E3F /* Vertex_Zak.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vertex_Zak.h; path = ConsoleChop/Vertex_Zak.h; sourceTree = SOURCE_ROOT; };
+		677A511E18FBD1DA00324E3F /* GlTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlTypes.h; path = ConsoleChop/GlTypes.h; sourceTree = SOURCE_ROOT; };
+		67EDF6C318E961E600A71CAD /* ConsoleChop */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ConsoleChop; sourceTree = BUILT_PRODUCTS_DIR; };
+		67EDF6C618E961E600A71CAD /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		67EDF6C818E961E600A71CAD /* ConsoleChop.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = ConsoleChop.1; sourceTree = "<group>"; };
+		67EDF6F718E9657200A71CAD /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		67EDF6FA18E9723B00A71CAD /* Chop.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Chop.cpp; sourceTree = "<group>"; };
+		67EDF6FB18E9723B00A71CAD /* Chop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Chop.h; sourceTree = "<group>"; };
+		67EDF6FE18E9723C00A71CAD /* CommonTool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommonTool.cpp; sourceTree = "<group>"; };
+		67EDF6FF18E9723C00A71CAD /* CommonTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonTool.h; sourceTree = "<group>"; };
+		67EDF70618E9723C00A71CAD /* stdafx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stdafx.cpp; sourceTree = "<group>"; };
+		67EDF70718E9723C00A71CAD /* stdafx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdafx.h; sourceTree = "<group>"; };
+		67EDF70818E9723C00A71CAD /* targetver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = targetver.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		67EDF6C018E961E600A71CAD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				67EDF6F818E9657200A71CAD /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		67EDF6BA18E961E600A71CAD = {
+			isa = PBXGroup;
+			children = (
+				67EDF6F918E9723B00A71CAD /* Chop */,
+				67EDF6F718E9657200A71CAD /* OpenGL.framework */,
+				67EDF6C518E961E600A71CAD /* ConsoleChop */,
+				67EDF6C418E961E600A71CAD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		67EDF6C418E961E600A71CAD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				67EDF6C318E961E600A71CAD /* ConsoleChop */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		67EDF6C518E961E600A71CAD /* ConsoleChop */ = {
+			isa = PBXGroup;
+			children = (
+				67EDF6C618E961E600A71CAD /* main.cpp */,
+				67EDF6C818E961E600A71CAD /* ConsoleChop.1 */,
+			);
+			path = ConsoleChop;
+			sourceTree = "<group>";
+		};
+		67EDF6F918E9723B00A71CAD /* Chop */ = {
+			isa = PBXGroup;
+			children = (
+				677A511E18FBD1DA00324E3F /* GlTypes.h */,
+				677A511D18FBB5E000324E3F /* Vertex_Zak.h */,
+				677A511918FBB5D100324E3F /* modeltool.cpp */,
+				677A511A18FBB5D100324E3F /* modeltool.h */,
+				677A511B18FBB5D100324E3F /* ModelType.h */,
+				67EDF6FA18E9723B00A71CAD /* Chop.cpp */,
+				67EDF6FB18E9723B00A71CAD /* Chop.h */,
+				67EDF6FE18E9723C00A71CAD /* CommonTool.cpp */,
+				67EDF6FF18E9723C00A71CAD /* CommonTool.h */,
+				67EDF70618E9723C00A71CAD /* stdafx.cpp */,
+				67EDF70718E9723C00A71CAD /* stdafx.h */,
+				67EDF70818E9723C00A71CAD /* targetver.h */,
+				67762B361912029A00B19FD2 /* ChopInternal.h */,
+			);
+			name = Chop;
+			path = ../Chop;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		67EDF6C218E961E600A71CAD /* ConsoleChop */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 67EDF6CC18E961E600A71CAD /* Build configuration list for PBXNativeTarget "ConsoleChop" */;
+			buildPhases = (
+				67EDF6BF18E961E600A71CAD /* Sources */,
+				67EDF6C018E961E600A71CAD /* Frameworks */,
+				67EDF6C118E961E600A71CAD /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ConsoleChop;
+			productName = ConsoleChop;
+			productReference = 67EDF6C318E961E600A71CAD /* ConsoleChop */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		67EDF6BB18E961E600A71CAD /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "Pixela Corporation";
+			};
+			buildConfigurationList = 67EDF6BE18E961E600A71CAD /* Build configuration list for PBXProject "ConsoleChop" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 67EDF6BA18E961E600A71CAD;
+			productRefGroup = 67EDF6C418E961E600A71CAD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				67EDF6C218E961E600A71CAD /* ConsoleChop */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		67EDF6BF18E961E600A71CAD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				677A511C18FBB5D100324E3F /* modeltool.cpp in Sources */,
+				67EDF71418E9723C00A71CAD /* CommonTool.cpp in Sources */,
+				67EDF6C718E961E600A71CAD /* main.cpp in Sources */,
+				67EDF71818E9723C00A71CAD /* stdafx.cpp in Sources */,
+				67EDF71318E9723C00A71CAD /* Chop.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		67EDF6CA18E961E600A71CAD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		67EDF6CB18E961E600A71CAD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		67EDF6CD18E961E600A71CAD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		67EDF6CE18E961E600A71CAD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		67EDF6BE18E961E600A71CAD /* Build configuration list for PBXProject "ConsoleChop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				67EDF6CA18E961E600A71CAD /* Debug */,
+				67EDF6CB18E961E600A71CAD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		67EDF6CC18E961E600A71CAD /* Build configuration list for PBXNativeTarget "ConsoleChop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				67EDF6CD18E961E600A71CAD /* Debug */,
+				67EDF6CE18E961E600A71CAD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 67EDF6BB18E961E600A71CAD /* Project object */;
+}
