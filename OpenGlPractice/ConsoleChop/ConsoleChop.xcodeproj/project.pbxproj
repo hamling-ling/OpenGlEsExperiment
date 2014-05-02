@@ -136,7 +136,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0510;
-				ORGANIZATIONNAME = "Pixela Corporation";
+				ORGANIZATIONNAME = "none";
 			};
 			buildConfigurationList = 67EDF6BE18E961E600A71CAD /* Build configuration list for PBXProject "ConsoleChop" */;
 			compatibilityVersion = "Xcode 3.2";
