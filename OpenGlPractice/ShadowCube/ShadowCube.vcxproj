@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,13 +18,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -60,14 +60,14 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)\Chop;$(SolutionDir)\CommonClasses</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)\Chop;$(SolutionDir)\Common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;Common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)glew\lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)glew\lib\;$(OutDir);</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)Dlls\glew32.dll" "$(OutDir)"
@@ -86,16 +86,16 @@ copy /Y "$(ProjectDir)*.frag" "$(OutDir)"
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)\Chop;$(SolutionDir)\CommonClasses</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)glew\include;$(SolutionDir)\Chop;$(SolutionDir)\Common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;Common.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>$(SolutionDir)glew\lib;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)glew\lib\;$(OutDir);</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)Dlls\glew32.dll" "$(OutDir)"
@@ -105,11 +105,6 @@ copy /Y "$(ProjectDir)*.frag" "$(OutDir)"
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\CommonClasses\BitmapFile.cpp" />
-    <ClCompile Include="..\CommonClasses\Matrix4x4f.cpp" />
-    <ClCompile Include="..\CommonClasses\SimpleObject.cpp" />
-    <ClCompile Include="..\CommonClasses\Texture.cpp" />
-    <ClCompile Include="..\CommonClasses\Vector3f.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -119,13 +114,6 @@ copy /Y "$(ProjectDir)*.frag" "$(OutDir)"
     </None>
     <None Include="Shadow.vert" />
     <None Include="Simple.vert" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\CommonClasses\BitmapFile.h" />
-    <ClInclude Include="..\CommonClasses\Matrix4x4f.h" />
-    <ClInclude Include="..\CommonClasses\SimpleObject.h" />
-    <ClInclude Include="..\CommonClasses\Texture.h" />
-    <ClInclude Include="..\CommonClasses\Vector3f.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
